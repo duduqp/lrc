@@ -207,33 +207,6 @@ src/proto/coordinator.pb.cc.s:
 	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/proto/coordinator.pb.cc.s
 .PHONY : src/proto/coordinator.pb.cc.s
 
-src/proto/datanode.pb.o: src/proto/datanode.pb.cc.o
-
-.PHONY : src/proto/datanode.pb.o
-
-# target to build an object file
-src/proto/datanode.pb.cc.o:
-	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/proto/datanode.pb.cc.o
-.PHONY : src/proto/datanode.pb.cc.o
-
-src/proto/datanode.pb.i: src/proto/datanode.pb.cc.i
-
-.PHONY : src/proto/datanode.pb.i
-
-# target to preprocess a source file
-src/proto/datanode.pb.cc.i:
-	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/proto/datanode.pb.cc.i
-.PHONY : src/proto/datanode.pb.cc.i
-
-src/proto/datanode.pb.s: src/proto/datanode.pb.cc.s
-
-.PHONY : src/proto/datanode.pb.s
-
-# target to generate assembly for a file
-src/proto/datanode.pb.cc.s:
-	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/proto/datanode.pb.cc.s
-.PHONY : src/proto/datanode.pb.cc.s
-
 src/pugixml.o: src/pugixml.cpp.o
 
 .PHONY : src/pugixml.o
@@ -279,9 +252,6 @@ help:
 	@echo "... src/proto/coordinator.pb.o"
 	@echo "... src/proto/coordinator.pb.i"
 	@echo "... src/proto/coordinator.pb.s"
-	@echo "... src/proto/datanode.pb.o"
-	@echo "... src/proto/datanode.pb.i"
-	@echo "... src/proto/datanode.pb.s"
 	@echo "... src/pugixml.o"
 	@echo "... src/pugixml.i"
 	@echo "... src/pugixml.s"
