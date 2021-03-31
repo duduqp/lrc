@@ -1,0 +1,36 @@
+syntax ="proto3";
+
+package coordinator;
+
+//client side stub
+//coordinator size implement
+service FileSystem{
+  rpc createDir (Path)  returns(RequestResult);
+  rpc uploadStripe (StripeInfo) returns(StripeLocation);
+  rpc downloadStripe (StripeId) returns(StripeLocation);
+  rpc deleteStripe(StripeId) returns(RequestResult);
+}
+message StripeId{
+  int32 stripeid = 1;
+}
+message StripeInfo{
+  int32 stripeid = 1;
+  int32 stripe_k = 2;
+  int32 stripe_l = 3;
+  int32 stripe_g = 4;
+
+}
+
+message StripeLocation{
+  repeated string dataLoc = 1;
+  repeated string localparityLoc = 2;
+  repeated string globalparityLoc = 3;
+}
+
+message Path{
+  string dstpath =1;
+}
+
+message RequestResult{
+  bool trueorfalse=1;
+}

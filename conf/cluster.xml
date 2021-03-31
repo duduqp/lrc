@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<clusters>
+        <cluster>
+            <id>fs_uri</id>
+            <gateway_uri></gateway_uri>
+            <nodes>
+                <node>
+                    <uri></uri>
+                </node>
+            </nodes>
+        </cluster>
+        <cluster>
+            <id>fs_uri</id>
+            <gateway_uri></gateway_uri>
+            <nodes>
+                <node>
+                    <uri></uri>
+                </node>
+            </nodes>
+        </cluster><cluster>
+        <id>fs_uri</id>
+        <gateway_uri></gateway_uri>
+        <nodes>
+            <node>
+                <uri></uri>
+            </node>
+        </nodes>
+    </cluster>
+</clusters>
