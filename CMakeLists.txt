@@ -64,8 +64,6 @@ foreach(_target
     add_executable(${_target}
             ${cn_proto_srcs}
             ${cn_grpc_srcs}
-            ${dn_proto_srcs}
-            ${dn_grpc_srcs}
             include/devcommon.h  include/pugixml.hpp include/pugiconfig.hpp include/FileSystemClient.h src/client.cpp src/pugixml.cpp include/MetaInfo.h include/FileSystemCN.h include/erasurecoding/CodeUtil.h include/erasurecoding/LRCCoder.h include/FileSystemDN.h)
     target_link_libraries(${_target}
             ${_REFLECTION}

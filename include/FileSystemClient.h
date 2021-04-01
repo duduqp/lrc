@@ -11,14 +11,18 @@
 
 #include "asio/thread_pool.hpp"
 #include "pugixml.hpp"
-
 #include <grpcpp/grpcpp.h>
+#include
+
+
+
 #include "MetaInfo.h"
-#include "proto/coordinator.grpc.pb.h"
+#include "coordinator.grpc.pb.h"
 
 namespace lrc{
     class FileSystemClient{
 
+        spdlog::logger m_client_logger;
         //for validation
         std::string m_meta_path ;
         std::string m_conf_path ;
@@ -37,11 +41,11 @@ namespace lrc{
 
         // client-namenode stub
         // no client-datanode stub, because client can see a filesystem abstraction via coordinator
-        std::unique_ptr<coordinator::FileSystem> m_fileSystem_ptr;
+        std::unique_ptr<coordinator::FileSystem::Stub> m_fileSystem_ptr;
 
         // need a socketfactory and a logger
     public:
-        FileSystemClient(const std::string & p_conf_path,const std::string p_fsimage_path):m_conf_path(p_conf_path)
+        FileSystemClient(const std::string & p_conf_path="/conf/configuration.xml",const std::string & p_fsimage_path="/history/fsimage.xml"):m_conf_path(p_conf_path)
         {
             //parse config file
             pugi::xml_document doc;
@@ -67,14 +71,38 @@ namespace lrc{
                 }
             }
             auto channel = grpc::CreateChannel(m_fs_uri,grpc::InsecureChannelCredentials());
-            m_fileSystem_ptr=coordinator::FileSystem::NewStub(channel);
+            m_fileSystem_ptr = coordinator::FileSystem::NewStub(channel);
+            m_client_logger = spdlog::
         }
 
-        bool UploadStripe(const std::string & srcpath,const std::string & dstpath,const ECSchema & ecschema,int stripeid)
-        {
-            // request DNs Location
-            //
-        }
+
+        FileSystemClient(const FileSystemClient &) =  delete;
+
+        FileSystemClient & operator=(const FileSystemClient &) =delete ;
+
+        FileSystemClient(FileSystemClient &&) = delete ;
+
+        FileSystemClient & operator(FileSystemClient &&) = delete;
+
+        ~FileSystemClient() ;
+
+
+        int UploadStripe(const std::string & srcpath,const std::string & dstpath,const ECSchema & ecschema);
+
+
+        bool DownLoadStripe(const string & srcpath,const string & dstpath,int stripe_id);
+
+
+        bool CreateDir(const std::string & dstpath) ;
+
+        bool DeleteDir(const std::string & dstpath) ;
+
+
+        bool TransformRedundancy(int start_stripe_id,int to_stripe_id);
+
+        std::vector<StripeInfo> ListStripes() const;
+
+
     };
 }
 #endif //LRC_FILESYSTEMCLIENT_H

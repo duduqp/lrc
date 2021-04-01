@@ -5,7 +5,7 @@
 #ifndef LRC_FILESYSTEMCN_H
 #define LRC_FILESYSTEMCN_H
 
-#include "proto/coordinator.grpc.pb.h"
+#include "coordinator.grpc.pb.h"
 #include <grpcpp/grpcpp.h>
 #include "devcommon.h"
 
