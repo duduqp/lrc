@@ -134,7 +134,7 @@ namespace lrc {
                                                    ::datanode::RequestResult *response) {
 
         m_dnfromcnimpl_logger->info("clear stripe {}", request->stripeid());
-        std::filesystem::remove(m_datapath.append(std::to_string(request->stripeid())));
+        std::filesystem::remove(m_datapath+(std::to_string(request->stripeid())));
         response->set_trueorfalse(true);
         return grpc::Status::OK;
     }
