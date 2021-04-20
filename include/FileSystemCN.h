@@ -160,11 +160,14 @@ namespace lrc {
 
             std::pair<std::vector<std::tuple<int, std::vector<std::string>, std::vector<std::string>>>,
             std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>>
-            generate_basic_transition_plan(const std::unordered_map<int, std::vector<std::string>>& fsimage);
+            generate_basic_transition_plan(std::unordered_map<int, std::vector<std::string>>& fsimage);
 
-            std::vector<std::tuple<int,int,std::vector<std::string>,std::vector<std::string>>>
-            FileSystemCN::FileSystemImpl::generate_designed_transition_plan(const std::unordered_map<int, std::vector<std::string>> &fsimage);
+            std::vector<std::tuple<int,int,std::vector<std::string>,std::string,std::vector<std::string>>>
+            generate_designed_transition_plan(std::unordered_map<int, std::vector<std::string>> &fsimage);
 
+            bool delete_global_parity_of(int stripeid);
+
+            bool rename_block_to(int oldstripeid, int newstripeid);
         };
 
 

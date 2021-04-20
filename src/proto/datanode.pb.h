@@ -48,7 +48,7 @@ struct TableStruct_datanode_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[11]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[12]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -77,6 +77,9 @@ extern PathDefaultTypeInternal _Path_default_instance_;
 class PullPerformPushCMD;
 class PullPerformPushCMDDefaultTypeInternal;
 extern PullPerformPushCMDDefaultTypeInternal _PullPerformPushCMD_default_instance_;
+class RenameCMD;
+class RenameCMDDefaultTypeInternal;
+extern RenameCMDDefaultTypeInternal _RenameCMD_default_instance_;
 class RequestResult;
 class RequestResultDefaultTypeInternal;
 extern RequestResultDefaultTypeInternal _RequestResult_default_instance_;
@@ -98,6 +101,7 @@ template<> ::datanode::NodesLocation* Arena::CreateMaybeMessage<::datanode::Node
 template<> ::datanode::OP* Arena::CreateMaybeMessage<::datanode::OP>(Arena*);
 template<> ::datanode::Path* Arena::CreateMaybeMessage<::datanode::Path>(Arena*);
 template<> ::datanode::PullPerformPushCMD* Arena::CreateMaybeMessage<::datanode::PullPerformPushCMD>(Arena*);
+template<> ::datanode::RenameCMD* Arena::CreateMaybeMessage<::datanode::RenameCMD>(Arena*);
 template<> ::datanode::RequestResult* Arena::CreateMaybeMessage<::datanode::RequestResult>(Arena*);
 template<> ::datanode::StripeId* Arena::CreateMaybeMessage<::datanode::StripeId>(Arena*);
 template<> ::datanode::StripeInfo* Arena::CreateMaybeMessage<::datanode::StripeInfo>(Arena*);
@@ -109,12 +113,13 @@ enum OP_CODEC : int {
   OP_CODEC_NO = 0,
   OP_CODEC_XOR = 1,
   OP_CODEC_LRC = 2,
+  OP_CODEC_REUSE = 3,
   OP_CODEC_OP_CODEC_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   OP_CODEC_OP_CODEC_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool OP_CODEC_IsValid(int value);
 constexpr OP_CODEC OP_CODEC_CODEC_MIN = OP_CODEC_NO;
-constexpr OP_CODEC OP_CODEC_CODEC_MAX = OP_CODEC_LRC;
+constexpr OP_CODEC OP_CODEC_CODEC_MAX = OP_CODEC_REUSE;
 constexpr int OP_CODEC_CODEC_ARRAYSIZE = OP_CODEC_CODEC_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* OP_CODEC_descriptor();
@@ -132,6 +137,145 @@ inline bool OP_CODEC_Parse(
     OP_CODEC_descriptor(), name, value);
 }
 // ===================================================================
+
+class RenameCMD :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.RenameCMD) */ {
+ public:
+  RenameCMD();
+  virtual ~RenameCMD();
+
+  RenameCMD(const RenameCMD& from);
+  RenameCMD(RenameCMD&& from) noexcept
+    : RenameCMD() {
+    *this = ::std::move(from);
+  }
+
+  inline RenameCMD& operator=(const RenameCMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RenameCMD& operator=(RenameCMD&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const RenameCMD& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RenameCMD* internal_default_instance() {
+    return reinterpret_cast<const RenameCMD*>(
+               &_RenameCMD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  friend void swap(RenameCMD& a, RenameCMD& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(RenameCMD* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RenameCMD* New() const final {
+    return CreateMaybeMessage<RenameCMD>(nullptr);
+  }
+
+  RenameCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<RenameCMD>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const RenameCMD& from);
+  void MergeFrom(const RenameCMD& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RenameCMD* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "datanode.RenameCMD";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
+    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kOldidFieldNumber = 1,
+    kNewidFieldNumber = 2,
+  };
+  // int32 oldid = 1;
+  void clear_oldid();
+  ::PROTOBUF_NAMESPACE_ID::int32 oldid() const;
+  void set_oldid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_oldid() const;
+  void _internal_set_oldid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 newid = 2;
+  void clear_newid();
+  ::PROTOBUF_NAMESPACE_ID::int32 newid() const;
+  void set_newid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_newid() const;
+  void _internal_set_newid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:datanode.RenameCMD)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::int32 oldid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 newid_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_datanode_2eproto;
+};
+// -------------------------------------------------------------------
 
 class CheckaliveCMD :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.CheckaliveCMD) */ {
@@ -175,7 +319,7 @@ class CheckaliveCMD :
                &_CheckaliveCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    1;
 
   friend void swap(CheckaliveCMD& a, CheckaliveCMD& b) {
     a.Swap(&b);
@@ -290,7 +434,7 @@ class PullPerformPushCMD :
                &_PullPerformPushCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    2;
 
   friend void swap(PullPerformPushCMD& a, PullPerformPushCMD& b) {
     a.Swap(&b);
@@ -475,7 +619,7 @@ class StripeId :
                &_StripeId_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   friend void swap(StripeId& a, StripeId& b) {
     a.Swap(&b);
@@ -603,7 +747,7 @@ class StripeLocation :
                &_StripeLocation_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   friend void swap(StripeLocation& a, StripeLocation& b) {
     a.Swap(&b);
@@ -798,7 +942,7 @@ class NodesLocation :
                &_NodesLocation_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
   friend void swap(NodesLocation& a, NodesLocation& b) {
     a.Swap(&b);
@@ -941,7 +1085,7 @@ class ClearallstripeCMD :
                &_ClearallstripeCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(ClearallstripeCMD& a, ClearallstripeCMD& b) {
     a.Swap(&b);
@@ -1056,7 +1200,7 @@ class Path :
                &_Path_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(Path& a, Path& b) {
     a.Swap(&b);
@@ -1191,7 +1335,7 @@ class OP :
                &_OP_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(OP& a, OP& b) {
     a.Swap(&b);
@@ -1259,6 +1403,8 @@ class OP :
     OP_CODEC_XOR;
   static constexpr CODEC LRC =
     OP_CODEC_LRC;
+  static constexpr CODEC REUSE =
+    OP_CODEC_REUSE;
   static inline bool CODEC_IsValid(int value) {
     return OP_CODEC_IsValid(value);
   }
@@ -1290,6 +1436,9 @@ class OP :
     kFromFieldNumber = 1,
     kToFieldNumber = 2,
     kOpFieldNumber = 3,
+    kShiftFieldNumber = 4,
+    kStripeidFieldNumber = 5,
+    kIndexFieldNumber = 6,
   };
   // repeated string from = 1;
   int from_size() const;
@@ -1348,6 +1497,33 @@ class OP :
   void _internal_set_op(::datanode::OP_CODEC value);
   public:
 
+  // int32 shift = 4;
+  void clear_shift();
+  ::PROTOBUF_NAMESPACE_ID::int32 shift() const;
+  void set_shift(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_shift() const;
+  void _internal_set_shift(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 stripeid = 5;
+  void clear_stripeid();
+  ::PROTOBUF_NAMESPACE_ID::int32 stripeid() const;
+  void set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_stripeid() const;
+  void _internal_set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 index = 6;
+  void clear_index();
+  ::PROTOBUF_NAMESPACE_ID::int32 index() const;
+  void set_index(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_index() const;
+  void _internal_set_index(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:datanode.OP)
  private:
   class _Internal;
@@ -1356,6 +1532,9 @@ class OP :
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> from_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> to_;
   int op_;
+  ::PROTOBUF_NAMESPACE_ID::int32 shift_;
+  ::PROTOBUF_NAMESPACE_ID::int32 stripeid_;
+  ::PROTOBUF_NAMESPACE_ID::int32 index_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_datanode_2eproto;
 };
@@ -1403,7 +1582,7 @@ class Action :
                &_Action_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(Action& a, Action& b) {
     a.Swap(&b);
@@ -1531,7 +1710,7 @@ class StripeInfo :
                &_StripeInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(StripeInfo& a, StripeInfo& b) {
     a.Swap(&b);
@@ -1692,7 +1871,7 @@ class RequestResult :
                &_RequestResult_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   friend void swap(RequestResult& a, RequestResult& b) {
     a.Swap(&b);
@@ -1785,6 +1964,50 @@ class RequestResult :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// RenameCMD
+
+// int32 oldid = 1;
+inline void RenameCMD::clear_oldid() {
+  oldid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 RenameCMD::_internal_oldid() const {
+  return oldid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 RenameCMD::oldid() const {
+  // @@protoc_insertion_point(field_get:datanode.RenameCMD.oldid)
+  return _internal_oldid();
+}
+inline void RenameCMD::_internal_set_oldid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  oldid_ = value;
+}
+inline void RenameCMD::set_oldid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_oldid(value);
+  // @@protoc_insertion_point(field_set:datanode.RenameCMD.oldid)
+}
+
+// int32 newid = 2;
+inline void RenameCMD::clear_newid() {
+  newid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 RenameCMD::_internal_newid() const {
+  return newid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 RenameCMD::newid() const {
+  // @@protoc_insertion_point(field_get:datanode.RenameCMD.newid)
+  return _internal_newid();
+}
+inline void RenameCMD::_internal_set_newid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  newid_ = value;
+}
+inline void RenameCMD::set_newid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_newid(value);
+  // @@protoc_insertion_point(field_set:datanode.RenameCMD.newid)
+}
+
+// -------------------------------------------------------------------
+
 // CheckaliveCMD
 
 // -------------------------------------------------------------------
@@ -2599,6 +2822,66 @@ inline void OP::set_op(::datanode::OP_CODEC value) {
   // @@protoc_insertion_point(field_set:datanode.OP.op)
 }
 
+// int32 shift = 4;
+inline void OP::clear_shift() {
+  shift_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::_internal_shift() const {
+  return shift_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::shift() const {
+  // @@protoc_insertion_point(field_get:datanode.OP.shift)
+  return _internal_shift();
+}
+inline void OP::_internal_set_shift(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  shift_ = value;
+}
+inline void OP::set_shift(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_shift(value);
+  // @@protoc_insertion_point(field_set:datanode.OP.shift)
+}
+
+// int32 stripeid = 5;
+inline void OP::clear_stripeid() {
+  stripeid_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::_internal_stripeid() const {
+  return stripeid_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::stripeid() const {
+  // @@protoc_insertion_point(field_get:datanode.OP.stripeid)
+  return _internal_stripeid();
+}
+inline void OP::_internal_set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  stripeid_ = value;
+}
+inline void OP::set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_stripeid(value);
+  // @@protoc_insertion_point(field_set:datanode.OP.stripeid)
+}
+
+// int32 index = 6;
+inline void OP::clear_index() {
+  index_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::_internal_index() const {
+  return index_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::index() const {
+  // @@protoc_insertion_point(field_get:datanode.OP.index)
+  return _internal_index();
+}
+inline void OP::_internal_set_index(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  index_ = value;
+}
+inline void OP::set_index(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_index(value);
+  // @@protoc_insertion_point(field_set:datanode.OP.index)
+}
+
 // -------------------------------------------------------------------
 
 // Action
@@ -2734,6 +3017,8 @@ inline void RequestResult::set_trueorfalse(bool value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

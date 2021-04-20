@@ -18,6 +18,10 @@ extern PROTOBUF_INTERNAL_EXPORT_datanode_2eproto ::PROTOBUF_NAMESPACE_ID::intern
 extern PROTOBUF_INTERNAL_EXPORT_datanode_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_NodesLocation_datanode_2eproto;
 extern PROTOBUF_INTERNAL_EXPORT_datanode_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_StripeInfo_datanode_2eproto;
 namespace datanode {
+class RenameCMDDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<RenameCMD> _instance;
+} _RenameCMD_default_instance_;
 class CheckaliveCMDDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<CheckaliveCMD> _instance;
@@ -164,6 +168,20 @@ static void InitDefaultsscc_info_PullPerformPushCMD_datanode_2eproto() {
       &scc_info_Action_datanode_2eproto.base,
       &scc_info_StripeInfo_datanode_2eproto.base,}};
 
+static void InitDefaultsscc_info_RenameCMD_datanode_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::datanode::_RenameCMD_default_instance_;
+    new (ptr) ::datanode::RenameCMD();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::datanode::RenameCMD::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_RenameCMD_datanode_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_RenameCMD_datanode_2eproto}, {}};
+
 static void InitDefaultsscc_info_RequestResult_datanode_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -220,11 +238,18 @@ static void InitDefaultsscc_info_StripeLocation_datanode_2eproto() {
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_StripeLocation_datanode_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_StripeLocation_datanode_2eproto}, {}};
 
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_datanode_2eproto[11];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_datanode_2eproto[12];
 static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_datanode_2eproto[1];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_datanode_2eproto = nullptr;
 
 const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_datanode_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::datanode::RenameCMD, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::datanode::RenameCMD, oldid_),
+  PROTOBUF_FIELD_OFFSET(::datanode::RenameCMD, newid_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::datanode::CheckaliveCMD, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -278,6 +303,9 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_datanode_2eproto::offsets[] PR
   PROTOBUF_FIELD_OFFSET(::datanode::OP, from_),
   PROTOBUF_FIELD_OFFSET(::datanode::OP, to_),
   PROTOBUF_FIELD_OFFSET(::datanode::OP, op_),
+  PROTOBUF_FIELD_OFFSET(::datanode::OP, shift_),
+  PROTOBUF_FIELD_OFFSET(::datanode::OP, stripeid_),
+  PROTOBUF_FIELD_OFFSET(::datanode::OP, index_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::datanode::Action, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -301,20 +329,22 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_datanode_2eproto::offsets[] PR
   PROTOBUF_FIELD_OFFSET(::datanode::RequestResult, trueorfalse_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::datanode::CheckaliveCMD)},
-  { 5, -1, sizeof(::datanode::PullPerformPushCMD)},
-  { 14, -1, sizeof(::datanode::StripeId)},
-  { 20, -1, sizeof(::datanode::StripeLocation)},
-  { 28, -1, sizeof(::datanode::NodesLocation)},
-  { 34, -1, sizeof(::datanode::ClearallstripeCMD)},
-  { 39, -1, sizeof(::datanode::Path)},
-  { 45, -1, sizeof(::datanode::OP)},
-  { 53, -1, sizeof(::datanode::Action)},
-  { 59, -1, sizeof(::datanode::StripeInfo)},
-  { 68, -1, sizeof(::datanode::RequestResult)},
+  { 0, -1, sizeof(::datanode::RenameCMD)},
+  { 7, -1, sizeof(::datanode::CheckaliveCMD)},
+  { 12, -1, sizeof(::datanode::PullPerformPushCMD)},
+  { 21, -1, sizeof(::datanode::StripeId)},
+  { 27, -1, sizeof(::datanode::StripeLocation)},
+  { 35, -1, sizeof(::datanode::NodesLocation)},
+  { 41, -1, sizeof(::datanode::ClearallstripeCMD)},
+  { 46, -1, sizeof(::datanode::Path)},
+  { 52, -1, sizeof(::datanode::OP)},
+  { 63, -1, sizeof(::datanode::Action)},
+  { 69, -1, sizeof(::datanode::StripeInfo)},
+  { 78, -1, sizeof(::datanode::RequestResult)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::datanode::_RenameCMD_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::datanode::_CheckaliveCMD_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::datanode::_PullPerformPushCMD_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::datanode::_StripeId_default_instance_),
@@ -329,41 +359,46 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_datanode_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\016datanode.proto\022\010datanode\"\017\n\rCheckalive"
-  "CMD\"\250\001\n\022PullPerformPushCMD\022$\n\003src\030\001 \001(\0132"
-  "\027.datanode.NodesLocation\022\034\n\002op\030\002 \001(\0132\020.d"
-  "atanode.Action\022$\n\003dst\030\003 \001(\0132\027.datanode.N"
-  "odesLocation\022(\n\nstripeinfo\030\004 \001(\0132\024.datan"
-  "ode.StripeInfo\"\034\n\010StripeId\022\020\n\010stripeid\030\001"
-  " \001(\005\"R\n\016StripeLocation\022\017\n\007dataLoc\030\001 \003(\t\022"
-  "\026\n\016localparityLoc\030\002 \003(\t\022\027\n\017globalparityL"
-  "oc\030\003 \003(\t\"!\n\rNodesLocation\022\020\n\010NodesUri\030\001 "
-  "\003(\t\"\023\n\021ClearallstripeCMD\"\027\n\004Path\022\017\n\007dstp"
-  "ath\030\001 \001(\t\"a\n\002OP\022\014\n\004from\030\001 \003(\t\022\n\n\002to\030\002 \003("
-  "\t\022\036\n\002op\030\003 \001(\0162\022.datanode.OP.CODEC\"!\n\005COD"
-  "EC\022\006\n\002NO\020\000\022\007\n\003XOR\020\001\022\007\n\003LRC\020\002\"\024\n\006Action\022\n"
-  "\n\002op\030\001 \001(\005\"T\n\nStripeInfo\022\020\n\010stripeid\030\001 \001"
-  "(\005\022\020\n\010stripe_k\030\002 \001(\005\022\020\n\010stripe_l\030\003 \001(\005\022\020"
-  "\n\010stripe_g\030\004 \001(\005\"$\n\rRequestResult\022\023\n\013tru"
-  "eorfalse\030\001 \001(\0102\016\n\014FromDataNode2\240\004\n\016FromC"
-  "oodinator\022B\n\023handleblocktransfer\022\022.datan"
-  "ode.StripeId\032\027.datanode.RequestResult\022>\n"
-  "\017handleblockpull\022\022.datanode.StripeId\032\027.d"
-  "atanode.RequestResult\022F\n\016clearallstripe\022"
-  "\033.datanode.ClearallstripeCMD\032\027.datanode."
-  "RequestResult\022C\n\017dolocallyrepair\022\027.datan"
-  "ode.NodesLocation\032\027.datanode.RequestResu"
-  "lt\022E\n\020docompleterepair\022\030.datanode.Stripe"
-  "Location\032\027.datanode.RequestResult\022:\n\013cle"
-  "arstripe\022\022.datanode.StripeId\032\027.datanode."
-  "RequestResult\022>\n\ncheckalive\022\027.datanode.C"
-  "heckaliveCMD\032\027.datanode.RequestResult\022:\n"
-  "\021pull_perform_push\022\014.datanode.OP\032\027.datan"
-  "ode.RequestResult2\014\n\nFromClientb\006proto3"
+  "\n\016datanode.proto\022\010datanode\")\n\tRenameCMD\022"
+  "\r\n\005oldid\030\001 \001(\005\022\r\n\005newid\030\002 \001(\005\"\017\n\rCheckal"
+  "iveCMD\"\250\001\n\022PullPerformPushCMD\022$\n\003src\030\001 \001"
+  "(\0132\027.datanode.NodesLocation\022\034\n\002op\030\002 \001(\0132"
+  "\020.datanode.Action\022$\n\003dst\030\003 \001(\0132\027.datanod"
+  "e.NodesLocation\022(\n\nstripeinfo\030\004 \001(\0132\024.da"
+  "tanode.StripeInfo\"\034\n\010StripeId\022\020\n\010stripei"
+  "d\030\001 \001(\005\"R\n\016StripeLocation\022\017\n\007dataLoc\030\001 \003"
+  "(\t\022\026\n\016localparityLoc\030\002 \003(\t\022\027\n\017globalpari"
+  "tyLoc\030\003 \003(\t\"!\n\rNodesLocation\022\020\n\010NodesUri"
+  "\030\001 \003(\t\"\023\n\021ClearallstripeCMD\"\027\n\004Path\022\017\n\007d"
+  "stpath\030\001 \001(\t\"\234\001\n\002OP\022\014\n\004from\030\001 \003(\t\022\n\n\002to\030"
+  "\002 \003(\t\022\036\n\002op\030\003 \001(\0162\022.datanode.OP.CODEC\022\r\n"
+  "\005shift\030\004 \001(\005\022\020\n\010stripeid\030\005 \001(\005\022\r\n\005index\030"
+  "\006 \001(\005\",\n\005CODEC\022\006\n\002NO\020\000\022\007\n\003XOR\020\001\022\007\n\003LRC\020\002"
+  "\022\t\n\005REUSE\020\003\"\024\n\006Action\022\n\n\002op\030\001 \001(\005\"T\n\nStr"
+  "ipeInfo\022\020\n\010stripeid\030\001 \001(\005\022\020\n\010stripe_k\030\002 "
+  "\001(\005\022\020\n\010stripe_l\030\003 \001(\005\022\020\n\010stripe_g\030\004 \001(\005\""
+  "$\n\rRequestResult\022\023\n\013trueorfalse\030\001 \001(\0102\016\n"
+  "\014FromDataNode2\335\004\n\016FromCoodinator\022B\n\023hand"
+  "leblocktransfer\022\022.datanode.StripeId\032\027.da"
+  "tanode.RequestResult\022>\n\017handleblockpull\022"
+  "\022.datanode.StripeId\032\027.datanode.RequestRe"
+  "sult\022F\n\016clearallstripe\022\033.datanode.Cleara"
+  "llstripeCMD\032\027.datanode.RequestResult\022C\n\017"
+  "dolocallyrepair\022\027.datanode.NodesLocation"
+  "\032\027.datanode.RequestResult\022E\n\020docompleter"
+  "epair\022\030.datanode.StripeLocation\032\027.datano"
+  "de.RequestResult\022:\n\013clearstripe\022\022.datano"
+  "de.StripeId\032\027.datanode.RequestResult\022>\n\n"
+  "checkalive\022\027.datanode.CheckaliveCMD\032\027.da"
+  "tanode.RequestResult\022:\n\021pull_perform_pus"
+  "h\022\014.datanode.OP\032\027.datanode.RequestResult"
+  "\022;\n\013renameblock\022\023.datanode.RenameCMD\032\027.d"
+  "atanode.RequestResult2\014\n\nFromClientb\006pro"
+  "to3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_datanode_2eproto_deps[1] = {
 };
-static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_datanode_2eproto_sccs[11] = {
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_datanode_2eproto_sccs[12] = {
   &scc_info_Action_datanode_2eproto.base,
   &scc_info_CheckaliveCMD_datanode_2eproto.base,
   &scc_info_ClearallstripeCMD_datanode_2eproto.base,
@@ -371,6 +406,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_dat
   &scc_info_OP_datanode_2eproto.base,
   &scc_info_Path_datanode_2eproto.base,
   &scc_info_PullPerformPushCMD_datanode_2eproto.base,
+  &scc_info_RenameCMD_datanode_2eproto.base,
   &scc_info_RequestResult_datanode_2eproto.base,
   &scc_info_StripeId_datanode_2eproto.base,
   &scc_info_StripeInfo_datanode_2eproto.base,
@@ -379,10 +415,10 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_dat
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_datanode_2eproto_once;
 static bool descriptor_table_datanode_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_datanode_2eproto = {
-  &descriptor_table_datanode_2eproto_initialized, descriptor_table_protodef_datanode_2eproto, "datanode.proto", 1239,
-  &descriptor_table_datanode_2eproto_once, descriptor_table_datanode_2eproto_sccs, descriptor_table_datanode_2eproto_deps, 11, 0,
+  &descriptor_table_datanode_2eproto_initialized, descriptor_table_protodef_datanode_2eproto, "datanode.proto", 1403,
+  &descriptor_table_datanode_2eproto_once, descriptor_table_datanode_2eproto_sccs, descriptor_table_datanode_2eproto_deps, 12, 0,
   schemas, file_default_instances, TableStruct_datanode_2eproto::offsets,
-  file_level_metadata_datanode_2eproto, 11, file_level_enum_descriptors_datanode_2eproto, file_level_service_descriptors_datanode_2eproto,
+  file_level_metadata_datanode_2eproto, 12, file_level_enum_descriptors_datanode_2eproto, file_level_service_descriptors_datanode_2eproto,
 };
 
 // Force running AddDescriptors() at dynamic initialization time.
@@ -397,6 +433,7 @@ bool OP_CODEC_IsValid(int value) {
     case 0:
     case 1:
     case 2:
+    case 3:
       return true;
     default:
       return false;
@@ -407,10 +444,227 @@ bool OP_CODEC_IsValid(int value) {
 constexpr OP_CODEC OP::NO;
 constexpr OP_CODEC OP::XOR;
 constexpr OP_CODEC OP::LRC;
+constexpr OP_CODEC OP::REUSE;
 constexpr OP_CODEC OP::CODEC_MIN;
 constexpr OP_CODEC OP::CODEC_MAX;
 constexpr int OP::CODEC_ARRAYSIZE;
 #endif  // (__cplusplus < 201703) && (!defined(_MSC_VER) || _MSC_VER >= 1900)
+
+// ===================================================================
+
+void RenameCMD::InitAsDefaultInstance() {
+}
+class RenameCMD::_Internal {
+ public:
+};
+
+RenameCMD::RenameCMD()
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:datanode.RenameCMD)
+}
+RenameCMD::RenameCMD(const RenameCMD& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _internal_metadata_(nullptr) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&oldid_, &from.oldid_,
+    static_cast<size_t>(reinterpret_cast<char*>(&newid_) -
+    reinterpret_cast<char*>(&oldid_)) + sizeof(newid_));
+  // @@protoc_insertion_point(copy_constructor:datanode.RenameCMD)
+}
+
+void RenameCMD::SharedCtor() {
+  ::memset(&oldid_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&newid_) -
+      reinterpret_cast<char*>(&oldid_)) + sizeof(newid_));
+}
+
+RenameCMD::~RenameCMD() {
+  // @@protoc_insertion_point(destructor:datanode.RenameCMD)
+  SharedDtor();
+}
+
+void RenameCMD::SharedDtor() {
+}
+
+void RenameCMD::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const RenameCMD& RenameCMD::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_RenameCMD_datanode_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void RenameCMD::Clear() {
+// @@protoc_insertion_point(message_clear_start:datanode.RenameCMD)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&oldid_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&newid_) -
+      reinterpret_cast<char*>(&oldid_)) + sizeof(newid_));
+  _internal_metadata_.Clear();
+}
+
+const char* RenameCMD::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // int32 oldid = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          oldid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 newid = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          newid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* RenameCMD::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:datanode.RenameCMD)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 oldid = 1;
+  if (this->oldid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(1, this->_internal_oldid(), target);
+  }
+
+  // int32 newid = 2;
+  if (this->newid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_newid(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:datanode.RenameCMD)
+  return target;
+}
+
+size_t RenameCMD::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:datanode.RenameCMD)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // int32 oldid = 1;
+  if (this->oldid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_oldid());
+  }
+
+  // int32 newid = 2;
+  if (this->newid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_newid());
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void RenameCMD::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:datanode.RenameCMD)
+  GOOGLE_DCHECK_NE(&from, this);
+  const RenameCMD* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<RenameCMD>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:datanode.RenameCMD)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:datanode.RenameCMD)
+    MergeFrom(*source);
+  }
+}
+
+void RenameCMD::MergeFrom(const RenameCMD& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:datanode.RenameCMD)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.oldid() != 0) {
+    _internal_set_oldid(from._internal_oldid());
+  }
+  if (from.newid() != 0) {
+    _internal_set_newid(from._internal_newid());
+  }
+}
+
+void RenameCMD::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:datanode.RenameCMD)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void RenameCMD::CopyFrom(const RenameCMD& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:datanode.RenameCMD)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RenameCMD::IsInitialized() const {
+  return true;
+}
+
+void RenameCMD::InternalSwap(RenameCMD* other) {
+  using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(oldid_, other->oldid_);
+  swap(newid_, other->newid_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata RenameCMD::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
 
 // ===================================================================
 
@@ -1923,13 +2177,17 @@ OP::OP(const OP& from)
       from_(from.from_),
       to_(from.to_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  op_ = from.op_;
+  ::memcpy(&op_, &from.op_,
+    static_cast<size_t>(reinterpret_cast<char*>(&index_) -
+    reinterpret_cast<char*>(&op_)) + sizeof(index_));
   // @@protoc_insertion_point(copy_constructor:datanode.OP)
 }
 
 void OP::SharedCtor() {
   ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_OP_datanode_2eproto.base);
-  op_ = 0;
+  ::memset(&op_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&index_) -
+      reinterpret_cast<char*>(&op_)) + sizeof(index_));
 }
 
 OP::~OP() {
@@ -1957,7 +2215,9 @@ void OP::Clear() {
 
   from_.Clear();
   to_.Clear();
-  op_ = 0;
+  ::memset(&op_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&index_) -
+      reinterpret_cast<char*>(&op_)) + sizeof(index_));
   _internal_metadata_.Clear();
 }
 
@@ -2002,6 +2262,27 @@ const char* OP::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::interna
           ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
           _internal_set_op(static_cast<::datanode::OP_CODEC>(val));
+        } else goto handle_unusual;
+        continue;
+      // int32 shift = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
+          shift_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 stripeid = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
+          stripeid_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 index = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 48)) {
+          index_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
         } else goto handle_unusual;
         continue;
       default: {
@@ -2057,6 +2338,24 @@ failure:
       3, this->_internal_op(), target);
   }
 
+  // int32 shift = 4;
+  if (this->shift() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(4, this->_internal_shift(), target);
+  }
+
+  // int32 stripeid = 5;
+  if (this->stripeid() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(5, this->_internal_stripeid(), target);
+  }
+
+  // int32 index = 6;
+  if (this->index() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(6, this->_internal_index(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -2095,6 +2394,27 @@ size_t OP::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_op());
   }
 
+  // int32 shift = 4;
+  if (this->shift() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_shift());
+  }
+
+  // int32 stripeid = 5;
+  if (this->stripeid() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_stripeid());
+  }
+
+  // int32 index = 6;
+  if (this->index() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_index());
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
         _internal_metadata_, total_size, &_cached_size_);
@@ -2131,6 +2451,15 @@ void OP::MergeFrom(const OP& from) {
   if (from.op() != 0) {
     _internal_set_op(from._internal_op());
   }
+  if (from.shift() != 0) {
+    _internal_set_shift(from._internal_shift());
+  }
+  if (from.stripeid() != 0) {
+    _internal_set_stripeid(from._internal_stripeid());
+  }
+  if (from.index() != 0) {
+    _internal_set_index(from._internal_index());
+  }
 }
 
 void OP::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -2157,6 +2486,9 @@ void OP::InternalSwap(OP* other) {
   from_.InternalSwap(&other->from_);
   to_.InternalSwap(&other->to_);
   swap(op_, other->op_);
+  swap(shift_, other->shift_);
+  swap(stripeid_, other->stripeid_);
+  swap(index_, other->index_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata OP::GetMetadata() const {
@@ -2801,6 +3133,9 @@ void RequestResult::InternalSwap(RequestResult* other) {
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace datanode
 PROTOBUF_NAMESPACE_OPEN
+template<> PROTOBUF_NOINLINE ::datanode::RenameCMD* Arena::CreateMaybeMessage< ::datanode::RenameCMD >(Arena* arena) {
+  return Arena::CreateInternal< ::datanode::RenameCMD >(arena);
+}
 template<> PROTOBUF_NOINLINE ::datanode::CheckaliveCMD* Arena::CreateMaybeMessage< ::datanode::CheckaliveCMD >(Arena* arena) {
   return Arena::CreateInternal< ::datanode::CheckaliveCMD >(arena);
 }

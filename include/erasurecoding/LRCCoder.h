@@ -79,16 +79,14 @@ namespace lrc{
 //            jerasure_matrix_encode(k,g,w,generator_matrix,data_words,target_global_parities,cellsize);
 
             //local
+            if(!target_local_parities) {
+                for (int j = 0; j < l; ++j) {
+                    for (int i = 1; i < g; ++i) {
 
-            for(int j=0;j<l;++j)
-            {
-                for(int i=1;i<g;++i)
-                {
-
-                    galois_region_xor(data_words[j*g+i],target_local_parities[j],cellsize);
+                        galois_region_xor(data_words[j * g + i], target_local_parities[j], cellsize);
+                    }
                 }
             }
-
 
 //
         }

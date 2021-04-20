@@ -25,9 +25,14 @@ service FromCoodinator{
 
   rpc pull_perform_push(OP) returns(RequestResult);
 
+  rpc renameblock(RenameCMD) returns(RequestResult);
 
 }
 
+message RenameCMD{
+  int32 oldid = 1;
+  int32 newid = 2;
+}
 message CheckaliveCMD{
 
 }
@@ -72,6 +77,9 @@ message OP{
     REUSE = 3;
   }
   CODEC op = 3;
+  int32 shift = 4 ;
+  int32 stripeid = 5;
+  int32 index = 6;
 }
 
 message Action{

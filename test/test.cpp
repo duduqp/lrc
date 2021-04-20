@@ -9,8 +9,195 @@
 #include "devcommon.h"
 #include "MetaInfo.h"
 #include "erasurecoding/LRCCoder.h"
+
 using namespace std;
-std::vector<std::unordered_map<std::string,std::pair<int, bool>>>
+
+std::pair<std::vector<std::tuple<int, std::vector<std::string>, std::vector<std::string >>>,
+        std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>>
+generate_basic_transition_plan(std::unordered_map<int, lrc::ClusterInfo> m_cluster_info,
+                               std::unordered_map<std::string, lrc::DataNodeInfo> m_dn_info,
+                               std::unordered_map<int, std::vector<std::string>> &fsimage) {
+
+    std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>> ret1;
+    std::vector<std::tuple<int, std::vector<std::string>, std::vector<std::string >>> ret2;
+    //todo load balance and priority schedule
+    auto extractor = [&](const std::vector<std::string> &stripelocs) ->
+            std::tuple<std::unordered_set<int>, std::unordered_set<int>, std::unordered_set<int>> {
+        std::unordered_set<int> datacluster;
+        std::unordered_set<int> globalcluster;
+        bool flag = false;// following will be gp cluster
+        int i = 0;
+        for (; i < stripelocs.size(); ++i) {
+            if (stripelocs[i] != "d" && stripelocs[i] != "l") {
+
+                datacluster.insert(m_dn_info[stripelocs[i]].clusterid);
+            } else {
+                if (stripelocs[i] == "l") break;
+                i++;
+                continue;
+            }
+        }
+        i++;
+        for (; i < stripelocs.size(); ++i) {
+            if (stripelocs[i] != "g") {
+                globalcluster.insert(m_dn_info[stripelocs[i]].clusterid);
+            } else {
+                break;
+            }
+        }
+
+        return {datacluster, {}, globalcluster};
+    };
+
+    int totalcluster = m_cluster_info.size();
+    std::vector<int> total(totalcluster, 0);
+    std::iota(total.begin(), total.end(), 0);
+    for (int i = 1; i < fsimage.size(); i += 2) {
+        auto kpos = std::find(fsimage[i - 1].cbegin(), fsimage[i - 1].cend(), "d");
+        auto lpos = std::find(kpos, fsimage[i - 1].cend(), "l");
+        auto gpos = std::find(lpos, fsimage[i - 1].cend(), "g");
+
+        int k = kpos - fsimage[i - 1].cbegin();
+        int l = lpos - kpos - 1;
+        int g = gpos - lpos - 1;
+        std::random_shuffle(total.begin(), total.end());
+        auto[excluded, _ignore1, candg]=extractor(fsimage[i - 1]);
+        auto[currentk, _ignore2, currentg]=extractor(fsimage[i]);
+        std::vector<int> candcluster;//cand data cluster
+        std::vector<int> overlap;
+        std::vector<std::string> overlap_d_nodes;
+        std::vector<std::string> overlap_l_nodes;
+        std::vector<std::string> to_d_nodes;
+        int u = 0;
+        std::unordered_set<int> consideronce;
+        for (; u < k; ++u) {
+            int c = m_dn_info[fsimage[i][u]].clusterid;
+            if (excluded.contains(c)) {
+                if(!consideronce.contains(c))
+                {
+                    overlap.push_back(c);
+                    consideronce.insert(c);
+                }
+                overlap_d_nodes.push_back(fsimage[i][u]);
+            }
+        }
+        ++u;
+        for (; fsimage[i][u] != "l"; ++u) {
+            int c = m_dn_info[fsimage[i][u]].clusterid;
+            if (excluded.contains(c)) {
+                if(!consideronce.contains(c)){
+                    overlap.push_back(c);
+                    consideronce.insert(c);
+                }
+                overlap_l_nodes.push_back(fsimage[i][u]);
+            }
+        }
+
+        for (int j = 0; j < totalcluster && overlap.size() > candcluster.size(); ++j) {
+            if (!excluded.contains(total[j]) && !candg.contains(total[j])) {
+                candcluster.push_back(total[j]);
+            }
+        }
+
+        //pick k datanodes l localparity nodes g globalparity nodes...
+        //for this plan generator just pick 1 globalparity from candg , encoding, and forward to g-1 others
+        auto target_g_cands = std::vector<std::string>(m_cluster_info[*candg.cbegin()].datanodesuri);
+        std::random_shuffle(target_g_cands.begin(), target_g_cands.end());
+        auto &target_coding_nodeuri = target_g_cands.front();
+        std::vector<std::string> to_g_nodes(target_g_cands.cbegin() + 1, target_g_cands.cbegin()+g);
+        std::vector<std::string> from_d_nodes(fsimage[i - 1].cbegin(), kpos);
+        from_d_nodes.insert(from_d_nodes.end(),
+                            fsimage[i].cbegin(),
+                            std::find(fsimage[i].cbegin(), fsimage[i].cend(), "d"));
+
+        std::vector<std::string> overlap_nodes;
+        int idx = 0;
+        while (idx < overlap_l_nodes.size()) {
+            overlap_nodes.insert(overlap_nodes.end(),
+                                 overlap_d_nodes.begin() + idx * k,
+                                 overlap_d_nodes.begin() + (idx + 1) * k);
+            overlap_nodes.push_back(overlap_l_nodes[idx]);
+            std::vector<std::string> thiscluster(m_cluster_info[candcluster[idx]].datanodesuri);
+            idx++;
+            std::random_shuffle(thiscluster.begin(), thiscluster.end());
+            to_d_nodes.insert(to_d_nodes.end(), thiscluster.cbegin(),
+                              thiscluster.cbegin() + k+1 );//at lease k+1 nodes !
+        }
+
+
+        ret1.push_back(
+                std::make_tuple(i - 1, std::move(from_d_nodes), target_coding_nodeuri, std::move(to_g_nodes)));
+        ret2.push_back(
+                std::make_tuple(i - 1, std::move(overlap_nodes), std::move(to_d_nodes))
+        );
+
+    }
+    return {ret2, ret1};
+}
+
+std::vector<std::tuple<int, int, std::vector<std::string>, std::string, std::vector<std::string>>>
+generate_designed_transition_plan(std::unordered_map<int, lrc::ClusterInfo> m_cluster_info,
+                                  std::unordered_map<std::string, lrc::DataNodeInfo> m_dn_info,
+                                  std::unordered_map<int, std::vector<std::string>> &fsimage) {
+    std::vector<std::tuple<int, int, std::vector<std::string>, std::string, std::vector<std::string>>> ret;
+
+    auto extractor = [&](const std::vector<std::string> &stripelocs) ->
+            std::tuple<std::unordered_set<int>, std::unordered_set<int>, std::unordered_set<int>> {
+        std::unordered_set<int> datacluster;
+        std::unordered_set<int> globalcluster;
+        bool flag = false;// following will be gp cluster
+        int i = 0;
+        for (; i < stripelocs.size(); i++) {
+            if (stripelocs[i] != "d" && stripelocs[i] != "l") {
+
+                datacluster.insert(m_dn_info[stripelocs[i]].clusterid);
+            } else {
+                if (stripelocs[i] == "l") break;
+                i++;
+                continue;
+            }
+        }
+        i++;
+        for (; i < stripelocs.size(); ++i) {
+            if (stripelocs[i] != "g") {
+                globalcluster.insert(m_dn_info[stripelocs[i]].clusterid);
+            } else {
+                break;
+            }
+        }
+
+        return {datacluster, {}, globalcluster};
+    };
+
+    for (int i = 1; i < fsimage.size(); i+=2) {
+        auto kpos = std::find(fsimage[i - 1].cbegin(), fsimage[i - 1].cend(), "d");
+        auto lpos = std::find(kpos, fsimage[i - 1].cend(), "l");
+        auto gpos = std::find(lpos, fsimage[i - 1].cend(), "g");
+
+        int k = kpos - fsimage[i - 1].cbegin();
+        int l = lpos - kpos - 1;
+        int g = gpos - lpos - 1;
+        int shift = l * ceil(log2(g + 1));
+
+        auto[_ignore1, _ignore2, candg] =extractor(fsimage[i - 1]);
+        assert(candg.size() == 1);
+        auto cand_g_nodes = m_cluster_info[*candg.cbegin()].datanodesuri;
+        std::random_shuffle(cand_g_nodes.begin(), cand_g_nodes.end());
+        //pick a worker
+        auto target_coding_node = cand_g_nodes.front();
+        std::vector<std::string> to_g_nodes(cand_g_nodes.begin() + 1, cand_g_nodes.begin() + g);
+        std::vector<std::string> from_g_nodes(lpos + 1, gpos);
+        from_g_nodes.insert(from_g_nodes.end(), std::find(fsimage[i].cbegin(), fsimage[i].cend(), "l") + 1,
+                            std::find(fsimage[i].cbegin(), fsimage[i].cend(), "g"));
+
+        ret.push_back(
+                std::make_tuple(i - 1, shift, std::move(from_g_nodes), target_coding_node, std::move(to_g_nodes)));
+    }
+
+    return ret;
+}
+
+std::vector<std::unordered_map<std::string, std::pair<int, bool>>>
 placement_resolve(std::unordered_map<int, lrc::ClusterInfo> m_cluster_info, int k, int l, int g,
                   bool designed_placement = false) {
 
@@ -104,6 +291,64 @@ int main() {
     m_cluster_info.insert({1, c2});
     m_cluster_info.insert({2, c3});
     m_cluster_info.insert({3, c4});
+
+    std::unordered_map<std::string, lrc::DataNodeInfo> m_dn_info;
+    auto dninfo1 = lrc::DataNodeInfo{};dninfo1.clusterid=0;
+    auto dn1 = std::make_pair("192.168.1.3:10001",dninfo1);
+    auto dninfo2 = lrc::DataNodeInfo{};dninfo2.clusterid=0;
+    auto dn2 = std::make_pair("192.168.1.3:10002",dninfo2);
+    auto dninfo3 = lrc::DataNodeInfo{};dninfo3.clusterid=0;
+    auto dn3 = std::make_pair("192.168.1.3:10003",dninfo3);
+    auto dninfo4 = lrc::DataNodeInfo{};dninfo4.clusterid=1;
+    auto dn4 = std::make_pair("192.168.0.11:10001",dninfo4);
+    auto dninfo5 = lrc::DataNodeInfo{};dninfo5.clusterid=1;
+    auto dn5 = std::make_pair("192.168.0.11:10002",dninfo5);
+    auto dninfo6 = lrc::DataNodeInfo{};dninfo6.clusterid=1;
+    auto dn6 = std::make_pair("192.168.0.11:10003",dninfo6);
+    auto dninfo7 = lrc::DataNodeInfo{};dninfo7.clusterid=2;
+    auto dn7 = std::make_pair("192.168.0.21:10001",dninfo7);
+    auto dninfo8 = lrc::DataNodeInfo{};dninfo8.clusterid=2;
+    auto dn8 = std::make_pair("192.168.0.21:10002",dninfo8);
+    auto dninfo9 = lrc::DataNodeInfo{};dninfo9.clusterid=2;
+    auto dn9 = std::make_pair("192.168.0.21:10003",dninfo9);
+    auto dninfo10 = lrc::DataNodeInfo{};dninfo10.clusterid=3;
+    auto dn10 = std::make_pair("192.168.0.22:10001",dninfo10);
+    auto dninfo11 = lrc::DataNodeInfo{};dninfo11.clusterid=3;
+    auto dn11 = std::make_pair("192.168.0.22:10002",dninfo11);
+    auto dninfo12 = lrc::DataNodeInfo{};dninfo12.clusterid=3;
+    auto dn12 = std::make_pair("192.168.0.22:10003",dninfo12);
+
+    m_dn_info.insert(dn1);
+    m_dn_info.insert(dn2);
+    m_dn_info.insert(dn3);
+    m_dn_info.insert(dn4);
+    m_dn_info.insert(dn5);
+    m_dn_info.insert(dn6);
+    m_dn_info.insert(dn7);
+    m_dn_info.insert(dn8);
+    m_dn_info.insert(dn9);
+    m_dn_info.insert(dn10);
+    m_dn_info.insert(dn11);
+    m_dn_info.insert(dn12);
+
+    std::unordered_map<int, std::vector<std::string>> fsimage{
+            {0,{"192.168.1.3:10002","192.168.1.3:10003","d","192.168.1.3:10001","l","192.168.0.22:10002","192.168.0.22:10001","g"}},
+            {1,{"192.168.0.11:10003","192.168.0.11:10001","d","192.168.0.11:10002","l","192.168.0.21:10001","192.168.0.21:10003","g"}},
+            {2,{"192.168.0.11:10002","192.168.0.11:10001","d","192.168.0.11:10003","l","192.168.0.22:10002","192.168.0.22:10003","g"}},
+            {3,{"192.168.0.22:10001","192.168.0.22:10003","d","192.168.0.22:10001","l","192.168.0.11:10001","192.168.0.11:10003","g"}},
+            {4,{"192.168.0.21:10001","192.168.0.21:10002","d","192.168.0.21:10003","l","192.168.1.3:10001","192.168.1.3:10002","g"}},
+            {5,{"192.168.0.21:10001","192.168.0.21:10002","d","192.168.0.21:10003","l","192.168.1.3:10001","192.168.1.3:10002","g"}},
+            {6,{"192.168.1.3:10003","192.168.1.3:10002","d","192.168.1.3:10001","l","192.168.0.21:10001","192.168.0.21:10002","g"}},
+            {7,{"192.168.0.22:10001","192.168.0.22:10003","d","192.168.0.22:10002","l","192.168.0.11:10002","192.168.0.11:10001","g"}}
+    };
+
+    std::unordered_map<int, std::vector<std::string>> fsimage2{
+            {0,{"192.168.1.3:10002","192.168.1.3:10003","d","192.168.1.3:10001","l","192.168.0.22:10002","192.168.0.22:10001","g"}},
+            {1,{"192.168.0.11:10002","192.168.0.11:10001","d","192.168.0.11:10003","l","192.168.0.22:10002","192.168.0.22:10003","g"}},
+            {2,{"192.168.0.22:10001","192.168.0.22:10003","d","192.168.0.22:10001","l","192.168.0.11:10001","192.168.0.11:10003","g"}},
+            {3,{"192.168.0.21:10001","192.168.0.21:10002","d","192.168.0.21:10003","l","192.168.0.11:10001","192.168.0.11:10002","g"}}
+    };
+/*
     {
         auto ret = placement_resolve(m_cluster_info, 2, 1, 2);
 
@@ -147,8 +392,8 @@ int main() {
         }
         std::cout << "\n";
     }
-
-
+*/
+/*
 
     {
         //test spdlog
@@ -252,5 +497,13 @@ int main() {
             }
         }
     }
-    return 0;
+    */
+
+/*
+ * test for transition plan
+ */
+   auto res = generate_basic_transition_plan(m_cluster_info,m_dn_info,fsimage);
+   auto res2 = generate_designed_transition_plan(m_cluster_info,m_dn_info,fsimage2);
+   int i=0;
+   return 0;
 }

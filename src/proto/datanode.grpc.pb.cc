@@ -46,6 +46,7 @@ static const char* FromCoodinator_method_names[] = {
   "/datanode.FromCoodinator/clearstripe",
   "/datanode.FromCoodinator/checkalive",
   "/datanode.FromCoodinator/pull_perform_push",
+  "/datanode.FromCoodinator/renameblock",
 };
 
 std::unique_ptr< FromCoodinator::Stub> FromCoodinator::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -63,6 +64,7 @@ FromCoodinator::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& cha
   , rpcmethod_clearstripe_(FromCoodinator_method_names[5], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_checkalive_(FromCoodinator_method_names[6], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_pull_perform_push_(FromCoodinator_method_names[7], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_renameblock_(FromCoodinator_method_names[8], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status FromCoodinator::Stub::handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::datanode::RequestResult* response) {
@@ -289,6 +291,34 @@ void FromCoodinator::Stub::experimental_async::pull_perform_push(::grpc::ClientC
   return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::datanode::RequestResult>::Create(channel_.get(), cq, rpcmethod_pull_perform_push_, context, request, false);
 }
 
+::grpc::Status FromCoodinator::Stub::renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::datanode::RequestResult* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_renameblock_, context, request, response);
+}
+
+void FromCoodinator::Stub::experimental_async::renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_renameblock_, context, request, response, std::move(f));
+}
+
+void FromCoodinator::Stub::experimental_async::renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_renameblock_, context, request, response, std::move(f));
+}
+
+void FromCoodinator::Stub::experimental_async::renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_renameblock_, context, request, response, reactor);
+}
+
+void FromCoodinator::Stub::experimental_async::renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_renameblock_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* FromCoodinator::Stub::AsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::datanode::RequestResult>::Create(channel_.get(), cq, rpcmethod_renameblock_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* FromCoodinator::Stub::PrepareAsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::datanode::RequestResult>::Create(channel_.get(), cq, rpcmethod_renameblock_, context, request, false);
+}
+
 FromCoodinator::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FromCoodinator_method_names[0],
@@ -330,6 +360,11 @@ FromCoodinator::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< FromCoodinator::Service, ::datanode::OP, ::datanode::RequestResult>(
           std::mem_fn(&FromCoodinator::Service::pull_perform_push), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FromCoodinator_method_names[8],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FromCoodinator::Service, ::datanode::RenameCMD, ::datanode::RequestResult>(
+          std::mem_fn(&FromCoodinator::Service::renameblock), this)));
 }
 
 FromCoodinator::Service::~Service() {
@@ -385,6 +420,13 @@ FromCoodinator::Service::~Service() {
 }
 
 ::grpc::Status FromCoodinator::Service::pull_perform_push(::grpc::ServerContext* context, const ::datanode::OP* request, ::datanode::RequestResult* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status FromCoodinator::Service::renameblock(::grpc::ServerContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response) {
   (void) context;
   (void) request;
   (void) response;

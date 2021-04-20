@@ -153,6 +153,13 @@ class FromCoodinator final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsyncpull_perform_push(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsyncpull_perform_pushRaw(context, request, cq));
     }
+    virtual ::grpc::Status renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::datanode::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asyncrenameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsyncrenameblockRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsyncrenameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsyncrenameblockRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
@@ -254,6 +261,18 @@ class FromCoodinator final {
       #else
       virtual void pull_perform_push(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
+      virtual void renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
     };
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
     typedef class experimental_async_interface async_interface;
@@ -279,6 +298,8 @@ class FromCoodinator final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* Asyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -338,6 +359,13 @@ class FromCoodinator final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsyncpull_perform_push(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsyncpull_perform_pushRaw(context, request, cq));
+    }
+    ::grpc::Status renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::datanode::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asyncrenameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsyncrenameblockRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsyncrenameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsyncrenameblockRaw(context, request, cq));
     }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
@@ -438,6 +466,18 @@ class FromCoodinator final {
       #else
       void pull_perform_push(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
+      void renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void renameblock(::grpc::ClientContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void renameblock(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -465,6 +505,8 @@ class FromCoodinator final {
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* Asyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_handleblocktransfer_;
     const ::grpc::internal::RpcMethod rpcmethod_handleblockpull_;
     const ::grpc::internal::RpcMethod rpcmethod_clearallstripe_;
@@ -473,6 +515,7 @@ class FromCoodinator final {
     const ::grpc::internal::RpcMethod rpcmethod_clearstripe_;
     const ::grpc::internal::RpcMethod rpcmethod_checkalive_;
     const ::grpc::internal::RpcMethod rpcmethod_pull_perform_push_;
+    const ::grpc::internal::RpcMethod rpcmethod_renameblock_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -490,6 +533,7 @@ class FromCoodinator final {
     virtual ::grpc::Status clearstripe(::grpc::ServerContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status checkalive(::grpc::ServerContext* context, const ::datanode::CheckaliveCMD* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status pull_perform_push(::grpc::ServerContext* context, const ::datanode::OP* request, ::datanode::RequestResult* response);
+    virtual ::grpc::Status renameblock(::grpc::ServerContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_handleblocktransfer : public BaseClass {
@@ -651,7 +695,27 @@ class FromCoodinator final {
       ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_handleblocktransfer<WithAsyncMethod_handleblockpull<WithAsyncMethod_clearallstripe<WithAsyncMethod_dolocallyrepair<WithAsyncMethod_docompleterepair<WithAsyncMethod_clearstripe<WithAsyncMethod_checkalive<WithAsyncMethod_pull_perform_push<Service > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_renameblock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_renameblock() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_renameblock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status renameblock(::grpc::ServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrenameblock(::grpc::ServerContext* context, ::datanode::RenameCMD* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_handleblocktransfer<WithAsyncMethod_handleblockpull<WithAsyncMethod_clearallstripe<WithAsyncMethod_dolocallyrepair<WithAsyncMethod_docompleterepair<WithAsyncMethod_clearstripe<WithAsyncMethod_checkalive<WithAsyncMethod_pull_perform_push<WithAsyncMethod_renameblock<Service > > > > > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_handleblocktransfer : public BaseClass {
    private:
@@ -1028,11 +1092,58 @@ class FromCoodinator final {
     #endif
       { return nullptr; }
   };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_renameblock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_renameblock() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(8,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::RenameCMD, ::datanode::RequestResult>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response) { return this->renameblock(context, request, response); }));}
+    void SetMessageAllocatorFor_renameblock(
+        ::grpc::experimental::MessageAllocator< ::datanode::RenameCMD, ::datanode::RequestResult>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(8);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::RenameCMD, ::datanode::RequestResult>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_renameblock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status renameblock(::grpc::ServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* renameblock(
+      ::grpc::CallbackServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* renameblock(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/)
+    #endif
+      { return nullptr; }
+  };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_handleblocktransfer<ExperimentalWithCallbackMethod_handleblockpull<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_pull_perform_push<Service > > > > > > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_handleblocktransfer<ExperimentalWithCallbackMethod_handleblockpull<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_pull_perform_push<ExperimentalWithCallbackMethod_renameblock<Service > > > > > > > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_handleblocktransfer<ExperimentalWithCallbackMethod_handleblockpull<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_pull_perform_push<Service > > > > > > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_handleblocktransfer<ExperimentalWithCallbackMethod_handleblockpull<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_pull_perform_push<ExperimentalWithCallbackMethod_renameblock<Service > > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_handleblocktransfer : public BaseClass {
    private:
@@ -1165,6 +1276,23 @@ class FromCoodinator final {
     }
     // disable synchronous version of this method
     ::grpc::Status pull_perform_push(::grpc::ServerContext* /*context*/, const ::datanode::OP* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_renameblock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_renameblock() {
+      ::grpc::Service::MarkMethodGeneric(8);
+    }
+    ~WithGenericMethod_renameblock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status renameblock(::grpc::ServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1327,6 +1455,26 @@ class FromCoodinator final {
     }
     void Requestpull_perform_push(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_renameblock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_renameblock() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_renameblock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status renameblock(::grpc::ServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestrenameblock(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1634,6 +1782,44 @@ class FromCoodinator final {
       { return nullptr; }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_renameblock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_renameblock() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(8,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->renameblock(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_renameblock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status renameblock(::grpc::ServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* renameblock(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* renameblock(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_handleblocktransfer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -1793,9 +1979,29 @@ class FromCoodinator final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streamedpull_perform_push(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::OP,::datanode::RequestResult>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_handleblocktransfer<WithStreamedUnaryMethod_handleblockpull<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_pull_perform_push<Service > > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_renameblock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_renameblock() {
+      ::grpc::Service::MarkMethodStreamed(8,
+        new ::grpc::internal::StreamedUnaryHandler< ::datanode::RenameCMD, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_renameblock<BaseClass>::Streamedrenameblock, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_renameblock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status renameblock(::grpc::ServerContext* /*context*/, const ::datanode::RenameCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedrenameblock(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::RenameCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_handleblocktransfer<WithStreamedUnaryMethod_handleblockpull<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_pull_perform_push<WithStreamedUnaryMethod_renameblock<Service > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_handleblocktransfer<WithStreamedUnaryMethod_handleblockpull<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_pull_perform_push<Service > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_handleblocktransfer<WithStreamedUnaryMethod_handleblockpull<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_pull_perform_push<WithStreamedUnaryMethod_renameblock<Service > > > > > > > > > StreamedService;
 };
 
 // From Client to DN {typically for single block transfer}

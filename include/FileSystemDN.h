@@ -92,6 +92,9 @@ namespace lrc {
         public:
             virtual ~FromCoordinatorImpl();
 
+            grpc::Status pull_perform_push(::grpc::ServerContext *context, const::datanode::OP *request,
+                                           ::datanode::RequestResult *response) override;
+
         private:
             std::string m_fs_uri;
             std::string m_dnfromcn_uri;
