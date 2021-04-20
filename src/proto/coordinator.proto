@@ -15,6 +15,7 @@ service FileSystem{
   rpc listStripe(StripeId) returns(StripeLocation);
   rpc listAllStripes(ListAllStripeCMD) returns(stream StripeLocation);
   rpc transitionup(TransitionUpCMD) returns (RequestResult);
+  rpc setplacementpolicy(SetPlacementPolicyCMD) returns(RequestResult);
 }
 
 
@@ -48,6 +49,9 @@ message StripeLocation{
   repeated string globalparityLoc = 3;
 }
 
+message SetPlacementPolicyCMD{
+  bool israndom = 1 ;
+}
 message Path{
   string dstpath =1;
 }

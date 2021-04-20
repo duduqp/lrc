@@ -421,8 +421,7 @@ namespace lrc {
                               m_defaultblocksize, stripeid,0,true);
                 t.detach();
             }
-            response->set_trueorfalse(true);
-            return grpc::Status::OK;
+
         } else {
             if (mode == datanode::OP_CODEC_LRC) {
                 if(0!=srcnums) {
@@ -473,48 +472,62 @@ namespace lrc {
 
                 }
             } else if (mode == datanode::OP_CODEC_REUSE) {
-                int multiby = pow(2, request->shift());
-                char **gpbuffer = new char *[srcnums];
-                for (int i = 0; i < srcnums; ++i) {
-                    gpbuffer[i] = new char[m_defaultblocksize * 1024 * 1024];//packet
+                if(0!=srcnums) {
+
+                    int multiby = pow(2, request->shift());
+                    char **gpbuffer = new char *[srcnums];
+                    for (int i = 0; i < srcnums; ++i) {
+                        gpbuffer[i] = new char[m_defaultblocksize * 1024 * 1024];//packet
+                    }
+                    /*
+                     *
+                     *  1 [q1=(2^shift)] q1^2  q1^3...
+                     *  1 [q2=(2^shift)^2] q2^2 ...
+                     *
+                     */
+                    int q = multiby;
+                    std::vector<int> codingmatrix((srcnums / 2) * (srcnums));
+                    char **res = new char *[tonums+1];
+                    for (int i = 0; i < tonums+1; ++i) {
+                        res[i] = new char[m_defaultblocksize * 1024 * 1024];
+                        codingmatrix[i * (srcnums) + i] = 1;
+                        codingmatrix[i * (srcnums) + i + (tonums+1)] = q;
+                        q = galois_single_multiply(q, multiby, request->shift()*2);
+                    }
+
+                    boost::thread_group tp;
+                    for (int i = 0; i < srcnums; ++i) {
+                    //please no flush
+                        tp.create_thread(std::bind(pulltask,holdme,request->from(i),m_datapath,gpbuffer[i],m_defaultblocksize, stripeid,i, false));
+                    }
+
+                    tp.join_all();
+                    //perform reuse style computation
+                    int *bitmatrix = jerasure_matrix_to_bitmatrix((srcnums), (srcnums / 2), request->shift() * 2,
+                                                                  &codingmatrix[0]);
+                    jerasure_bitmatrix_encode((srcnums), (srcnums / 2), (request->shift() * 2), bitmatrix, gpbuffer,
+                                              res,
+                                              m_defaultblocksize * 1024 * 1024, sizeof(long));
+                    //forwarding global parities
+                    boost::thread_group tp2;
+                    for (int i = 0; i < tonums; ++i) {
+                        tp2.create_thread(std::bind(reusedpushtask, res[i+1], request->to(i), m_defaultblocksize));
+                    }
+                    tp2.join_all();
+                    //flush res[0] to local
+                    std::ofstream ofs(m_datapath + std::to_string(stripeid));
+                    ofs.write(res[0], m_defaultblocksize * 1024 * 1024);
+                    ofs.flush();
+                    std::cout << "successfully write new global pairty block in stripe " << request->stripeid()
+                              << " to local\n";
+                }else{
+                    //srcnums == 0
+                    //reuse mode but a pure push command
+                    //with deletion
+                    std::thread t(preparingpush,holdme,m_dnfromcn_uri,m_datapath,m_defaultblocksize,stripeid,index,true);
+                    t.detach();
                 }
-                /*
-                 *
-                 *  1 [q1=(2^shift)] q1^2  q1^3...
-                 *  1 [q2=(2^shift)^2] q2^2 ...
-                 *
-                 */
-                int q = multiby;
-                std::vector<int> codingmatrix((srcnums / 2) * (srcnums));
-                char **res = new char *[(srcnums) / 2];
-                for (int i = 0; i < (srcnums / 2); ++i) {
-                    res[i] = new char[m_defaultblocksize * 1024 * 1024];
-                    codingmatrix[i * (srcnums) + i] = 1;
-                    codingmatrix[i * (srcnums) + i + (srcnums / 2)] = q;
-                    q = galois_single_multiply(q, q, request->shift());
-                }
-                boost::thread_group tp;
-                for (int i = 0; i < srcnums; ++i) {
-                    tp.create_thread(std::bind(reusedpulltask, gpbuffer, request->from(i), i,true));
-                }
-                tp.join_all();
-                //perform reuse style computation
-                int *bitmatrix = jerasure_matrix_to_bitmatrix((srcnums), (srcnums / 2), request->shift() * 2,
-                                                              &codingmatrix[0]);
-                jerasure_bitmatrix_encode((srcnums), (srcnums / 2), (request->shift() * 2), bitmatrix, gpbuffer, res,
-                                          m_defaultblocksize * 1024 * 1024, sizeof(long));
-                //forwarding global parities
-                boost::thread_group tp2;
-                for (int i = 0; i < tonums; ++i) {
-                    tp2.create_thread(std::bind(reusedpushtask, res, request->to(i), i + 1));
-                }
-                tp2.join_all();
-                //flush res[0] to local
-                std::ofstream ofs(m_datapath + std::to_string(stripeid));
-                ofs.write(res[0], m_defaultblocksize * 1024 * 1024);
-                ofs.flush();
-                std::cout << "successfully write new global pairty block in stripe " << request->stripeid()
-                          << " to local\n";
+
             } else if (mode == datanode::OP_CODEC_XOR) { ;
             }
         }

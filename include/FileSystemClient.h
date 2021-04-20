@@ -110,7 +110,7 @@ namespace lrc{
 
         std::vector<StripeInfo> ListStripes() const;
 
-
+        bool SetPlaceMentPolicy(bool israndom=false);
     };
 }
 #endif //LRC_FILESYSTEMCLIENT_H

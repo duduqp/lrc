@@ -236,6 +236,11 @@ namespace lrc{
         return ret;
     }
 
+    bool FileSystemClient::SetPlaceMentPolicy(bool israndom) {
+
+        return false;
+    }
+
     bool FileSystemClient::DownLoadStripe(const std::string &srcpath, const std::string &dstpath, int stripe_id)
     {
         grpc::ClientContext downloadctx;
