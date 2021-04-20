@@ -192,6 +192,9 @@ namespace lrc {
 
 
             std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl> get_sharedholder();
+
+            grpc::Status renameblock(::grpc::ServerContext *context, const::datanode::RenameCMD *request,
+                                     ::datanode::RequestResult *response) override;
         };
 
 

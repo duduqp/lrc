@@ -32,6 +32,7 @@ static const char* FileSystem_method_names[] = {
   "/coordinator.FileSystem/listStripe",
   "/coordinator.FileSystem/listAllStripes",
   "/coordinator.FileSystem/transitionup",
+  "/coordinator.FileSystem/setplacementpolicy",
 };
 
 std::unique_ptr< FileSystem::Stub> FileSystem::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -51,6 +52,7 @@ FileSystem::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
   , rpcmethod_listStripe_(FileSystem_method_names[7], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_listAllStripes_(FileSystem_method_names[8], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_transitionup_(FileSystem_method_names[9], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_setplacementpolicy_(FileSystem_method_names[10], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status FileSystem::Stub::createDir(::grpc::ClientContext* context, const ::coordinator::Path& request, ::coordinator::RequestResult* response) {
@@ -321,6 +323,34 @@ void FileSystem::Stub::experimental_async::transitionup(::grpc::ClientContext* c
   return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::coordinator::RequestResult>::Create(channel_.get(), cq, rpcmethod_transitionup_, context, request, false);
 }
 
+::grpc::Status FileSystem::Stub::setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::coordinator::RequestResult* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_setplacementpolicy_, context, request, response);
+}
+
+void FileSystem::Stub::experimental_async::setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_setplacementpolicy_, context, request, response, std::move(f));
+}
+
+void FileSystem::Stub::experimental_async::setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)> f) {
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_setplacementpolicy_, context, request, response, std::move(f));
+}
+
+void FileSystem::Stub::experimental_async::setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_setplacementpolicy_, context, request, response, reactor);
+}
+
+void FileSystem::Stub::experimental_async::setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_setplacementpolicy_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* FileSystem::Stub::AsyncsetplacementpolicyRaw(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::coordinator::RequestResult>::Create(channel_.get(), cq, rpcmethod_setplacementpolicy_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* FileSystem::Stub::PrepareAsyncsetplacementpolicyRaw(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::coordinator::RequestResult>::Create(channel_.get(), cq, rpcmethod_setplacementpolicy_, context, request, false);
+}
+
 FileSystem::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileSystem_method_names[0],
@@ -372,6 +402,11 @@ FileSystem::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< FileSystem::Service, ::coordinator::TransitionUpCMD, ::coordinator::RequestResult>(
           std::mem_fn(&FileSystem::Service::transitionup), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileSystem_method_names[10],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FileSystem::Service, ::coordinator::SetPlacementPolicyCMD, ::coordinator::RequestResult>(
+          std::mem_fn(&FileSystem::Service::setplacementpolicy), this)));
 }
 
 FileSystem::Service::~Service() {
@@ -441,6 +476,13 @@ FileSystem::Service::~Service() {
 }
 
 ::grpc::Status FileSystem::Service::transitionup(::grpc::ServerContext* context, const ::coordinator::TransitionUpCMD* request, ::coordinator::RequestResult* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status FileSystem::Service::setplacementpolicy(::grpc::ServerContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response) {
   (void) context;
   (void) request;
   (void) response;

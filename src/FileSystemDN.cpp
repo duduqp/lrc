@@ -167,6 +167,17 @@ namespace lrc {
         return m_dnfromcnimpl_logger;
     }
 
+    grpc::Status
+    FileSystemDN::FromCoordinatorImpl::renameblock(::grpc::ServerContext *context, const::datanode::RenameCMD *request,
+                                                   ::datanode::RequestResult *response) {
+        if(std::filesystem::exists(m_datapath+std::to_string(request->oldid()))){
+            std::filesystem::rename(m_datapath+std::to_string(request->oldid()),m_datapath+std::to_string(request->newid()));
+        }else{
+            std::cout << "old stripeid : " <<request->newid()<<" currently not exists" << std::endl;
+        }
+        return grpc::Status::OK;
+    }
+
     void FileSystemDN::FromCoordinatorImpl::setMDnfromcnimplLogger(
             const std::shared_ptr<spdlog::logger> &mDnfromcnimplLogger) {
         m_dnfromcnimpl_logger = mDnfromcnimplLogger;

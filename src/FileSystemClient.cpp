@@ -237,7 +237,7 @@ namespace lrc{
     }
 
     bool FileSystemClient::SetPlaceMentPolicy(bool israndom) {
-
+        m_fileSystem_ptr->setpla
         return false;
     }
 

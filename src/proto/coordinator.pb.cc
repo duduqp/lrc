@@ -37,6 +37,10 @@ class StripeLocationDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<StripeLocation> _instance;
 } _StripeLocation_default_instance_;
+class SetPlacementPolicyCMDDefaultTypeInternal {
+ public:
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<SetPlacementPolicyCMD> _instance;
+} _SetPlacementPolicyCMD_default_instance_;
 class PathDefaultTypeInternal {
  public:
   ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<Path> _instance;
@@ -110,6 +114,20 @@ static void InitDefaultsscc_info_RequestResult_coordinator_2eproto() {
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_RequestResult_coordinator_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_RequestResult_coordinator_2eproto}, {}};
 
+static void InitDefaultsscc_info_SetPlacementPolicyCMD_coordinator_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::coordinator::_SetPlacementPolicyCMD_default_instance_;
+    new (ptr) ::coordinator::SetPlacementPolicyCMD();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::coordinator::SetPlacementPolicyCMD::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_SetPlacementPolicyCMD_coordinator_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_SetPlacementPolicyCMD_coordinator_2eproto}, {}};
+
 static void InitDefaultsscc_info_StripeId_coordinator_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -182,7 +200,7 @@ static void InitDefaultsscc_info_TransitionUpCMD_coordinator_2eproto() {
 ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_TransitionUpCMD_coordinator_2eproto =
     {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, 0, InitDefaultsscc_info_TransitionUpCMD_coordinator_2eproto}, {}};
 
-static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_coordinator_2eproto[9];
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_coordinator_2eproto[10];
 static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_coordinator_2eproto[1];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_coordinator_2eproto = nullptr;
 
@@ -224,6 +242,12 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_coordinator_2eproto::offsets[]
   PROTOBUF_FIELD_OFFSET(::coordinator::StripeLocation, localparityloc_),
   PROTOBUF_FIELD_OFFSET(::coordinator::StripeLocation, globalparityloc_),
   ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::coordinator::SetPlacementPolicyCMD, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  PROTOBUF_FIELD_OFFSET(::coordinator::SetPlacementPolicyCMD, israndom_),
+  ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::coordinator::Path, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -253,10 +277,11 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 13, -1, sizeof(::coordinator::StripeId)},
   { 19, -1, sizeof(::coordinator::StripeInfo)},
   { 28, -1, sizeof(::coordinator::StripeLocation)},
-  { 36, -1, sizeof(::coordinator::Path)},
-  { 42, -1, sizeof(::coordinator::RequestResult)},
-  { 48, -1, sizeof(::coordinator::ListAllStripeCMD)},
-  { 53, -1, sizeof(::coordinator::TransitionUpCMD)},
+  { 36, -1, sizeof(::coordinator::SetPlacementPolicyCMD)},
+  { 42, -1, sizeof(::coordinator::Path)},
+  { 48, -1, sizeof(::coordinator::RequestResult)},
+  { 54, -1, sizeof(::coordinator::ListAllStripeCMD)},
+  { 59, -1, sizeof(::coordinator::TransitionUpCMD)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -265,6 +290,7 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_StripeId_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_StripeInfo_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_StripeLocation_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_SetPlacementPolicyCMD_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_Path_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_RequestResult_default_instance_),
   reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::coordinator::_ListAllStripeCMD_default_instance_),
@@ -281,39 +307,43 @@ const char descriptor_table_protodef_coordinator_2eproto[] PROTOBUF_SECTION_VARI
   "\022\020\n\010stripe_k\030\002 \001(\005\022\020\n\010stripe_l\030\003 \001(\005\022\020\n\010"
   "stripe_g\030\004 \001(\005\"R\n\016StripeLocation\022\017\n\007data"
   "Loc\030\001 \003(\t\022\026\n\016localparityLoc\030\002 \003(\t\022\027\n\017glo"
-  "balparityLoc\030\003 \003(\t\"\027\n\004Path\022\017\n\007dstpath\030\001 "
-  "\001(\t\"$\n\rRequestResult\022\023\n\013trueorfalse\030\001 \001("
-  "\010\"\022\n\020ListAllStripeCMD\"s\n\017TransitionUpCMD"
-  "\022/\n\004mode\030\001 \001(\0162!.coordinator.TransitionU"
-  "pCMD.MODE\"/\n\004MODE\022\t\n\005BASIC\020\000\022\016\n\nBASIC_PA"
-  "RT\020\001\022\014\n\010DESIGNED\020\0022\327\005\n\nFileSystem\022:\n\tcre"
-  "ateDir\022\021.coordinator.Path\032\032.coordinator."
-  "RequestResult\022D\n\014uploadStripe\022\027.coordina"
-  "tor.StripeInfo\032\033.coordinator.StripeLocat"
-  "ion\022D\n\016downloadStripe\022\025.coordinator.Stri"
-  "peId\032\033.coordinator.StripeLocation\022T\n\026dow"
-  "nloadStripeWithHint\022\035.coordinator.Stripe"
-  "IdWithHint\032\033.coordinator.StripeLocation\022"
-  "A\n\014deleteStripe\022\025.coordinator.StripeId\032\032"
-  ".coordinator.RequestResult\022B\n\013uploadChec"
-  "k\022\027.coordinator.StripeInfo\032\032.coordinator"
-  ".RequestResult\022H\n\023reportblocktransfer\022\025."
-  "coordinator.StripeId\032\032.coordinator.Reque"
-  "stResult\022@\n\nlistStripe\022\025.coordinator.Str"
-  "ipeId\032\033.coordinator.StripeLocation\022N\n\016li"
-  "stAllStripes\022\035.coordinator.ListAllStripe"
-  "CMD\032\033.coordinator.StripeLocation0\001\022H\n\014tr"
-  "ansitionup\022\034.coordinator.TransitionUpCMD"
-  "\032\032.coordinator.RequestResult2\016\n\014FromData"
-  "Nodeb\006proto3"
+  "balparityLoc\030\003 \003(\t\")\n\025SetPlacementPolicy"
+  "CMD\022\020\n\010israndom\030\001 \001(\010\"\027\n\004Path\022\017\n\007dstpath"
+  "\030\001 \001(\t\"$\n\rRequestResult\022\023\n\013trueorfalse\030\001"
+  " \001(\010\"\022\n\020ListAllStripeCMD\"s\n\017TransitionUp"
+  "CMD\022/\n\004mode\030\001 \001(\0162!.coordinator.Transiti"
+  "onUpCMD.MODE\"/\n\004MODE\022\t\n\005BASIC\020\000\022\016\n\nBASIC"
+  "_PART\020\001\022\014\n\010DESIGNED\020\0022\255\006\n\nFileSystem\022:\n\t"
+  "createDir\022\021.coordinator.Path\032\032.coordinat"
+  "or.RequestResult\022D\n\014uploadStripe\022\027.coord"
+  "inator.StripeInfo\032\033.coordinator.StripeLo"
+  "cation\022D\n\016downloadStripe\022\025.coordinator.S"
+  "tripeId\032\033.coordinator.StripeLocation\022T\n\026"
+  "downloadStripeWithHint\022\035.coordinator.Str"
+  "ipeIdWithHint\032\033.coordinator.StripeLocati"
+  "on\022A\n\014deleteStripe\022\025.coordinator.StripeI"
+  "d\032\032.coordinator.RequestResult\022B\n\013uploadC"
+  "heck\022\027.coordinator.StripeInfo\032\032.coordina"
+  "tor.RequestResult\022H\n\023reportblocktransfer"
+  "\022\025.coordinator.StripeId\032\032.coordinator.Re"
+  "questResult\022@\n\nlistStripe\022\025.coordinator."
+  "StripeId\032\033.coordinator.StripeLocation\022N\n"
+  "\016listAllStripes\022\035.coordinator.ListAllStr"
+  "ipeCMD\032\033.coordinator.StripeLocation0\001\022H\n"
+  "\014transitionup\022\034.coordinator.TransitionUp"
+  "CMD\032\032.coordinator.RequestResult\022T\n\022setpl"
+  "acementpolicy\022\".coordinator.SetPlacement"
+  "PolicyCMD\032\032.coordinator.RequestResult2\016\n"
+  "\014FromDataNodeb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_coordinator_2eproto_deps[1] = {
 };
-static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_coordinator_2eproto_sccs[9] = {
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_coordinator_2eproto_sccs[10] = {
   &scc_info_ListAllStripeCMD_coordinator_2eproto.base,
   &scc_info_NodesLocation_coordinator_2eproto.base,
   &scc_info_Path_coordinator_2eproto.base,
   &scc_info_RequestResult_coordinator_2eproto.base,
+  &scc_info_SetPlacementPolicyCMD_coordinator_2eproto.base,
   &scc_info_StripeId_coordinator_2eproto.base,
   &scc_info_StripeIdWithHint_coordinator_2eproto.base,
   &scc_info_StripeInfo_coordinator_2eproto.base,
@@ -323,10 +353,10 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_coo
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_coordinator_2eproto_once;
 static bool descriptor_table_coordinator_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_coordinator_2eproto = {
-  &descriptor_table_coordinator_2eproto_initialized, descriptor_table_protodef_coordinator_2eproto, "coordinator.proto", 1332,
-  &descriptor_table_coordinator_2eproto_once, descriptor_table_coordinator_2eproto_sccs, descriptor_table_coordinator_2eproto_deps, 9, 0,
+  &descriptor_table_coordinator_2eproto_initialized, descriptor_table_protodef_coordinator_2eproto, "coordinator.proto", 1461,
+  &descriptor_table_coordinator_2eproto_once, descriptor_table_coordinator_2eproto_sccs, descriptor_table_coordinator_2eproto_deps, 10, 0,
   schemas, file_default_instances, TableStruct_coordinator_2eproto::offsets,
-  file_level_metadata_coordinator_2eproto, 9, file_level_enum_descriptors_coordinator_2eproto, file_level_service_descriptors_coordinator_2eproto,
+  file_level_metadata_coordinator_2eproto, 10, file_level_enum_descriptors_coordinator_2eproto, file_level_service_descriptors_coordinator_2eproto,
 };
 
 // Force running AddDescriptors() at dynamic initialization time.
@@ -1521,6 +1551,190 @@ void StripeLocation::InternalSwap(StripeLocation* other) {
 
 // ===================================================================
 
+void SetPlacementPolicyCMD::InitAsDefaultInstance() {
+}
+class SetPlacementPolicyCMD::_Internal {
+ public:
+};
+
+SetPlacementPolicyCMD::SetPlacementPolicyCMD()
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:coordinator.SetPlacementPolicyCMD)
+}
+SetPlacementPolicyCMD::SetPlacementPolicyCMD(const SetPlacementPolicyCMD& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
+      _internal_metadata_(nullptr) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  israndom_ = from.israndom_;
+  // @@protoc_insertion_point(copy_constructor:coordinator.SetPlacementPolicyCMD)
+}
+
+void SetPlacementPolicyCMD::SharedCtor() {
+  israndom_ = false;
+}
+
+SetPlacementPolicyCMD::~SetPlacementPolicyCMD() {
+  // @@protoc_insertion_point(destructor:coordinator.SetPlacementPolicyCMD)
+  SharedDtor();
+}
+
+void SetPlacementPolicyCMD::SharedDtor() {
+}
+
+void SetPlacementPolicyCMD::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const SetPlacementPolicyCMD& SetPlacementPolicyCMD::default_instance() {
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_SetPlacementPolicyCMD_coordinator_2eproto.base);
+  return *internal_default_instance();
+}
+
+
+void SetPlacementPolicyCMD::Clear() {
+// @@protoc_insertion_point(message_clear_start:coordinator.SetPlacementPolicyCMD)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  israndom_ = false;
+  _internal_metadata_.Clear();
+}
+
+const char* SetPlacementPolicyCMD::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
+    switch (tag >> 3) {
+      // bool israndom = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          israndom_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->SetLastTag(tag);
+          goto success;
+        }
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
+      }
+    }  // switch
+  }  // while
+success:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
+}
+
+::PROTOBUF_NAMESPACE_ID::uint8* SetPlacementPolicyCMD::_InternalSerialize(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:coordinator.SetPlacementPolicyCMD)
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // bool israndom = 1;
+  if (this->israndom() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(1, this->_internal_israndom(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:coordinator.SetPlacementPolicyCMD)
+  return target;
+}
+
+size_t SetPlacementPolicyCMD::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:coordinator.SetPlacementPolicyCMD)
+  size_t total_size = 0;
+
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // bool israndom = 1;
+  if (this->israndom() != 0) {
+    total_size += 1 + 1;
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    return ::PROTOBUF_NAMESPACE_ID::internal::ComputeUnknownFieldsSize(
+        _internal_metadata_, total_size, &_cached_size_);
+  }
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void SetPlacementPolicyCMD::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:coordinator.SetPlacementPolicyCMD)
+  GOOGLE_DCHECK_NE(&from, this);
+  const SetPlacementPolicyCMD* source =
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<SetPlacementPolicyCMD>(
+          &from);
+  if (source == nullptr) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:coordinator.SetPlacementPolicyCMD)
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:coordinator.SetPlacementPolicyCMD)
+    MergeFrom(*source);
+  }
+}
+
+void SetPlacementPolicyCMD::MergeFrom(const SetPlacementPolicyCMD& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:coordinator.SetPlacementPolicyCMD)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.israndom() != 0) {
+    _internal_set_israndom(from._internal_israndom());
+  }
+}
+
+void SetPlacementPolicyCMD::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:coordinator.SetPlacementPolicyCMD)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SetPlacementPolicyCMD::CopyFrom(const SetPlacementPolicyCMD& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:coordinator.SetPlacementPolicyCMD)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SetPlacementPolicyCMD::IsInitialized() const {
+  return true;
+}
+
+void SetPlacementPolicyCMD::InternalSwap(SetPlacementPolicyCMD* other) {
+  using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(israndom_, other->israndom_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata SetPlacementPolicyCMD::GetMetadata() const {
+  return GetMetadataStatic();
+}
+
+
+// ===================================================================
+
 void Path::InitAsDefaultInstance() {
 }
 class Path::_Internal {
@@ -2260,6 +2474,9 @@ template<> PROTOBUF_NOINLINE ::coordinator::StripeInfo* Arena::CreateMaybeMessag
 }
 template<> PROTOBUF_NOINLINE ::coordinator::StripeLocation* Arena::CreateMaybeMessage< ::coordinator::StripeLocation >(Arena* arena) {
   return Arena::CreateInternal< ::coordinator::StripeLocation >(arena);
+}
+template<> PROTOBUF_NOINLINE ::coordinator::SetPlacementPolicyCMD* Arena::CreateMaybeMessage< ::coordinator::SetPlacementPolicyCMD >(Arena* arena) {
+  return Arena::CreateInternal< ::coordinator::SetPlacementPolicyCMD >(arena);
 }
 template<> PROTOBUF_NOINLINE ::coordinator::Path* Arena::CreateMaybeMessage< ::coordinator::Path >(Arena* arena) {
   return Arena::CreateInternal< ::coordinator::Path >(arena);

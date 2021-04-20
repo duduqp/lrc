@@ -48,7 +48,7 @@ struct TableStruct_coordinator_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[9]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[10]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -68,6 +68,9 @@ extern PathDefaultTypeInternal _Path_default_instance_;
 class RequestResult;
 class RequestResultDefaultTypeInternal;
 extern RequestResultDefaultTypeInternal _RequestResult_default_instance_;
+class SetPlacementPolicyCMD;
+class SetPlacementPolicyCMDDefaultTypeInternal;
+extern SetPlacementPolicyCMDDefaultTypeInternal _SetPlacementPolicyCMD_default_instance_;
 class StripeId;
 class StripeIdDefaultTypeInternal;
 extern StripeIdDefaultTypeInternal _StripeId_default_instance_;
@@ -89,6 +92,7 @@ template<> ::coordinator::ListAllStripeCMD* Arena::CreateMaybeMessage<::coordina
 template<> ::coordinator::NodesLocation* Arena::CreateMaybeMessage<::coordinator::NodesLocation>(Arena*);
 template<> ::coordinator::Path* Arena::CreateMaybeMessage<::coordinator::Path>(Arena*);
 template<> ::coordinator::RequestResult* Arena::CreateMaybeMessage<::coordinator::RequestResult>(Arena*);
+template<> ::coordinator::SetPlacementPolicyCMD* Arena::CreateMaybeMessage<::coordinator::SetPlacementPolicyCMD>(Arena*);
 template<> ::coordinator::StripeId* Arena::CreateMaybeMessage<::coordinator::StripeId>(Arena*);
 template<> ::coordinator::StripeIdWithHint* Arena::CreateMaybeMessage<::coordinator::StripeIdWithHint>(Arena*);
 template<> ::coordinator::StripeInfo* Arena::CreateMaybeMessage<::coordinator::StripeInfo>(Arena*);
@@ -903,6 +907,134 @@ class StripeLocation :
 };
 // -------------------------------------------------------------------
 
+class SetPlacementPolicyCMD :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator.SetPlacementPolicyCMD) */ {
+ public:
+  SetPlacementPolicyCMD();
+  virtual ~SetPlacementPolicyCMD();
+
+  SetPlacementPolicyCMD(const SetPlacementPolicyCMD& from);
+  SetPlacementPolicyCMD(SetPlacementPolicyCMD&& from) noexcept
+    : SetPlacementPolicyCMD() {
+    *this = ::std::move(from);
+  }
+
+  inline SetPlacementPolicyCMD& operator=(const SetPlacementPolicyCMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SetPlacementPolicyCMD& operator=(SetPlacementPolicyCMD&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const SetPlacementPolicyCMD& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const SetPlacementPolicyCMD* internal_default_instance() {
+    return reinterpret_cast<const SetPlacementPolicyCMD*>(
+               &_SetPlacementPolicyCMD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(SetPlacementPolicyCMD& a, SetPlacementPolicyCMD& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(SetPlacementPolicyCMD* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline SetPlacementPolicyCMD* New() const final {
+    return CreateMaybeMessage<SetPlacementPolicyCMD>(nullptr);
+  }
+
+  SetPlacementPolicyCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<SetPlacementPolicyCMD>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const SetPlacementPolicyCMD& from);
+  void MergeFrom(const SetPlacementPolicyCMD& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(SetPlacementPolicyCMD* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator.SetPlacementPolicyCMD";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_coordinator_2eproto);
+    return ::descriptor_table_coordinator_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kIsrandomFieldNumber = 1,
+  };
+  // bool israndom = 1;
+  void clear_israndom();
+  bool israndom() const;
+  void set_israndom(bool value);
+  private:
+  bool _internal_israndom() const;
+  void _internal_set_israndom(bool value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator.SetPlacementPolicyCMD)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  bool israndom_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_coordinator_2eproto;
+};
+// -------------------------------------------------------------------
+
 class Path :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator.Path) */ {
  public:
@@ -945,7 +1077,7 @@ class Path :
                &_Path_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(Path& a, Path& b) {
     a.Swap(&b);
@@ -1080,7 +1212,7 @@ class RequestResult :
                &_RequestResult_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(RequestResult& a, RequestResult& b) {
     a.Swap(&b);
@@ -1208,7 +1340,7 @@ class ListAllStripeCMD :
                &_ListAllStripeCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(ListAllStripeCMD& a, ListAllStripeCMD& b) {
     a.Swap(&b);
@@ -1323,7 +1455,7 @@ class TransitionUpCMD :
                &_TransitionUpCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(TransitionUpCMD& a, TransitionUpCMD& b) {
     a.Swap(&b);
@@ -1984,6 +2116,30 @@ StripeLocation::mutable_globalparityloc() {
 
 // -------------------------------------------------------------------
 
+// SetPlacementPolicyCMD
+
+// bool israndom = 1;
+inline void SetPlacementPolicyCMD::clear_israndom() {
+  israndom_ = false;
+}
+inline bool SetPlacementPolicyCMD::_internal_israndom() const {
+  return israndom_;
+}
+inline bool SetPlacementPolicyCMD::israndom() const {
+  // @@protoc_insertion_point(field_get:coordinator.SetPlacementPolicyCMD.israndom)
+  return _internal_israndom();
+}
+inline void SetPlacementPolicyCMD::_internal_set_israndom(bool value) {
+  
+  israndom_ = value;
+}
+inline void SetPlacementPolicyCMD::set_israndom(bool value) {
+  _internal_set_israndom(value);
+  // @@protoc_insertion_point(field_set:coordinator.SetPlacementPolicyCMD.israndom)
+}
+
+// -------------------------------------------------------------------
+
 // Path
 
 // string dstpath = 1;
@@ -2101,6 +2257,8 @@ inline void TransitionUpCMD::set_mode(::coordinator::TransitionUpCMD_MODE value)
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

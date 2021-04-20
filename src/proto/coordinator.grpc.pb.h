@@ -110,6 +110,13 @@ class FileSystem final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> PrepareAsynctransitionup(::grpc::ClientContext* context, const ::coordinator::TransitionUpCMD& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(PrepareAsynctransitionupRaw(context, request, cq));
     }
+    virtual ::grpc::Status setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::coordinator::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> Asyncsetplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(AsyncsetplacementpolicyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> PrepareAsyncsetplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(PrepareAsyncsetplacementpolicyRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
@@ -226,6 +233,18 @@ class FileSystem final {
       #else
       virtual void transitionup(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
+      virtual void setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
     };
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
     typedef class experimental_async_interface async_interface;
@@ -256,6 +275,8 @@ class FileSystem final {
     virtual ::grpc::ClientAsyncReaderInterface< ::coordinator::StripeLocation>* PrepareAsynclistAllStripesRaw(::grpc::ClientContext* context, const ::coordinator::ListAllStripeCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsynctransitionupRaw(::grpc::ClientContext* context, const ::coordinator::TransitionUpCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsynctransitionupRaw(::grpc::ClientContext* context, const ::coordinator::TransitionUpCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsyncsetplacementpolicyRaw(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsyncsetplacementpolicyRaw(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -331,6 +352,13 @@ class FileSystem final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> PrepareAsynctransitionup(::grpc::ClientContext* context, const ::coordinator::TransitionUpCMD& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(PrepareAsynctransitionupRaw(context, request, cq));
+    }
+    ::grpc::Status setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::coordinator::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> Asyncsetplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(AsyncsetplacementpolicyRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> PrepareAsyncsetplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(PrepareAsyncsetplacementpolicyRaw(context, request, cq));
     }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
@@ -448,6 +476,18 @@ class FileSystem final {
       #else
       void transitionup(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
+      void setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void setplacementpolicy(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void setplacementpolicy(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -480,6 +520,8 @@ class FileSystem final {
     ::grpc::ClientAsyncReader< ::coordinator::StripeLocation>* PrepareAsynclistAllStripesRaw(::grpc::ClientContext* context, const ::coordinator::ListAllStripeCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsynctransitionupRaw(::grpc::ClientContext* context, const ::coordinator::TransitionUpCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsynctransitionupRaw(::grpc::ClientContext* context, const ::coordinator::TransitionUpCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsyncsetplacementpolicyRaw(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsyncsetplacementpolicyRaw(::grpc::ClientContext* context, const ::coordinator::SetPlacementPolicyCMD& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_createDir_;
     const ::grpc::internal::RpcMethod rpcmethod_uploadStripe_;
     const ::grpc::internal::RpcMethod rpcmethod_downloadStripe_;
@@ -490,6 +532,7 @@ class FileSystem final {
     const ::grpc::internal::RpcMethod rpcmethod_listStripe_;
     const ::grpc::internal::RpcMethod rpcmethod_listAllStripes_;
     const ::grpc::internal::RpcMethod rpcmethod_transitionup_;
+    const ::grpc::internal::RpcMethod rpcmethod_setplacementpolicy_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -507,6 +550,7 @@ class FileSystem final {
     virtual ::grpc::Status listStripe(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response);
     virtual ::grpc::Status listAllStripes(::grpc::ServerContext* context, const ::coordinator::ListAllStripeCMD* request, ::grpc::ServerWriter< ::coordinator::StripeLocation>* writer);
     virtual ::grpc::Status transitionup(::grpc::ServerContext* context, const ::coordinator::TransitionUpCMD* request, ::coordinator::RequestResult* response);
+    virtual ::grpc::Status setplacementpolicy(::grpc::ServerContext* context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_createDir : public BaseClass {
@@ -708,7 +752,27 @@ class FileSystem final {
       ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_createDir<WithAsyncMethod_uploadStripe<WithAsyncMethod_downloadStripe<WithAsyncMethod_downloadStripeWithHint<WithAsyncMethod_deleteStripe<WithAsyncMethod_uploadCheck<WithAsyncMethod_reportblocktransfer<WithAsyncMethod_listStripe<WithAsyncMethod_listAllStripes<WithAsyncMethod_transitionup<Service > > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_setplacementpolicy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_setplacementpolicy() {
+      ::grpc::Service::MarkMethodAsync(10);
+    }
+    ~WithAsyncMethod_setplacementpolicy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status setplacementpolicy(::grpc::ServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsetplacementpolicy(::grpc::ServerContext* context, ::coordinator::SetPlacementPolicyCMD* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_createDir<WithAsyncMethod_uploadStripe<WithAsyncMethod_downloadStripe<WithAsyncMethod_downloadStripeWithHint<WithAsyncMethod_deleteStripe<WithAsyncMethod_uploadCheck<WithAsyncMethod_reportblocktransfer<WithAsyncMethod_listStripe<WithAsyncMethod_listAllStripes<WithAsyncMethod_transitionup<WithAsyncMethod_setplacementpolicy<Service > > > > > > > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_createDir : public BaseClass {
    private:
@@ -1170,11 +1234,58 @@ class FileSystem final {
     #endif
       { return nullptr; }
   };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_setplacementpolicy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_setplacementpolicy() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(10,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::SetPlacementPolicyCMD, ::coordinator::RequestResult>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::coordinator::SetPlacementPolicyCMD* request, ::coordinator::RequestResult* response) { return this->setplacementpolicy(context, request, response); }));}
+    void SetMessageAllocatorFor_setplacementpolicy(
+        ::grpc::experimental::MessageAllocator< ::coordinator::SetPlacementPolicyCMD, ::coordinator::RequestResult>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(10);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::SetPlacementPolicyCMD, ::coordinator::RequestResult>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_setplacementpolicy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status setplacementpolicy(::grpc::ServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* setplacementpolicy(
+      ::grpc::CallbackServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* setplacementpolicy(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/)
+    #endif
+      { return nullptr; }
+  };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblocktransfer<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<Service > > > > > > > > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblocktransfer<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<ExperimentalWithCallbackMethod_setplacementpolicy<Service > > > > > > > > > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblocktransfer<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<Service > > > > > > > > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblocktransfer<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<ExperimentalWithCallbackMethod_setplacementpolicy<Service > > > > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_createDir : public BaseClass {
    private:
@@ -1341,6 +1452,23 @@ class FileSystem final {
     }
     // disable synchronous version of this method
     ::grpc::Status transitionup(::grpc::ServerContext* /*context*/, const ::coordinator::TransitionUpCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_setplacementpolicy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_setplacementpolicy() {
+      ::grpc::Service::MarkMethodGeneric(10);
+    }
+    ~WithGenericMethod_setplacementpolicy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status setplacementpolicy(::grpc::ServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1543,6 +1671,26 @@ class FileSystem final {
     }
     void Requesttransitionup(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_setplacementpolicy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_setplacementpolicy() {
+      ::grpc::Service::MarkMethodRaw(10);
+    }
+    ~WithRawMethod_setplacementpolicy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status setplacementpolicy(::grpc::ServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestsetplacementpolicy(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1926,6 +2074,44 @@ class FileSystem final {
       { return nullptr; }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_setplacementpolicy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_setplacementpolicy() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(10,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->setplacementpolicy(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_setplacementpolicy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status setplacementpolicy(::grpc::ServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* setplacementpolicy(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* setplacementpolicy(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_createDir : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -2105,7 +2291,27 @@ class FileSystem final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streamedtransitionup(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::TransitionUpCMD,::coordinator::RequestResult>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblocktransfer<WithStreamedUnaryMethod_listStripe<WithStreamedUnaryMethod_transitionup<Service > > > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_setplacementpolicy : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_setplacementpolicy() {
+      ::grpc::Service::MarkMethodStreamed(10,
+        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::SetPlacementPolicyCMD, ::coordinator::RequestResult>(std::bind(&WithStreamedUnaryMethod_setplacementpolicy<BaseClass>::Streamedsetplacementpolicy, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_setplacementpolicy() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status setplacementpolicy(::grpc::ServerContext* /*context*/, const ::coordinator::SetPlacementPolicyCMD* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedsetplacementpolicy(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::SetPlacementPolicyCMD,::coordinator::RequestResult>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblocktransfer<WithStreamedUnaryMethod_listStripe<WithStreamedUnaryMethod_transitionup<WithStreamedUnaryMethod_setplacementpolicy<Service > > > > > > > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_listAllStripes : public BaseClass {
    private:
@@ -2127,7 +2333,7 @@ class FileSystem final {
     virtual ::grpc::Status StreamedlistAllStripes(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::coordinator::ListAllStripeCMD,::coordinator::StripeLocation>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_listAllStripes<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblocktransfer<WithStreamedUnaryMethod_listStripe<WithSplitStreamingMethod_listAllStripes<WithStreamedUnaryMethod_transitionup<Service > > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblocktransfer<WithStreamedUnaryMethod_listStripe<WithSplitStreamingMethod_listAllStripes<WithStreamedUnaryMethod_transitionup<WithStreamedUnaryMethod_setplacementpolicy<Service > > > > > > > > > > > StreamedService;
 };
 
 // From DataNode to Coodinator{typically for report a block from a stripe transfer from client result}

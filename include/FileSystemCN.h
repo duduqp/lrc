@@ -68,6 +68,8 @@ namespace lrc {
             //stub
             std::map<std::string, std::unique_ptr<datanode::FromCoodinator::Stub>> m_dn_ptrs;
 
+            //policy
+            bool m_placementpolicy{false};
             bool askDNhandling(const std::string & dnuri,int stripeid);
         public:
             grpc::Status uploadCheck(::grpc::ServerContext *context, const::coordinator::StripeInfo *request,
@@ -168,6 +170,13 @@ namespace lrc {
             bool delete_global_parity_of(int stripeid);
 
             bool rename_block_to(int oldstripeid, int newstripeid);
+
+            grpc::Status
+            setplacementpolicy(::grpc::ServerContext *context, const::coordinator::SetPlacementPolicyCMD *request,
+                               ::coordinator::RequestResult *response) override;
+
+            std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
+            random_placement_resolve(ECSchema schema);
         };
 
 

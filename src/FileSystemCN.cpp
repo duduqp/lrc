@@ -389,6 +389,7 @@ namespace lrc {
     std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
     FileSystemCN::FileSystemImpl::placement_resolve(ECSchema ecSchema, bool designed_placement) {
 
+        if(!m_placementpolicy) return random_placement_resolve(ecSchema);
         static std::vector<std::unordered_set<int>> stripe_local_group_history;
         static int stripe_global_history = -1;
 
@@ -1228,6 +1229,45 @@ namespace lrc {
             m_dn_ptrs[node]->renameblock(&renamectx,renameCMD,&renameres);
         }
         return true;
+    }
+
+    grpc::Status FileSystemCN::FileSystemImpl::setplacementpolicy(::grpc::ServerContext *context,
+                                                                  const::coordinator::SetPlacementPolicyCMD *request,
+                                                                  ::coordinator::RequestResult *response) {
+        m_placementpolicy = (!request->israndom());
+        return grpc::Status::OK;
+    }
+
+    std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
+    FileSystemCN::FileSystemImpl::random_placement_resolve(ECSchema schema) {
+        std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>> ret(3);
+        int totalcluster = m_cluster_info.size();
+        std::vector<int> total(totalcluster,0);
+        std::iota(total.begin(),total.end(),0);
+        std::random_shuffle(total.begin(),total.end());
+        //pick first l+1 cluster
+        int i=0;
+        for(; i<schema.localparityblk;++i)
+        {
+            std::vector<std::string> thiscluster(m_cluster_info[total[i]].datanodesuri);
+            std::random_shuffle(thiscluster.begin(), thiscluster.end());
+            int j=0;
+            for(;j<schema.globalparityblk;++j)
+            {
+                ret[0].insert({thiscluster[j],{FileSystemCN::FileSystemImpl::TYPE::DATA,false}});
+            }
+            ret[1].insert({thiscluster[j],{FileSystemCN::FileSystemImpl::TYPE::LP,false}});
+        }
+
+        //pick next cluster as gp
+        std::vector<std::string> lastcluster(m_cluster_info[total[i]].datanodesuri);
+        std::random_shuffle(lastcluster.begin(), lastcluster.end());
+        int j=0;
+        for(;j<schema.globalparityblk;++j)
+        {
+            ret[2].insert({lastcluster[j],{FileSystemCN::FileSystemImpl::TYPE::GP,false}});
+        }
+        return ret;
     }
 //CN in DN implementation
 /*
