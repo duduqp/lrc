@@ -48,7 +48,7 @@ struct TableStruct_coordinator_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[10]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[11]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -71,6 +71,9 @@ extern RequestResultDefaultTypeInternal _RequestResult_default_instance_;
 class SetPlacementPolicyCMD;
 class SetPlacementPolicyCMDDefaultTypeInternal;
 extern SetPlacementPolicyCMDDefaultTypeInternal _SetPlacementPolicyCMD_default_instance_;
+class StripeDetail;
+class StripeDetailDefaultTypeInternal;
+extern StripeDetailDefaultTypeInternal _StripeDetail_default_instance_;
 class StripeId;
 class StripeIdDefaultTypeInternal;
 extern StripeIdDefaultTypeInternal _StripeId_default_instance_;
@@ -93,6 +96,7 @@ template<> ::coordinator::NodesLocation* Arena::CreateMaybeMessage<::coordinator
 template<> ::coordinator::Path* Arena::CreateMaybeMessage<::coordinator::Path>(Arena*);
 template<> ::coordinator::RequestResult* Arena::CreateMaybeMessage<::coordinator::RequestResult>(Arena*);
 template<> ::coordinator::SetPlacementPolicyCMD* Arena::CreateMaybeMessage<::coordinator::SetPlacementPolicyCMD>(Arena*);
+template<> ::coordinator::StripeDetail* Arena::CreateMaybeMessage<::coordinator::StripeDetail>(Arena*);
 template<> ::coordinator::StripeId* Arena::CreateMaybeMessage<::coordinator::StripeId>(Arena*);
 template<> ::coordinator::StripeIdWithHint* Arena::CreateMaybeMessage<::coordinator::StripeIdWithHint>(Arena*);
 template<> ::coordinator::StripeInfo* Arena::CreateMaybeMessage<::coordinator::StripeInfo>(Arena*);
@@ -907,6 +911,157 @@ class StripeLocation :
 };
 // -------------------------------------------------------------------
 
+class StripeDetail :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator.StripeDetail) */ {
+ public:
+  StripeDetail();
+  virtual ~StripeDetail();
+
+  StripeDetail(const StripeDetail& from);
+  StripeDetail(StripeDetail&& from) noexcept
+    : StripeDetail() {
+    *this = ::std::move(from);
+  }
+
+  inline StripeDetail& operator=(const StripeDetail& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline StripeDetail& operator=(StripeDetail&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const StripeDetail& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const StripeDetail* internal_default_instance() {
+    return reinterpret_cast<const StripeDetail*>(
+               &_StripeDetail_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(StripeDetail& a, StripeDetail& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(StripeDetail* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline StripeDetail* New() const final {
+    return CreateMaybeMessage<StripeDetail>(nullptr);
+  }
+
+  StripeDetail* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<StripeDetail>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const StripeDetail& from);
+  void MergeFrom(const StripeDetail& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(StripeDetail* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "coordinator.StripeDetail";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_coordinator_2eproto);
+    return ::descriptor_table_coordinator_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kStripelocationFieldNumber = 1,
+    kStripeidFieldNumber = 2,
+  };
+  // .coordinator.StripeLocation stripelocation = 1;
+  bool has_stripelocation() const;
+  private:
+  bool _internal_has_stripelocation() const;
+  public:
+  void clear_stripelocation();
+  const ::coordinator::StripeLocation& stripelocation() const;
+  ::coordinator::StripeLocation* release_stripelocation();
+  ::coordinator::StripeLocation* mutable_stripelocation();
+  void set_allocated_stripelocation(::coordinator::StripeLocation* stripelocation);
+  private:
+  const ::coordinator::StripeLocation& _internal_stripelocation() const;
+  ::coordinator::StripeLocation* _internal_mutable_stripelocation();
+  public:
+
+  // .coordinator.StripeId stripeid = 2;
+  bool has_stripeid() const;
+  private:
+  bool _internal_has_stripeid() const;
+  public:
+  void clear_stripeid();
+  const ::coordinator::StripeId& stripeid() const;
+  ::coordinator::StripeId* release_stripeid();
+  ::coordinator::StripeId* mutable_stripeid();
+  void set_allocated_stripeid(::coordinator::StripeId* stripeid);
+  private:
+  const ::coordinator::StripeId& _internal_stripeid() const;
+  ::coordinator::StripeId* _internal_mutable_stripeid();
+  public:
+
+  // @@protoc_insertion_point(class_scope:coordinator.StripeDetail)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::coordinator::StripeLocation* stripelocation_;
+  ::coordinator::StripeId* stripeid_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_coordinator_2eproto;
+};
+// -------------------------------------------------------------------
+
 class SetPlacementPolicyCMD :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:coordinator.SetPlacementPolicyCMD) */ {
  public:
@@ -949,7 +1104,7 @@ class SetPlacementPolicyCMD :
                &_SetPlacementPolicyCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   friend void swap(SetPlacementPolicyCMD& a, SetPlacementPolicyCMD& b) {
     a.Swap(&b);
@@ -1077,7 +1232,7 @@ class Path :
                &_Path_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   friend void swap(Path& a, Path& b) {
     a.Swap(&b);
@@ -1212,7 +1367,7 @@ class RequestResult :
                &_RequestResult_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   friend void swap(RequestResult& a, RequestResult& b) {
     a.Swap(&b);
@@ -1340,7 +1495,7 @@ class ListAllStripeCMD :
                &_ListAllStripeCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   friend void swap(ListAllStripeCMD& a, ListAllStripeCMD& b) {
     a.Swap(&b);
@@ -1455,7 +1610,7 @@ class TransitionUpCMD :
                &_TransitionUpCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   friend void swap(TransitionUpCMD& a, TransitionUpCMD& b) {
     a.Swap(&b);
@@ -2116,6 +2271,130 @@ StripeLocation::mutable_globalparityloc() {
 
 // -------------------------------------------------------------------
 
+// StripeDetail
+
+// .coordinator.StripeLocation stripelocation = 1;
+inline bool StripeDetail::_internal_has_stripelocation() const {
+  return this != internal_default_instance() && stripelocation_ != nullptr;
+}
+inline bool StripeDetail::has_stripelocation() const {
+  return _internal_has_stripelocation();
+}
+inline void StripeDetail::clear_stripelocation() {
+  if (GetArenaNoVirtual() == nullptr && stripelocation_ != nullptr) {
+    delete stripelocation_;
+  }
+  stripelocation_ = nullptr;
+}
+inline const ::coordinator::StripeLocation& StripeDetail::_internal_stripelocation() const {
+  const ::coordinator::StripeLocation* p = stripelocation_;
+  return p != nullptr ? *p : *reinterpret_cast<const ::coordinator::StripeLocation*>(
+      &::coordinator::_StripeLocation_default_instance_);
+}
+inline const ::coordinator::StripeLocation& StripeDetail::stripelocation() const {
+  // @@protoc_insertion_point(field_get:coordinator.StripeDetail.stripelocation)
+  return _internal_stripelocation();
+}
+inline ::coordinator::StripeLocation* StripeDetail::release_stripelocation() {
+  // @@protoc_insertion_point(field_release:coordinator.StripeDetail.stripelocation)
+  
+  ::coordinator::StripeLocation* temp = stripelocation_;
+  stripelocation_ = nullptr;
+  return temp;
+}
+inline ::coordinator::StripeLocation* StripeDetail::_internal_mutable_stripelocation() {
+  
+  if (stripelocation_ == nullptr) {
+    auto* p = CreateMaybeMessage<::coordinator::StripeLocation>(GetArenaNoVirtual());
+    stripelocation_ = p;
+  }
+  return stripelocation_;
+}
+inline ::coordinator::StripeLocation* StripeDetail::mutable_stripelocation() {
+  // @@protoc_insertion_point(field_mutable:coordinator.StripeDetail.stripelocation)
+  return _internal_mutable_stripelocation();
+}
+inline void StripeDetail::set_allocated_stripelocation(::coordinator::StripeLocation* stripelocation) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == nullptr) {
+    delete stripelocation_;
+  }
+  if (stripelocation) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    if (message_arena != submessage_arena) {
+      stripelocation = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, stripelocation, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  stripelocation_ = stripelocation;
+  // @@protoc_insertion_point(field_set_allocated:coordinator.StripeDetail.stripelocation)
+}
+
+// .coordinator.StripeId stripeid = 2;
+inline bool StripeDetail::_internal_has_stripeid() const {
+  return this != internal_default_instance() && stripeid_ != nullptr;
+}
+inline bool StripeDetail::has_stripeid() const {
+  return _internal_has_stripeid();
+}
+inline void StripeDetail::clear_stripeid() {
+  if (GetArenaNoVirtual() == nullptr && stripeid_ != nullptr) {
+    delete stripeid_;
+  }
+  stripeid_ = nullptr;
+}
+inline const ::coordinator::StripeId& StripeDetail::_internal_stripeid() const {
+  const ::coordinator::StripeId* p = stripeid_;
+  return p != nullptr ? *p : *reinterpret_cast<const ::coordinator::StripeId*>(
+      &::coordinator::_StripeId_default_instance_);
+}
+inline const ::coordinator::StripeId& StripeDetail::stripeid() const {
+  // @@protoc_insertion_point(field_get:coordinator.StripeDetail.stripeid)
+  return _internal_stripeid();
+}
+inline ::coordinator::StripeId* StripeDetail::release_stripeid() {
+  // @@protoc_insertion_point(field_release:coordinator.StripeDetail.stripeid)
+  
+  ::coordinator::StripeId* temp = stripeid_;
+  stripeid_ = nullptr;
+  return temp;
+}
+inline ::coordinator::StripeId* StripeDetail::_internal_mutable_stripeid() {
+  
+  if (stripeid_ == nullptr) {
+    auto* p = CreateMaybeMessage<::coordinator::StripeId>(GetArenaNoVirtual());
+    stripeid_ = p;
+  }
+  return stripeid_;
+}
+inline ::coordinator::StripeId* StripeDetail::mutable_stripeid() {
+  // @@protoc_insertion_point(field_mutable:coordinator.StripeDetail.stripeid)
+  return _internal_mutable_stripeid();
+}
+inline void StripeDetail::set_allocated_stripeid(::coordinator::StripeId* stripeid) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == nullptr) {
+    delete stripeid_;
+  }
+  if (stripeid) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    if (message_arena != submessage_arena) {
+      stripeid = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, stripeid, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  stripeid_ = stripeid;
+  // @@protoc_insertion_point(field_set_allocated:coordinator.StripeDetail.stripeid)
+}
+
+// -------------------------------------------------------------------
+
 // SetPlacementPolicyCMD
 
 // bool israndom = 1;
@@ -2257,6 +2536,8 @@ inline void TransitionUpCMD::set_mode(::coordinator::TransitionUpCMD_MODE value)
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

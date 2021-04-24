@@ -96,21 +96,20 @@ class FromCoodinator final {
    public:
     virtual ~StubInterface() {}
     // deal with dir creating too
-    virtual ::grpc::Status handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::datanode::RequestResult* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asynchandleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsynchandleblocktransferRaw(context, request, cq));
+    virtual ::grpc::Status handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::datanode::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asynchandleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsynchandleuploadRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynchandleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynchandleblocktransferRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynchandleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynchandleuploadRaw(context, request, cq));
     }
-    virtual ::grpc::Status handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::datanode::RequestResult* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asynchandleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsynchandleblockpullRaw(context, request, cq));
+    virtual ::grpc::Status handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::datanode::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asynchandledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsynchandledownloadRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynchandleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynchandleblockpullRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynchandledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynchandledownloadRaw(context, request, cq));
     }
-    //  rpc createDir(Path) returns(RequestResult);
     virtual ::grpc::Status clearallstripe(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::datanode::RequestResult* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asyncclearallstripe(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsyncclearallstripeRaw(context, request, cq));
@@ -146,6 +145,23 @@ class FromCoodinator final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynccheckalive(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynccheckaliveRaw(context, request, cq));
     }
+    // with deletion , migration use only
+    virtual ::grpc::Status handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::datanode::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asynchandlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsynchandlepullRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynchandlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynchandlepullRaw(context, request, cq));
+    }
+    virtual ::grpc::Status handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::datanode::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asynchandlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(AsynchandlepushRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> PrepareAsynchandlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(PrepareAsynchandlepushRaw(context, request, cq));
+    }
+    // pull from handledownload nodes and perform some operations then push to some handleupload nodes
+    // worker node use only
     virtual ::grpc::Status pull_perform_push(::grpc::ClientContext* context, const ::datanode::OP& request, ::datanode::RequestResult* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>> Asyncpull_perform_push(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>>(Asyncpull_perform_pushRaw(context, request, cq));
@@ -164,31 +180,30 @@ class FromCoodinator final {
      public:
       virtual ~experimental_async_interface() {}
       // deal with dir creating too
-      virtual void handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void handleblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void handleupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void handleblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void handleupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void handleblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void handleupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
-      virtual void handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void handleblockpull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void handledownload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void handleblockpull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void handledownload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void handleblockpull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void handledownload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
-      //  rpc createDir(Path) returns(RequestResult);
       virtual void clearallstripe(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       virtual void clearallstripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -249,6 +264,33 @@ class FromCoodinator final {
       #else
       virtual void checkalive(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
+      // with deletion , migration use only
+      virtual void handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void handlepull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void handlepull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void handlepull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      virtual void handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void handlepush(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void handlepush(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
+      virtual void handlepush(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
+      // pull from handledownload nodes and perform some operations then push to some handleupload nodes
+      // worker node use only
       virtual void pull_perform_push(::grpc::ClientContext* context, const ::datanode::OP* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       virtual void pull_perform_push(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -282,10 +324,10 @@ class FromCoodinator final {
     #endif
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynchandleblocktransferRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynchandleblocktransferRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynchandleblockpullRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynchandleblockpullRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynchandleuploadRaw(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynchandleuploadRaw(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynchandledownloadRaw(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynchandledownloadRaw(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsyncclearallstripeRaw(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsyncclearallstripeRaw(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsyncdolocallyrepairRaw(::grpc::ClientContext* context, const ::datanode::NodesLocation& request, ::grpc::CompletionQueue* cq) = 0;
@@ -296,6 +338,10 @@ class FromCoodinator final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsyncclearstripeRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynccheckaliveRaw(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynchandlepullRaw(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynchandlepullRaw(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsynchandlepushRaw(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsynchandlepushRaw(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* Asyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* PrepareAsyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::datanode::RequestResult>* AsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) = 0;
@@ -304,19 +350,19 @@ class FromCoodinator final {
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-    ::grpc::Status handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::datanode::RequestResult* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asynchandleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsynchandleblocktransferRaw(context, request, cq));
+    ::grpc::Status handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::datanode::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asynchandleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsynchandleuploadRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynchandleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynchandleblocktransferRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynchandleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynchandleuploadRaw(context, request, cq));
     }
-    ::grpc::Status handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::datanode::RequestResult* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asynchandleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsynchandleblockpullRaw(context, request, cq));
+    ::grpc::Status handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::datanode::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asynchandledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsynchandledownloadRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynchandleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynchandleblockpullRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynchandledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynchandledownloadRaw(context, request, cq));
     }
     ::grpc::Status clearallstripe(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::datanode::RequestResult* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asyncclearallstripe(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::grpc::CompletionQueue* cq) {
@@ -353,6 +399,20 @@ class FromCoodinator final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynccheckalive(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynccheckaliveRaw(context, request, cq));
     }
+    ::grpc::Status handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::datanode::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asynchandlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsynchandlepullRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynchandlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynchandlepullRaw(context, request, cq));
+    }
+    ::grpc::Status handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::datanode::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asynchandlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(AsynchandlepushRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> PrepareAsynchandlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(PrepareAsynchandlepushRaw(context, request, cq));
+    }
     ::grpc::Status pull_perform_push(::grpc::ClientContext* context, const ::datanode::OP& request, ::datanode::RequestResult* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>> Asyncpull_perform_push(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>>(Asyncpull_perform_pushRaw(context, request, cq));
@@ -370,29 +430,29 @@ class FromCoodinator final {
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
-      void handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
-      void handleblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void handleupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void handleblocktransfer(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void handleupload(::grpc::ClientContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void handleblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void handleupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void handleblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void handleupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
-      void handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
-      void handleblockpull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void handledownload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void handleblockpull(::grpc::ClientContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void handledownload(::grpc::ClientContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void handleblockpull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void handledownload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void handleblockpull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void handledownload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       void clearallstripe(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
       void clearallstripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
@@ -454,6 +514,30 @@ class FromCoodinator final {
       #else
       void checkalive(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
+      void handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void handlepull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void handlepull(::grpc::ClientContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void handlepull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void handlepull(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      void handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void handlepush(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void handlepush(::grpc::ClientContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void handlepush(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
+      void handlepush(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void pull_perform_push(::grpc::ClientContext* context, const ::datanode::OP* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
       void pull_perform_push(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::datanode::RequestResult* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -489,10 +573,10 @@ class FromCoodinator final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class experimental_async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynchandleblocktransferRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynchandleblocktransferRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynchandleblockpullRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynchandleblockpullRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynchandleuploadRaw(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynchandleuploadRaw(::grpc::ClientContext* context, const ::datanode::UploadCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynchandledownloadRaw(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynchandledownloadRaw(::grpc::ClientContext* context, const ::datanode::DownloadCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsyncclearallstripeRaw(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsyncclearallstripeRaw(::grpc::ClientContext* context, const ::datanode::ClearallstripeCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsyncdolocallyrepairRaw(::grpc::ClientContext* context, const ::datanode::NodesLocation& request, ::grpc::CompletionQueue* cq) override;
@@ -503,17 +587,23 @@ class FromCoodinator final {
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsyncclearstripeRaw(::grpc::ClientContext* context, const ::datanode::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynccheckaliveRaw(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynccheckaliveRaw(::grpc::ClientContext* context, const ::datanode::CheckaliveCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynchandlepullRaw(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynchandlepullRaw(::grpc::ClientContext* context, const ::datanode::HandlePullCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsynchandlepushRaw(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsynchandlepushRaw(::grpc::ClientContext* context, const ::datanode::HandlePushCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* Asyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsyncpull_perform_pushRaw(::grpc::ClientContext* context, const ::datanode::OP& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* AsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::datanode::RequestResult>* PrepareAsyncrenameblockRaw(::grpc::ClientContext* context, const ::datanode::RenameCMD& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::internal::RpcMethod rpcmethod_handleblocktransfer_;
-    const ::grpc::internal::RpcMethod rpcmethod_handleblockpull_;
+    const ::grpc::internal::RpcMethod rpcmethod_handleupload_;
+    const ::grpc::internal::RpcMethod rpcmethod_handledownload_;
     const ::grpc::internal::RpcMethod rpcmethod_clearallstripe_;
     const ::grpc::internal::RpcMethod rpcmethod_dolocallyrepair_;
     const ::grpc::internal::RpcMethod rpcmethod_docompleterepair_;
     const ::grpc::internal::RpcMethod rpcmethod_clearstripe_;
     const ::grpc::internal::RpcMethod rpcmethod_checkalive_;
+    const ::grpc::internal::RpcMethod rpcmethod_handlepull_;
+    const ::grpc::internal::RpcMethod rpcmethod_handlepush_;
     const ::grpc::internal::RpcMethod rpcmethod_pull_perform_push_;
     const ::grpc::internal::RpcMethod rpcmethod_renameblock_;
   };
@@ -524,54 +614,58 @@ class FromCoodinator final {
     Service();
     virtual ~Service();
     // deal with dir creating too
-    virtual ::grpc::Status handleblocktransfer(::grpc::ServerContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response);
-    virtual ::grpc::Status handleblockpull(::grpc::ServerContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response);
-    //  rpc createDir(Path) returns(RequestResult);
+    virtual ::grpc::Status handleupload(::grpc::ServerContext* context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response);
+    virtual ::grpc::Status handledownload(::grpc::ServerContext* context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status clearallstripe(::grpc::ServerContext* context, const ::datanode::ClearallstripeCMD* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status dolocallyrepair(::grpc::ServerContext* context, const ::datanode::NodesLocation* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status docompleterepair(::grpc::ServerContext* context, const ::datanode::StripeLocation* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status clearstripe(::grpc::ServerContext* context, const ::datanode::StripeId* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status checkalive(::grpc::ServerContext* context, const ::datanode::CheckaliveCMD* request, ::datanode::RequestResult* response);
+    // with deletion , migration use only
+    virtual ::grpc::Status handlepull(::grpc::ServerContext* context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response);
+    virtual ::grpc::Status handlepush(::grpc::ServerContext* context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response);
+    // pull from handledownload nodes and perform some operations then push to some handleupload nodes
+    // worker node use only
     virtual ::grpc::Status pull_perform_push(::grpc::ServerContext* context, const ::datanode::OP* request, ::datanode::RequestResult* response);
     virtual ::grpc::Status renameblock(::grpc::ServerContext* context, const ::datanode::RenameCMD* request, ::datanode::RequestResult* response);
   };
   template <class BaseClass>
-  class WithAsyncMethod_handleblocktransfer : public BaseClass {
+  class WithAsyncMethod_handleupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_handleblocktransfer() {
+    WithAsyncMethod_handleupload() {
       ::grpc::Service::MarkMethodAsync(0);
     }
-    ~WithAsyncMethod_handleblocktransfer() override {
+    ~WithAsyncMethod_handleupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblocktransfer(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handleupload(::grpc::ServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requesthandleblocktransfer(::grpc::ServerContext* context, ::datanode::StripeId* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requesthandleupload(::grpc::ServerContext* context, ::datanode::UploadCMD* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_handleblockpull : public BaseClass {
+  class WithAsyncMethod_handledownload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_handleblockpull() {
+    WithAsyncMethod_handledownload() {
       ::grpc::Service::MarkMethodAsync(1);
     }
-    ~WithAsyncMethod_handleblockpull() override {
+    ~WithAsyncMethod_handledownload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblockpull(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handledownload(::grpc::ServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requesthandleblockpull(::grpc::ServerContext* context, ::datanode::StripeId* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requesthandledownload(::grpc::ServerContext* context, ::datanode::DownloadCMD* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -676,12 +770,52 @@ class FromCoodinator final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_handlepull : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_handlepull() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_handlepull() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepull(::grpc::ServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesthandlepull(::grpc::ServerContext* context, ::datanode::HandlePullCMD* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_handlepush : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_handlepush() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_handlepush() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepush(::grpc::ServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesthandlepush(::grpc::ServerContext* context, ::datanode::HandlePushCMD* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_pull_perform_push : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_pull_perform_push() {
-      ::grpc::Service::MarkMethodAsync(7);
+      ::grpc::Service::MarkMethodAsync(9);
     }
     ~WithAsyncMethod_pull_perform_push() override {
       BaseClassMustBeDerivedFromService(this);
@@ -692,7 +826,7 @@ class FromCoodinator final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpull_perform_push(::grpc::ServerContext* context, ::datanode::OP* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -701,7 +835,7 @@ class FromCoodinator final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_renameblock() {
-      ::grpc::Service::MarkMethodAsync(8);
+      ::grpc::Service::MarkMethodAsync(10);
     }
     ~WithAsyncMethod_renameblock() override {
       BaseClassMustBeDerivedFromService(this);
@@ -712,101 +846,101 @@ class FromCoodinator final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestrenameblock(::grpc::ServerContext* context, ::datanode::RenameCMD* request, ::grpc::ServerAsyncResponseWriter< ::datanode::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_handleblocktransfer<WithAsyncMethod_handleblockpull<WithAsyncMethod_clearallstripe<WithAsyncMethod_dolocallyrepair<WithAsyncMethod_docompleterepair<WithAsyncMethod_clearstripe<WithAsyncMethod_checkalive<WithAsyncMethod_pull_perform_push<WithAsyncMethod_renameblock<Service > > > > > > > > > AsyncService;
+  typedef WithAsyncMethod_handleupload<WithAsyncMethod_handledownload<WithAsyncMethod_clearallstripe<WithAsyncMethod_dolocallyrepair<WithAsyncMethod_docompleterepair<WithAsyncMethod_clearstripe<WithAsyncMethod_checkalive<WithAsyncMethod_handlepull<WithAsyncMethod_handlepush<WithAsyncMethod_pull_perform_push<WithAsyncMethod_renameblock<Service > > > > > > > > > > > AsyncService;
   template <class BaseClass>
-  class ExperimentalWithCallbackMethod_handleblocktransfer : public BaseClass {
+  class ExperimentalWithCallbackMethod_handleupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithCallbackMethod_handleblocktransfer() {
+    ExperimentalWithCallbackMethod_handleupload() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(0,
-          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::StripeId, ::datanode::RequestResult>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::UploadCMD, ::datanode::RequestResult>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::datanode::StripeId* request, ::datanode::RequestResult* response) { return this->handleblocktransfer(context, request, response); }));}
-    void SetMessageAllocatorFor_handleblocktransfer(
-        ::grpc::experimental::MessageAllocator< ::datanode::StripeId, ::datanode::RequestResult>* allocator) {
+                     context, const ::datanode::UploadCMD* request, ::datanode::RequestResult* response) { return this->handleupload(context, request, response); }));}
+    void SetMessageAllocatorFor_handleupload(
+        ::grpc::experimental::MessageAllocator< ::datanode::UploadCMD, ::datanode::RequestResult>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
     #else
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(0);
     #endif
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::StripeId, ::datanode::RequestResult>*>(handler)
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::UploadCMD, ::datanode::RequestResult>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~ExperimentalWithCallbackMethod_handleblocktransfer() override {
+    ~ExperimentalWithCallbackMethod_handleupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblocktransfer(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handleupload(::grpc::ServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* handleblocktransfer(
-      ::grpc::CallbackServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/)
+    virtual ::grpc::ServerUnaryReactor* handleupload(
+      ::grpc::CallbackServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* handleblocktransfer(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/)
+    virtual ::grpc::experimental::ServerUnaryReactor* handleupload(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/)
     #endif
       { return nullptr; }
   };
   template <class BaseClass>
-  class ExperimentalWithCallbackMethod_handleblockpull : public BaseClass {
+  class ExperimentalWithCallbackMethod_handledownload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithCallbackMethod_handleblockpull() {
+    ExperimentalWithCallbackMethod_handledownload() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(1,
-          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::StripeId, ::datanode::RequestResult>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::DownloadCMD, ::datanode::RequestResult>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::datanode::StripeId* request, ::datanode::RequestResult* response) { return this->handleblockpull(context, request, response); }));}
-    void SetMessageAllocatorFor_handleblockpull(
-        ::grpc::experimental::MessageAllocator< ::datanode::StripeId, ::datanode::RequestResult>* allocator) {
+                     context, const ::datanode::DownloadCMD* request, ::datanode::RequestResult* response) { return this->handledownload(context, request, response); }));}
+    void SetMessageAllocatorFor_handledownload(
+        ::grpc::experimental::MessageAllocator< ::datanode::DownloadCMD, ::datanode::RequestResult>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
     #else
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(1);
     #endif
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::StripeId, ::datanode::RequestResult>*>(handler)
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::DownloadCMD, ::datanode::RequestResult>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~ExperimentalWithCallbackMethod_handleblockpull() override {
+    ~ExperimentalWithCallbackMethod_handledownload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblockpull(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handledownload(::grpc::ServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* handleblockpull(
-      ::grpc::CallbackServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/)
+    virtual ::grpc::ServerUnaryReactor* handledownload(
+      ::grpc::CallbackServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* handleblockpull(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/)
+    virtual ::grpc::experimental::ServerUnaryReactor* handledownload(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/)
     #endif
       { return nullptr; }
   };
@@ -1046,6 +1180,100 @@ class FromCoodinator final {
       { return nullptr; }
   };
   template <class BaseClass>
+  class ExperimentalWithCallbackMethod_handlepull : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_handlepull() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(7,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::HandlePullCMD, ::datanode::RequestResult>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::datanode::HandlePullCMD* request, ::datanode::RequestResult* response) { return this->handlepull(context, request, response); }));}
+    void SetMessageAllocatorFor_handlepull(
+        ::grpc::experimental::MessageAllocator< ::datanode::HandlePullCMD, ::datanode::RequestResult>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(7);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::HandlePullCMD, ::datanode::RequestResult>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_handlepull() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepull(::grpc::ServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* handlepull(
+      ::grpc::CallbackServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* handlepull(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_handlepush : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithCallbackMethod_handlepush() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(8,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::HandlePushCMD, ::datanode::RequestResult>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::datanode::HandlePushCMD* request, ::datanode::RequestResult* response) { return this->handlepush(context, request, response); }));}
+    void SetMessageAllocatorFor_handlepush(
+        ::grpc::experimental::MessageAllocator< ::datanode::HandlePushCMD, ::datanode::RequestResult>* allocator) {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(8);
+    #endif
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::HandlePushCMD, ::datanode::RequestResult>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~ExperimentalWithCallbackMethod_handlepush() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepush(::grpc::ServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* handlepush(
+      ::grpc::CallbackServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* handlepush(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
   class ExperimentalWithCallbackMethod_pull_perform_push : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -1056,7 +1284,7 @@ class FromCoodinator final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodCallback(7,
+        MarkMethodCallback(9,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::OP, ::datanode::RequestResult>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -1068,9 +1296,9 @@ class FromCoodinator final {
     void SetMessageAllocatorFor_pull_perform_push(
         ::grpc::experimental::MessageAllocator< ::datanode::OP, ::datanode::RequestResult>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
     #else
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(7);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(9);
     #endif
       static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::OP, ::datanode::RequestResult>*>(handler)
               ->SetMessageAllocator(allocator);
@@ -1103,7 +1331,7 @@ class FromCoodinator final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodCallback(8,
+        MarkMethodCallback(10,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::datanode::RenameCMD, ::datanode::RequestResult>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -1115,9 +1343,9 @@ class FromCoodinator final {
     void SetMessageAllocatorFor_renameblock(
         ::grpc::experimental::MessageAllocator< ::datanode::RenameCMD, ::datanode::RequestResult>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
     #else
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(8);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(10);
     #endif
       static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::datanode::RenameCMD, ::datanode::RequestResult>*>(handler)
               ->SetMessageAllocator(allocator);
@@ -1140,40 +1368,40 @@ class FromCoodinator final {
       { return nullptr; }
   };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_handleblocktransfer<ExperimentalWithCallbackMethod_handleblockpull<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_pull_perform_push<ExperimentalWithCallbackMethod_renameblock<Service > > > > > > > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_handleupload<ExperimentalWithCallbackMethod_handledownload<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_handlepull<ExperimentalWithCallbackMethod_handlepush<ExperimentalWithCallbackMethod_pull_perform_push<ExperimentalWithCallbackMethod_renameblock<Service > > > > > > > > > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_handleblocktransfer<ExperimentalWithCallbackMethod_handleblockpull<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_pull_perform_push<ExperimentalWithCallbackMethod_renameblock<Service > > > > > > > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_handleupload<ExperimentalWithCallbackMethod_handledownload<ExperimentalWithCallbackMethod_clearallstripe<ExperimentalWithCallbackMethod_dolocallyrepair<ExperimentalWithCallbackMethod_docompleterepair<ExperimentalWithCallbackMethod_clearstripe<ExperimentalWithCallbackMethod_checkalive<ExperimentalWithCallbackMethod_handlepull<ExperimentalWithCallbackMethod_handlepush<ExperimentalWithCallbackMethod_pull_perform_push<ExperimentalWithCallbackMethod_renameblock<Service > > > > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
-  class WithGenericMethod_handleblocktransfer : public BaseClass {
+  class WithGenericMethod_handleupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_handleblocktransfer() {
+    WithGenericMethod_handleupload() {
       ::grpc::Service::MarkMethodGeneric(0);
     }
-    ~WithGenericMethod_handleblocktransfer() override {
+    ~WithGenericMethod_handleupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblocktransfer(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handleupload(::grpc::ServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_handleblockpull : public BaseClass {
+  class WithGenericMethod_handledownload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_handleblockpull() {
+    WithGenericMethod_handledownload() {
       ::grpc::Service::MarkMethodGeneric(1);
     }
-    ~WithGenericMethod_handleblockpull() override {
+    ~WithGenericMethod_handledownload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblockpull(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handledownload(::grpc::ServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1264,12 +1492,46 @@ class FromCoodinator final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_handlepull : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_handlepull() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_handlepull() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepull(::grpc::ServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_handlepush : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_handlepush() {
+      ::grpc::Service::MarkMethodGeneric(8);
+    }
+    ~WithGenericMethod_handlepush() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepush(::grpc::ServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_pull_perform_push : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_pull_perform_push() {
-      ::grpc::Service::MarkMethodGeneric(7);
+      ::grpc::Service::MarkMethodGeneric(9);
     }
     ~WithGenericMethod_pull_perform_push() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1286,7 +1548,7 @@ class FromCoodinator final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_renameblock() {
-      ::grpc::Service::MarkMethodGeneric(8);
+      ::grpc::Service::MarkMethodGeneric(10);
     }
     ~WithGenericMethod_renameblock() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1298,42 +1560,42 @@ class FromCoodinator final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_handleblocktransfer : public BaseClass {
+  class WithRawMethod_handleupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_handleblocktransfer() {
+    WithRawMethod_handleupload() {
       ::grpc::Service::MarkMethodRaw(0);
     }
-    ~WithRawMethod_handleblocktransfer() override {
+    ~WithRawMethod_handleupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblocktransfer(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handleupload(::grpc::ServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requesthandleblocktransfer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requesthandleupload(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_handleblockpull : public BaseClass {
+  class WithRawMethod_handledownload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_handleblockpull() {
+    WithRawMethod_handledownload() {
       ::grpc::Service::MarkMethodRaw(1);
     }
-    ~WithRawMethod_handleblockpull() override {
+    ~WithRawMethod_handledownload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblockpull(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handledownload(::grpc::ServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requesthandleblockpull(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requesthandledownload(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -1438,12 +1700,52 @@ class FromCoodinator final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_handlepull : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_handlepull() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_handlepull() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepull(::grpc::ServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesthandlepull(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_handlepush : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_handlepush() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_handlepush() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepush(::grpc::ServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requesthandlepush(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_pull_perform_push : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_pull_perform_push() {
-      ::grpc::Service::MarkMethodRaw(7);
+      ::grpc::Service::MarkMethodRaw(9);
     }
     ~WithRawMethod_pull_perform_push() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1454,7 +1756,7 @@ class FromCoodinator final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestpull_perform_push(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1463,7 +1765,7 @@ class FromCoodinator final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_renameblock() {
-      ::grpc::Service::MarkMethodRaw(8);
+      ::grpc::Service::MarkMethodRaw(10);
     }
     ~WithRawMethod_renameblock() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1474,15 +1776,15 @@ class FromCoodinator final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void Requestrenameblock(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class ExperimentalWithRawCallbackMethod_handleblocktransfer : public BaseClass {
+  class ExperimentalWithRawCallbackMethod_handleupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithRawCallbackMethod_handleblocktransfer() {
+    ExperimentalWithRawCallbackMethod_handleupload() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
@@ -1496,31 +1798,31 @@ class FromCoodinator final {
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->handleblocktransfer(context, request, response); }));
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->handleupload(context, request, response); }));
     }
-    ~ExperimentalWithRawCallbackMethod_handleblocktransfer() override {
+    ~ExperimentalWithRawCallbackMethod_handleupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblocktransfer(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handleupload(::grpc::ServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* handleblocktransfer(
+    virtual ::grpc::ServerUnaryReactor* handleupload(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* handleblocktransfer(
+    virtual ::grpc::experimental::ServerUnaryReactor* handleupload(
       ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #endif
       { return nullptr; }
   };
   template <class BaseClass>
-  class ExperimentalWithRawCallbackMethod_handleblockpull : public BaseClass {
+  class ExperimentalWithRawCallbackMethod_handledownload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithRawCallbackMethod_handleblockpull() {
+    ExperimentalWithRawCallbackMethod_handledownload() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
@@ -1534,21 +1836,21 @@ class FromCoodinator final {
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->handleblockpull(context, request, response); }));
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->handledownload(context, request, response); }));
     }
-    ~ExperimentalWithRawCallbackMethod_handleblockpull() override {
+    ~ExperimentalWithRawCallbackMethod_handledownload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status handleblockpull(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handledownload(::grpc::ServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* handleblockpull(
+    virtual ::grpc::ServerUnaryReactor* handledownload(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* handleblockpull(
+    virtual ::grpc::experimental::ServerUnaryReactor* handledownload(
       ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #endif
       { return nullptr; }
@@ -1744,6 +2046,82 @@ class FromCoodinator final {
       { return nullptr; }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_handlepull : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_handlepull() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(7,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->handlepull(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_handlepull() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepull(::grpc::ServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* handlepull(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* handlepull(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_handlepush : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    ExperimentalWithRawCallbackMethod_handlepush() {
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(8,
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->handlepush(context, request, response); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_handlepush() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status handlepush(::grpc::ServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* handlepush(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* handlepush(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
+  };
+  template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_pull_perform_push : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -1754,7 +2132,7 @@ class FromCoodinator final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodRawCallback(7,
+        MarkMethodRawCallback(9,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -1792,7 +2170,7 @@ class FromCoodinator final {
     #else
       ::grpc::Service::experimental().
     #endif
-        MarkMethodRawCallback(8,
+        MarkMethodRawCallback(10,
           new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
@@ -1820,44 +2198,44 @@ class FromCoodinator final {
       { return nullptr; }
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_handleblocktransfer : public BaseClass {
+  class WithStreamedUnaryMethod_handleupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_handleblocktransfer() {
+    WithStreamedUnaryMethod_handleupload() {
       ::grpc::Service::MarkMethodStreamed(0,
-        new ::grpc::internal::StreamedUnaryHandler< ::datanode::StripeId, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_handleblocktransfer<BaseClass>::Streamedhandleblocktransfer, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::datanode::UploadCMD, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_handleupload<BaseClass>::Streamedhandleupload, this, std::placeholders::_1, std::placeholders::_2)));
     }
-    ~WithStreamedUnaryMethod_handleblocktransfer() override {
+    ~WithStreamedUnaryMethod_handleupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status handleblocktransfer(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handleupload(::grpc::ServerContext* /*context*/, const ::datanode::UploadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedhandleblocktransfer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::StripeId,::datanode::RequestResult>* server_unary_streamer) = 0;
+    virtual ::grpc::Status Streamedhandleupload(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::UploadCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_handleblockpull : public BaseClass {
+  class WithStreamedUnaryMethod_handledownload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_handleblockpull() {
+    WithStreamedUnaryMethod_handledownload() {
       ::grpc::Service::MarkMethodStreamed(1,
-        new ::grpc::internal::StreamedUnaryHandler< ::datanode::StripeId, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_handleblockpull<BaseClass>::Streamedhandleblockpull, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::datanode::DownloadCMD, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_handledownload<BaseClass>::Streamedhandledownload, this, std::placeholders::_1, std::placeholders::_2)));
     }
-    ~WithStreamedUnaryMethod_handleblockpull() override {
+    ~WithStreamedUnaryMethod_handledownload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status handleblockpull(::grpc::ServerContext* /*context*/, const ::datanode::StripeId* /*request*/, ::datanode::RequestResult* /*response*/) override {
+    ::grpc::Status handledownload(::grpc::ServerContext* /*context*/, const ::datanode::DownloadCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedhandleblockpull(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::StripeId,::datanode::RequestResult>* server_unary_streamer) = 0;
+    virtual ::grpc::Status Streamedhandledownload(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::DownloadCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_clearallstripe : public BaseClass {
@@ -1960,12 +2338,52 @@ class FromCoodinator final {
     virtual ::grpc::Status Streamedcheckalive(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::CheckaliveCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_handlepull : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_handlepull() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler< ::datanode::HandlePullCMD, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_handlepull<BaseClass>::Streamedhandlepull, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_handlepull() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status handlepull(::grpc::ServerContext* /*context*/, const ::datanode::HandlePullCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedhandlepull(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::HandlePullCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_handlepush : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_handlepush() {
+      ::grpc::Service::MarkMethodStreamed(8,
+        new ::grpc::internal::StreamedUnaryHandler< ::datanode::HandlePushCMD, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_handlepush<BaseClass>::Streamedhandlepush, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_handlepush() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status handlepush(::grpc::ServerContext* /*context*/, const ::datanode::HandlePushCMD* /*request*/, ::datanode::RequestResult* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status Streamedhandlepush(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::HandlePushCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_pull_perform_push : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_pull_perform_push() {
-      ::grpc::Service::MarkMethodStreamed(7,
+      ::grpc::Service::MarkMethodStreamed(9,
         new ::grpc::internal::StreamedUnaryHandler< ::datanode::OP, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_pull_perform_push<BaseClass>::Streamedpull_perform_push, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_pull_perform_push() override {
@@ -1985,7 +2403,7 @@ class FromCoodinator final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_renameblock() {
-      ::grpc::Service::MarkMethodStreamed(8,
+      ::grpc::Service::MarkMethodStreamed(10,
         new ::grpc::internal::StreamedUnaryHandler< ::datanode::RenameCMD, ::datanode::RequestResult>(std::bind(&WithStreamedUnaryMethod_renameblock<BaseClass>::Streamedrenameblock, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_renameblock() override {
@@ -1999,9 +2417,9 @@ class FromCoodinator final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streamedrenameblock(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::datanode::RenameCMD,::datanode::RequestResult>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_handleblocktransfer<WithStreamedUnaryMethod_handleblockpull<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_pull_perform_push<WithStreamedUnaryMethod_renameblock<Service > > > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_handleupload<WithStreamedUnaryMethod_handledownload<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_handlepull<WithStreamedUnaryMethod_handlepush<WithStreamedUnaryMethod_pull_perform_push<WithStreamedUnaryMethod_renameblock<Service > > > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_handleblocktransfer<WithStreamedUnaryMethod_handleblockpull<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_pull_perform_push<WithStreamedUnaryMethod_renameblock<Service > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_handleupload<WithStreamedUnaryMethod_handledownload<WithStreamedUnaryMethod_clearallstripe<WithStreamedUnaryMethod_dolocallyrepair<WithStreamedUnaryMethod_docompleterepair<WithStreamedUnaryMethod_clearstripe<WithStreamedUnaryMethod_checkalive<WithStreamedUnaryMethod_handlepull<WithStreamedUnaryMethod_handlepush<WithStreamedUnaryMethod_pull_perform_push<WithStreamedUnaryMethod_renameblock<Service > > > > > > > > > > > StreamedService;
 };
 
 // From Client to DN {typically for single block transfer}

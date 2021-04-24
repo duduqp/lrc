@@ -95,7 +95,7 @@ namespace lrc{
         ~FileSystemClient() = default;
 
 
-        bool UploadStripe(const std::string & srcpath,int stripeid,const ECSchema & ecschema);
+        bool UploadStripe(const std::string & srcpath,int stripeid,const ECSchema & ecschema,bool trivial=false);
 
 
         bool DownLoadStripe(const std::string & srcpath,const std::string & dstpath,int stripe_id);
@@ -106,11 +106,11 @@ namespace lrc{
         bool DeleteDir(const std::string & dstpath) ;
 
 
-        bool TransformRedundancy(int start_stripe_id,int to_stripe_id);
+        bool TransformRedundancy(coordinator::TransitionUpCMD_MODE mode=coordinator::TransitionUpCMD_MODE_BASIC);
 
         std::vector<StripeInfo> ListStripes() const;
 
-        bool SetPlaceMentPolicy(bool israndom=false);
+        bool SetRandomPlaceMentPolicy(bool israndom=true);
     };
 }
 #endif //LRC_FILESYSTEMCLIENT_H

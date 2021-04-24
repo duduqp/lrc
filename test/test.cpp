@@ -274,6 +274,76 @@ placement_resolve(std::unordered_map<int, lrc::ClusterInfo> m_cluster_info, int 
     return ret;
 }
 
+
+std::unordered_map<int, std::vector<std::string>> m_fs_image{
+        {0,{"192.168.1.3:10002","192.168.1.3:10003","d","192.168.1.3:10001","l","192.168.0.22:10002","192.168.0.22:10001","g"}},
+        {1,{"192.168.0.11:10003","192.168.0.11:10001","d","192.168.0.11:10002","l","192.168.0.21:10001","192.168.0.21:10003","g"}},
+        {2,{"192.168.0.11:10002","192.168.0.11:10001","d","192.168.0.11:10003","l","192.168.0.22:10002","192.168.0.22:10003","g"}},
+        {3,{"192.168.0.22:10001","192.168.0.22:10003","d","192.168.0.22:10001","l","192.168.0.11:10001","192.168.0.11:10003","g"}},
+        {4,{"192.168.0.21:10001","192.168.0.21:10002","d","192.168.0.21:10003","l","192.168.1.3:10001","192.168.1.3:10002","g"}},
+        {5,{"192.168.0.21:10001","192.168.0.21:10002","d","192.168.0.21:10003","l","192.168.1.3:10001","192.168.1.3:10002","g"}},
+        {6,{"192.168.1.3:10003","192.168.1.3:10002","d","192.168.1.3:10001","l","192.168.0.21:10001","192.168.0.21:10002","g"}},
+        {7,{"192.168.0.22:10001","192.168.0.22:10003","d","192.168.0.22:10002","l","192.168.0.11:10002","192.168.0.11:10001","g"}}
+};
+
+bool refreshfilesystemimagebasic(
+        const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string >> &codingplan,
+        const std::tuple<int, std::vector<std::string>, std::vector<std::string >> &migrationplan) {
+    //copy stripe datanodes and put stripe+1 datanodes into a set
+    //replace stripe+1 nodes set ∩ migration src nodes with migration dst nodes
+    //merge stripe+1 set with stripe set
+    //set gp nodes with worker node and forwarding dst nodes
+    int modified_stripe = std::get<0>(codingplan)+1;
+    int k = std::get<1>(codingplan).size();//new k
+    int g = std::get<3>(codingplan).size() + 1;
+    int l = k / g;
+    const auto & be_migrated = std::get<1>(migrationplan);
+    const auto & dst_migrated = std::get<2>(migrationplan);
+    const auto & total_node = std::get<1>(codingplan);
+    const auto & new_gp_node = std::get<3>(codingplan);
+    std::vector<std::string> new_stripelocation(k+1+l+1+g+1,"");
+    std::unordered_map<std::string,std::string> be_migratedset_to_dst;
+    int j=0;
+    for(int i=0;i<be_migrated.size();++i)
+    {
+        be_migratedset_to_dst[be_migrated[i]]=dst_migrated[i];
+    }
+    std::vector<std::string> total_datanodeset;
+    for(const auto & node:total_node){
+        //all datanodes in both stripe
+        if(be_migratedset_to_dst.contains(node)){
+            new_stripelocation[j++]=be_migratedset_to_dst[node];
+        }else{
+            new_stripelocation[j++]=node;
+        }
+    }
+    new_stripelocation[j++]="d";
+    std::vector<std::string> total_lpnodeset;
+    for(int i=k/2+1;"l"!=m_fs_image[modified_stripe-1][i];++i){
+        //stayed stripe lp
+        new_stripelocation[j++]=m_fs_image[modified_stripe-1][i];
+    }
+    for(int i=k/2+1;"l"!=m_fs_image[modified_stripe][i];++i){
+        //stayed stripe lp
+        if(!be_migratedset_to_dst.contains(m_fs_image[modified_stripe][i])) new_stripelocation[j++]=m_fs_image[modified_stripe][i];
+        else new_stripelocation[j++]=m_fs_image[modified_stripe][i];
+    }
+    new_stripelocation[j++]="l";
+    new_stripelocation[j++]=std::get<2>(codingplan);
+    for(const auto & gp:new_gp_node)
+    {
+        new_stripelocation[j++]=gp;
+    }
+    new_stripelocation[j++]="g";
+    m_fs_image.erase(modified_stripe-1);
+    m_fs_image.erase(modified_stripe);
+    m_fs_image.insert({modified_stripe-1,std::move(new_stripelocation)});
+    return true;
+}
+
+
+
+
 int main() {
 
     std::vector<std::string> v1{"192.168.1.3:10001", "192.168.1.3:10002", "192.168.1.3:10003", "192.168.1.3:10004"};
@@ -504,6 +574,25 @@ int main() {
  */
    auto res = generate_basic_transition_plan(m_cluster_info,m_dn_info,fsimage);
    auto res2 = generate_designed_transition_plan(m_cluster_info,m_dn_info,fsimage2);
-   int i=0;
+
+
+
+   /*
+    *test for refreshfsimage
+   */
+    refreshfilesystemimagebasic(res.second[0],res.first[0]);
+    refreshfilesystemimagebasic(res.second[1],res.first[1]);
+    refreshfilesystemimagebasic(res.second[2],res.first[2]);
+    refreshfilesystemimagebasic(res.second[3],res.first[3]);
+
+    for(auto stripe:m_fs_image)
+    {
+        for(const auto node:stripe.second)
+        {
+            std::cout << node << "\t";
+        }
+        std::cout<<std::endl;
+    }
+    int i=0;//only breakpoint use
    return 0;
 }

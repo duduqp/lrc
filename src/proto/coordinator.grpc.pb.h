@@ -45,19 +45,19 @@ class FileSystem final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> PrepareAsynccreateDir(::grpc::ClientContext* context, const ::coordinator::Path& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(PrepareAsynccreateDirRaw(context, request, cq));
     }
-    virtual ::grpc::Status uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::coordinator::StripeLocation* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>> AsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>>(AsyncuploadStripeRaw(context, request, cq));
+    virtual ::grpc::Status uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::coordinator::StripeDetail* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>> AsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>>(AsyncuploadStripeRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>> PrepareAsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>>(PrepareAsyncuploadStripeRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>> PrepareAsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>>(PrepareAsyncuploadStripeRaw(context, request, cq));
     }
-    virtual ::grpc::Status downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::StripeLocation* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>> AsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>>(AsyncdownloadStripeRaw(context, request, cq));
+    virtual ::grpc::Status downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::StripeDetail* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>> AsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>>(AsyncdownloadStripeRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>> PrepareAsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>>(PrepareAsyncdownloadStripeRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>> PrepareAsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>>(PrepareAsyncdownloadStripeRaw(context, request, cq));
     }
     virtual ::grpc::Status downloadStripeWithHint(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::coordinator::StripeLocation* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>> AsyncdownloadStripeWithHint(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::grpc::CompletionQueue* cq) {
@@ -80,12 +80,12 @@ class FileSystem final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> PrepareAsyncuploadCheck(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(PrepareAsyncuploadCheckRaw(context, request, cq));
     }
-    virtual ::grpc::Status reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::RequestResult* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> Asyncreportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(AsyncreportblocktransferRaw(context, request, cq));
+    virtual ::grpc::Status reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::RequestResult* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> Asyncreportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(AsyncreportblockuploadRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> PrepareAsyncreportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(PrepareAsyncreportblocktransferRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>> PrepareAsyncreportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>>(PrepareAsyncreportblockuploadRaw(context, request, cq));
     }
     virtual ::grpc::Status listStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::StripeLocation* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>> AsynclistStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
@@ -132,29 +132,29 @@ class FileSystem final {
       #else
       virtual void createDir(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
-      virtual void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
-      virtual void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       virtual void downloadStripeWithHint(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
       virtual void downloadStripeWithHint(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
@@ -192,17 +192,17 @@ class FileSystem final {
       #else
       virtual void uploadCheck(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
-      virtual void reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void reportblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void reportblockupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) = 0;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      virtual void reportblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void reportblockupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       #else
-      virtual void reportblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void reportblockupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       #endif
       virtual void listStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
       virtual void listStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) = 0;
@@ -256,18 +256,18 @@ class FileSystem final {
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsynccreateDirRaw(::grpc::ClientContext* context, const ::coordinator::Path& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsynccreateDirRaw(::grpc::ClientContext* context, const ::coordinator::Path& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* AsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* PrepareAsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* AsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* PrepareAsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>* AsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>* PrepareAsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>* AsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeDetail>* PrepareAsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* AsyncdownloadStripeWithHintRaw(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* PrepareAsyncdownloadStripeWithHintRaw(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsyncdeleteStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsyncdeleteStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsyncuploadCheckRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsyncuploadCheckRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsyncreportblocktransferRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsyncreportblocktransferRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* AsyncreportblockuploadRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::RequestResult>* PrepareAsyncreportblockuploadRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* AsynclistStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::coordinator::StripeLocation>* PrepareAsynclistStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderInterface< ::coordinator::StripeLocation>* listAllStripesRaw(::grpc::ClientContext* context, const ::coordinator::ListAllStripeCMD& request) = 0;
@@ -288,19 +288,19 @@ class FileSystem final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> PrepareAsynccreateDir(::grpc::ClientContext* context, const ::coordinator::Path& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(PrepareAsynccreateDirRaw(context, request, cq));
     }
-    ::grpc::Status uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::coordinator::StripeLocation* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>> AsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>>(AsyncuploadStripeRaw(context, request, cq));
+    ::grpc::Status uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::coordinator::StripeDetail* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>> AsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>>(AsyncuploadStripeRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>> PrepareAsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>>(PrepareAsyncuploadStripeRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>> PrepareAsyncuploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>>(PrepareAsyncuploadStripeRaw(context, request, cq));
     }
-    ::grpc::Status downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::StripeLocation* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>> AsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>>(AsyncdownloadStripeRaw(context, request, cq));
+    ::grpc::Status downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::StripeDetail* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>> AsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>>(AsyncdownloadStripeRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>> PrepareAsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>>(PrepareAsyncdownloadStripeRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>> PrepareAsyncdownloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>>(PrepareAsyncdownloadStripeRaw(context, request, cq));
     }
     ::grpc::Status downloadStripeWithHint(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::coordinator::StripeLocation* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>> AsyncdownloadStripeWithHint(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::grpc::CompletionQueue* cq) {
@@ -323,12 +323,12 @@ class FileSystem final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> PrepareAsyncuploadCheck(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(PrepareAsyncuploadCheckRaw(context, request, cq));
     }
-    ::grpc::Status reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::RequestResult* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> Asyncreportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(AsyncreportblocktransferRaw(context, request, cq));
+    ::grpc::Status reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::RequestResult* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> Asyncreportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(AsyncreportblockuploadRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> PrepareAsyncreportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(PrepareAsyncreportblocktransferRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>> PrepareAsyncreportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>>(PrepareAsyncreportblockuploadRaw(context, request, cq));
     }
     ::grpc::Status listStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::coordinator::StripeLocation* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>> AsynclistStripe(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) {
@@ -375,29 +375,29 @@ class FileSystem final {
       #else
       void createDir(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
-      void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
-      void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
+      void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) override;
+      void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void uploadStripe(::grpc::ClientContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void uploadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
-      void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
-      void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
+      void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) override;
+      void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void downloadStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void downloadStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeDetail* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       void downloadStripeWithHint(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
       void downloadStripeWithHint(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
@@ -435,17 +435,17 @@ class FileSystem final {
       #else
       void uploadCheck(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
-      void reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) override;
-      void reportblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) override;
+      void reportblockupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, std::function<void(::grpc::Status)>) override;
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void reportblocktransfer(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void reportblockupload(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-      void reportblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void reportblockupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::ClientUnaryReactor* reactor) override;
       #else
-      void reportblocktransfer(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void reportblockupload(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::RequestResult* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       #endif
       void listStripe(::grpc::ClientContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
       void listStripe(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::coordinator::StripeLocation* response, std::function<void(::grpc::Status)>) override;
@@ -501,18 +501,18 @@ class FileSystem final {
     class experimental_async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsynccreateDirRaw(::grpc::ClientContext* context, const ::coordinator::Path& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsynccreateDirRaw(::grpc::ClientContext* context, const ::coordinator::Path& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* AsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* PrepareAsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* AsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* PrepareAsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>* AsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>* PrepareAsyncuploadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>* AsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::StripeDetail>* PrepareAsyncdownloadStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* AsyncdownloadStripeWithHintRaw(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* PrepareAsyncdownloadStripeWithHintRaw(::grpc::ClientContext* context, const ::coordinator::StripeIdWithHint& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsyncdeleteStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsyncdeleteStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsyncuploadCheckRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsyncuploadCheckRaw(::grpc::ClientContext* context, const ::coordinator::StripeInfo& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsyncreportblocktransferRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsyncreportblocktransferRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* AsyncreportblockuploadRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::coordinator::RequestResult>* PrepareAsyncreportblockuploadRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* AsynclistStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::coordinator::StripeLocation>* PrepareAsynclistStripeRaw(::grpc::ClientContext* context, const ::coordinator::StripeId& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientReader< ::coordinator::StripeLocation>* listAllStripesRaw(::grpc::ClientContext* context, const ::coordinator::ListAllStripeCMD& request) override;
@@ -528,7 +528,7 @@ class FileSystem final {
     const ::grpc::internal::RpcMethod rpcmethod_downloadStripeWithHint_;
     const ::grpc::internal::RpcMethod rpcmethod_deleteStripe_;
     const ::grpc::internal::RpcMethod rpcmethod_uploadCheck_;
-    const ::grpc::internal::RpcMethod rpcmethod_reportblocktransfer_;
+    const ::grpc::internal::RpcMethod rpcmethod_reportblockupload_;
     const ::grpc::internal::RpcMethod rpcmethod_listStripe_;
     const ::grpc::internal::RpcMethod rpcmethod_listAllStripes_;
     const ::grpc::internal::RpcMethod rpcmethod_transitionup_;
@@ -541,12 +541,12 @@ class FileSystem final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status createDir(::grpc::ServerContext* context, const ::coordinator::Path* request, ::coordinator::RequestResult* response);
-    virtual ::grpc::Status uploadStripe(::grpc::ServerContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response);
-    virtual ::grpc::Status downloadStripe(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response);
+    virtual ::grpc::Status uploadStripe(::grpc::ServerContext* context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response);
+    virtual ::grpc::Status downloadStripe(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response);
     virtual ::grpc::Status downloadStripeWithHint(::grpc::ServerContext* context, const ::coordinator::StripeIdWithHint* request, ::coordinator::StripeLocation* response);
     virtual ::grpc::Status deleteStripe(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response);
     virtual ::grpc::Status uploadCheck(::grpc::ServerContext* context, const ::coordinator::StripeInfo* request, ::coordinator::RequestResult* response);
-    virtual ::grpc::Status reportblocktransfer(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response);
+    virtual ::grpc::Status reportblockupload(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response);
     virtual ::grpc::Status listStripe(::grpc::ServerContext* context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response);
     virtual ::grpc::Status listAllStripes(::grpc::ServerContext* context, const ::coordinator::ListAllStripeCMD* request, ::grpc::ServerWriter< ::coordinator::StripeLocation>* writer);
     virtual ::grpc::Status transitionup(::grpc::ServerContext* context, const ::coordinator::TransitionUpCMD* request, ::coordinator::RequestResult* response);
@@ -584,11 +584,11 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestuploadStripe(::grpc::ServerContext* context, ::coordinator::StripeInfo* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::StripeLocation>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestuploadStripe(::grpc::ServerContext* context, ::coordinator::StripeInfo* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::StripeDetail>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -604,11 +604,11 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestdownloadStripe(::grpc::ServerContext* context, ::coordinator::StripeId* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::StripeLocation>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestdownloadStripe(::grpc::ServerContext* context, ::coordinator::StripeId* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::StripeDetail>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -673,22 +673,22 @@ class FileSystem final {
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_reportblocktransfer : public BaseClass {
+  class WithAsyncMethod_reportblockupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_reportblocktransfer() {
+    WithAsyncMethod_reportblockupload() {
       ::grpc::Service::MarkMethodAsync(6);
     }
-    ~WithAsyncMethod_reportblocktransfer() override {
+    ~WithAsyncMethod_reportblockupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status reportblocktransfer(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+    ::grpc::Status reportblockupload(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestreportblocktransfer(::grpc::ServerContext* context, ::coordinator::StripeId* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestreportblockupload(::grpc::ServerContext* context, ::coordinator::StripeId* request, ::grpc::ServerAsyncResponseWriter< ::coordinator::RequestResult>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -772,7 +772,7 @@ class FileSystem final {
       ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_createDir<WithAsyncMethod_uploadStripe<WithAsyncMethod_downloadStripe<WithAsyncMethod_downloadStripeWithHint<WithAsyncMethod_deleteStripe<WithAsyncMethod_uploadCheck<WithAsyncMethod_reportblocktransfer<WithAsyncMethod_listStripe<WithAsyncMethod_listAllStripes<WithAsyncMethod_transitionup<WithAsyncMethod_setplacementpolicy<Service > > > > > > > > > > > AsyncService;
+  typedef WithAsyncMethod_createDir<WithAsyncMethod_uploadStripe<WithAsyncMethod_downloadStripe<WithAsyncMethod_downloadStripeWithHint<WithAsyncMethod_deleteStripe<WithAsyncMethod_uploadCheck<WithAsyncMethod_reportblockupload<WithAsyncMethod_listStripe<WithAsyncMethod_listAllStripes<WithAsyncMethod_transitionup<WithAsyncMethod_setplacementpolicy<Service > > > > > > > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_createDir : public BaseClass {
    private:
@@ -832,38 +832,38 @@ class FileSystem final {
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(1,
-          new ::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeInfo, ::coordinator::StripeLocation>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeInfo, ::coordinator::StripeDetail>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::coordinator::StripeInfo* request, ::coordinator::StripeLocation* response) { return this->uploadStripe(context, request, response); }));}
+                     context, const ::coordinator::StripeInfo* request, ::coordinator::StripeDetail* response) { return this->uploadStripe(context, request, response); }));}
     void SetMessageAllocatorFor_uploadStripe(
-        ::grpc::experimental::MessageAllocator< ::coordinator::StripeInfo, ::coordinator::StripeLocation>* allocator) {
+        ::grpc::experimental::MessageAllocator< ::coordinator::StripeInfo, ::coordinator::StripeDetail>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
     #else
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(1);
     #endif
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeInfo, ::coordinator::StripeLocation>*>(handler)
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeInfo, ::coordinator::StripeDetail>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~ExperimentalWithCallbackMethod_uploadStripe() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
     virtual ::grpc::ServerUnaryReactor* uploadStripe(
-      ::grpc::CallbackServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/)
+      ::grpc::CallbackServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/)
     #else
     virtual ::grpc::experimental::ServerUnaryReactor* uploadStripe(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/)
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/)
     #endif
       { return nullptr; }
   };
@@ -879,38 +879,38 @@ class FileSystem final {
       ::grpc::Service::experimental().
     #endif
         MarkMethodCallback(2,
-          new ::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeId, ::coordinator::StripeLocation>(
+          new ::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeId, ::coordinator::StripeDetail>(
             [this](
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
                    ::grpc::CallbackServerContext*
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::coordinator::StripeId* request, ::coordinator::StripeLocation* response) { return this->downloadStripe(context, request, response); }));}
+                     context, const ::coordinator::StripeId* request, ::coordinator::StripeDetail* response) { return this->downloadStripe(context, request, response); }));}
     void SetMessageAllocatorFor_downloadStripe(
-        ::grpc::experimental::MessageAllocator< ::coordinator::StripeId, ::coordinator::StripeLocation>* allocator) {
+        ::grpc::experimental::MessageAllocator< ::coordinator::StripeId, ::coordinator::StripeDetail>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
     #else
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(2);
     #endif
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeId, ::coordinator::StripeLocation>*>(handler)
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeId, ::coordinator::StripeDetail>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~ExperimentalWithCallbackMethod_downloadStripe() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
     virtual ::grpc::ServerUnaryReactor* downloadStripe(
-      ::grpc::CallbackServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/)
+      ::grpc::CallbackServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/)
     #else
     virtual ::grpc::experimental::ServerUnaryReactor* downloadStripe(
-      ::grpc::experimental::CallbackServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/)
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/)
     #endif
       { return nullptr; }
   };
@@ -1056,11 +1056,11 @@ class FileSystem final {
       { return nullptr; }
   };
   template <class BaseClass>
-  class ExperimentalWithCallbackMethod_reportblocktransfer : public BaseClass {
+  class ExperimentalWithCallbackMethod_reportblockupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithCallbackMethod_reportblocktransfer() {
+    ExperimentalWithCallbackMethod_reportblockupload() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
@@ -1074,8 +1074,8 @@ class FileSystem final {
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response) { return this->reportblocktransfer(context, request, response); }));}
-    void SetMessageAllocatorFor_reportblocktransfer(
+                     context, const ::coordinator::StripeId* request, ::coordinator::RequestResult* response) { return this->reportblockupload(context, request, response); }));}
+    void SetMessageAllocatorFor_reportblockupload(
         ::grpc::experimental::MessageAllocator< ::coordinator::StripeId, ::coordinator::RequestResult>* allocator) {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
@@ -1085,19 +1085,19 @@ class FileSystem final {
       static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::coordinator::StripeId, ::coordinator::RequestResult>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~ExperimentalWithCallbackMethod_reportblocktransfer() override {
+    ~ExperimentalWithCallbackMethod_reportblockupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status reportblocktransfer(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+    ::grpc::Status reportblockupload(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* reportblocktransfer(
+    virtual ::grpc::ServerUnaryReactor* reportblockupload(
       ::grpc::CallbackServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* reportblocktransfer(
+    virtual ::grpc::experimental::ServerUnaryReactor* reportblockupload(
       ::grpc::experimental::CallbackServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/)
     #endif
       { return nullptr; }
@@ -1282,10 +1282,10 @@ class FileSystem final {
       { return nullptr; }
   };
   #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblocktransfer<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<ExperimentalWithCallbackMethod_setplacementpolicy<Service > > > > > > > > > > > CallbackService;
+  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblockupload<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<ExperimentalWithCallbackMethod_setplacementpolicy<Service > > > > > > > > > > > CallbackService;
   #endif
 
-  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblocktransfer<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<ExperimentalWithCallbackMethod_setplacementpolicy<Service > > > > > > > > > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_createDir<ExperimentalWithCallbackMethod_uploadStripe<ExperimentalWithCallbackMethod_downloadStripe<ExperimentalWithCallbackMethod_downloadStripeWithHint<ExperimentalWithCallbackMethod_deleteStripe<ExperimentalWithCallbackMethod_uploadCheck<ExperimentalWithCallbackMethod_reportblockupload<ExperimentalWithCallbackMethod_listStripe<ExperimentalWithCallbackMethod_listAllStripes<ExperimentalWithCallbackMethod_transitionup<ExperimentalWithCallbackMethod_setplacementpolicy<Service > > > > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_createDir : public BaseClass {
    private:
@@ -1315,7 +1315,7 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1332,7 +1332,7 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1389,18 +1389,18 @@ class FileSystem final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_reportblocktransfer : public BaseClass {
+  class WithGenericMethod_reportblockupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_reportblocktransfer() {
+    WithGenericMethod_reportblockupload() {
       ::grpc::Service::MarkMethodGeneric(6);
     }
-    ~WithGenericMethod_reportblocktransfer() override {
+    ~WithGenericMethod_reportblockupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status reportblocktransfer(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+    ::grpc::Status reportblockupload(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1505,7 +1505,7 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1525,7 +1525,7 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1594,22 +1594,22 @@ class FileSystem final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_reportblocktransfer : public BaseClass {
+  class WithRawMethod_reportblockupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_reportblocktransfer() {
+    WithRawMethod_reportblockupload() {
       ::grpc::Service::MarkMethodRaw(6);
     }
-    ~WithRawMethod_reportblocktransfer() override {
+    ~WithRawMethod_reportblockupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status reportblocktransfer(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+    ::grpc::Status reportblockupload(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestreportblocktransfer(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestreportblockupload(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -1756,7 +1756,7 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1794,7 +1794,7 @@ class FileSystem final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1922,11 +1922,11 @@ class FileSystem final {
       { return nullptr; }
   };
   template <class BaseClass>
-  class ExperimentalWithRawCallbackMethod_reportblocktransfer : public BaseClass {
+  class ExperimentalWithRawCallbackMethod_reportblockupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    ExperimentalWithRawCallbackMethod_reportblocktransfer() {
+    ExperimentalWithRawCallbackMethod_reportblockupload() {
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
       ::grpc::Service::
     #else
@@ -1940,21 +1940,21 @@ class FileSystem final {
     #else
                    ::grpc::experimental::CallbackServerContext*
     #endif
-                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->reportblocktransfer(context, request, response); }));
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->reportblockupload(context, request, response); }));
     }
-    ~ExperimentalWithRawCallbackMethod_reportblocktransfer() override {
+    ~ExperimentalWithRawCallbackMethod_reportblockupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status reportblocktransfer(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+    ::grpc::Status reportblockupload(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
-    virtual ::grpc::ServerUnaryReactor* reportblocktransfer(
+    virtual ::grpc::ServerUnaryReactor* reportblockupload(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #else
-    virtual ::grpc::experimental::ServerUnaryReactor* reportblocktransfer(
+    virtual ::grpc::experimental::ServerUnaryReactor* reportblockupload(
       ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
     #endif
       { return nullptr; }
@@ -2138,18 +2138,18 @@ class FileSystem final {
    public:
     WithStreamedUnaryMethod_uploadStripe() {
       ::grpc::Service::MarkMethodStreamed(1,
-        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::StripeInfo, ::coordinator::StripeLocation>(std::bind(&WithStreamedUnaryMethod_uploadStripe<BaseClass>::StreameduploadStripe, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::StripeInfo, ::coordinator::StripeDetail>(std::bind(&WithStreamedUnaryMethod_uploadStripe<BaseClass>::StreameduploadStripe, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_uploadStripe() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status uploadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeInfo* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreameduploadStripe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeInfo,::coordinator::StripeLocation>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreameduploadStripe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeInfo,::coordinator::StripeDetail>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_downloadStripe : public BaseClass {
@@ -2158,18 +2158,18 @@ class FileSystem final {
    public:
     WithStreamedUnaryMethod_downloadStripe() {
       ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::StripeId, ::coordinator::StripeLocation>(std::bind(&WithStreamedUnaryMethod_downloadStripe<BaseClass>::StreameddownloadStripe, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::StripeId, ::coordinator::StripeDetail>(std::bind(&WithStreamedUnaryMethod_downloadStripe<BaseClass>::StreameddownloadStripe, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_downloadStripe() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeLocation* /*response*/) override {
+    ::grpc::Status downloadStripe(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::StripeDetail* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreameddownloadStripe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeId,::coordinator::StripeLocation>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreameddownloadStripe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeId,::coordinator::StripeDetail>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_downloadStripeWithHint : public BaseClass {
@@ -2232,24 +2232,24 @@ class FileSystem final {
     virtual ::grpc::Status StreameduploadCheck(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeInfo,::coordinator::RequestResult>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_reportblocktransfer : public BaseClass {
+  class WithStreamedUnaryMethod_reportblockupload : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_reportblocktransfer() {
+    WithStreamedUnaryMethod_reportblockupload() {
       ::grpc::Service::MarkMethodStreamed(6,
-        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::StripeId, ::coordinator::RequestResult>(std::bind(&WithStreamedUnaryMethod_reportblocktransfer<BaseClass>::Streamedreportblocktransfer, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler< ::coordinator::StripeId, ::coordinator::RequestResult>(std::bind(&WithStreamedUnaryMethod_reportblockupload<BaseClass>::Streamedreportblockupload, this, std::placeholders::_1, std::placeholders::_2)));
     }
-    ~WithStreamedUnaryMethod_reportblocktransfer() override {
+    ~WithStreamedUnaryMethod_reportblockupload() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status reportblocktransfer(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
+    ::grpc::Status reportblockupload(::grpc::ServerContext* /*context*/, const ::coordinator::StripeId* /*request*/, ::coordinator::RequestResult* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status Streamedreportblocktransfer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeId,::coordinator::RequestResult>* server_unary_streamer) = 0;
+    virtual ::grpc::Status Streamedreportblockupload(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::StripeId,::coordinator::RequestResult>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_listStripe : public BaseClass {
@@ -2311,7 +2311,7 @@ class FileSystem final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status Streamedsetplacementpolicy(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::coordinator::SetPlacementPolicyCMD,::coordinator::RequestResult>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblocktransfer<WithStreamedUnaryMethod_listStripe<WithStreamedUnaryMethod_transitionup<WithStreamedUnaryMethod_setplacementpolicy<Service > > > > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblockupload<WithStreamedUnaryMethod_listStripe<WithStreamedUnaryMethod_transitionup<WithStreamedUnaryMethod_setplacementpolicy<Service > > > > > > > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_listAllStripes : public BaseClass {
    private:
@@ -2333,7 +2333,7 @@ class FileSystem final {
     virtual ::grpc::Status StreamedlistAllStripes(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::coordinator::ListAllStripeCMD,::coordinator::StripeLocation>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_listAllStripes<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblocktransfer<WithStreamedUnaryMethod_listStripe<WithSplitStreamingMethod_listAllStripes<WithStreamedUnaryMethod_transitionup<WithStreamedUnaryMethod_setplacementpolicy<Service > > > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_createDir<WithStreamedUnaryMethod_uploadStripe<WithStreamedUnaryMethod_downloadStripe<WithStreamedUnaryMethod_downloadStripeWithHint<WithStreamedUnaryMethod_deleteStripe<WithStreamedUnaryMethod_uploadCheck<WithStreamedUnaryMethod_reportblockupload<WithStreamedUnaryMethod_listStripe<WithSplitStreamingMethod_listAllStripes<WithStreamedUnaryMethod_transitionup<WithStreamedUnaryMethod_setplacementpolicy<Service > > > > > > > > > > > StreamedService;
 };
 
 // From DataNode to Coodinator{typically for report a block from a stripe transfer from client result}

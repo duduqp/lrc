@@ -32,9 +32,10 @@ namespace lrc {
 
     grpc::Status
     FileSystemCN::FileSystemImpl::uploadStripe(::grpc::ServerContext *context, const ::coordinator::StripeInfo *request,
-                                               ::coordinator::StripeLocation *response) {
+                                               ::coordinator::StripeDetail *response) {
         std::unique_lock ulk2(m_fsimage_mtx);
-        int stripeid = request->stripeid();
+        int stripeid = m_fs_nextstripeid++;
+        auto retstripeloc = response->mutable_stripelocation();
         std::vector<std::unordered_map<std::string, std::pair<TYPE, bool>>> cand;
         if (m_fs_image.count(stripeid)) {
             ulk2.unlock();
@@ -72,18 +73,20 @@ namespace lrc {
 
 
         for (auto p:cand[0]) {
-            response->add_dataloc(p.first);
+            retstripeloc->add_dataloc(p.first);
             std::cout << "try to adddataloc:" << p.first << std::endl;
             if (!askDNhandling(p.first, stripeid)) return grpc::Status::CANCELLED;
         }
         for (auto p:cand[1]) {
-            response->add_localparityloc(p.first);
+            retstripeloc->add_localparityloc(p.first);
             if (!askDNhandling(p.first, stripeid)) return grpc::Status::CANCELLED;
         }
         for (auto p:cand[2]) {
-            response->add_globalparityloc(p.first);
+            retstripeloc->add_globalparityloc(p.first);
             if (!askDNhandling(p.first, stripeid)) return grpc::Status::CANCELLED;
         }
+        auto stripeId = response->mutable_stripeid();
+        stripeId->set_stripeid(stripeid);
         return grpc::Status::OK;
     }
 
@@ -169,6 +172,7 @@ namespace lrc {
 
         } else {
 //            loadhistory(); //todo
+            clearexistedstripes();
         }
         m_cn_logger->info("cn initialize success!");
         m_initialized = true;
@@ -311,7 +315,7 @@ namespace lrc {
 
     void FileSystemCN::FileSystemImpl::updatestripeuploadcounter(int stripeid, std::string fromdatanode_uri) {
         std::scoped_lock lockGuard(m_stripeuploadcount_mtx, m_fsimage_mtx);
-        std::cout << fromdatanode_uri << std::endl;
+        std::cout << fromdatanode_uri <<"updatestripeuploadcounter for"<<stripeid<< std::endl;
 
         // stripe_in_uploading[stripeid][fromdatanode_uri] = true; //this line truely distributed env only
         stripe_in_uploadingcounter[stripeid]--;
@@ -386,10 +390,11 @@ namespace lrc {
         m_cn_logger->info("cn im-memory image flush back to metapath!");
         flushhistory();
     }
+
     std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
     FileSystemCN::FileSystemImpl::placement_resolve(ECSchema ecSchema, bool designed_placement) {
 
-        if(!m_placementpolicy) return random_placement_resolve(ecSchema);
+        if (!m_placementpolicy) return random_placement_resolve(ecSchema);
         static std::vector<std::unordered_set<int>> stripe_local_group_history;
         static int stripe_global_history = -1;
 
@@ -489,8 +494,9 @@ namespace lrc {
         if (res) flushhistory();
         return grpc::Status::OK;
     }
+
     grpc::Status
-    FileSystemCN::FileSystemImpl::reportblocktransfer(::grpc::ServerContext *context,
+    FileSystemCN::FileSystemImpl::reportblockupload(::grpc::ServerContext *context,
                                                       const ::coordinator::StripeId *request,
                                                       ::coordinator::RequestResult *response) {
         m_cn_logger->info("datanode {} receive block of stripe {} from client successfully!", context->peer(),
@@ -505,9 +511,8 @@ namespace lrc {
 
         grpc::ClientContext handlectx;
         datanode::RequestResult handlereqres;
-        datanode::StripeId stripeId;
-        stripeId.set_stripeid(stripeid);
-        auto status = m_dn_ptrs[dnuri]->handleblocktransfer(&handlectx, stripeId, &handlereqres);
+        datanode::UploadCMD uploadCmd;
+        auto status = m_dn_ptrs[dnuri]->handleupload(&handlectx, uploadCmd, &handlereqres);
         if (status.ok()) {
             return handlereqres.trueorfalse();
         } else {
@@ -570,9 +575,10 @@ namespace lrc {
 
     grpc::Status
     FileSystemCN::FileSystemImpl::downloadStripe(::grpc::ServerContext *context, const ::coordinator::StripeId *request,
-                                                 ::coordinator::StripeLocation *response) {
+                                                 ::coordinator::StripeDetail *response) {
 
         std::scoped_lock slk(m_fsimage_mtx);
+        auto retstripeloc = response->mutable_stripelocation();
         int stripeid = request->stripeid();
         std::vector<std::string> datauris;//extractdatablklocation(request->stripeid());
         std::vector<std::string> lpuris;//extractlpblklocation(request->stripeid());
@@ -647,7 +653,7 @@ namespace lrc {
         }
 
         for (int i = 0; i < datauris.size(); ++i) {
-            response->add_dataloc(datauris[i]);
+            retstripeloc->add_dataloc(datauris[i]);
         }
 
         std::cout << "returned locations!\n";
@@ -747,11 +753,10 @@ namespace lrc {
                                                       int stripeid) {
         for (const auto &node:reqnodes) {
             grpc::ClientContext downloadctx;
+            datanode::DownloadCMD downloadCmd;
             datanode::RequestResult res;
-            datanode::StripeId stripeId;
-            stripeId.set_stripeid(stripeid);
             std::cout << "ask datanode : " << node << " to serve client download request" << std::endl;
-            auto status = m_dn_ptrs[node]->handleblockpull(&downloadctx, stripeId, &res);
+            auto status = m_dn_ptrs[node]->handledownload(&downloadctx, downloadCmd, &res);
             if (!status.ok()) {
                 std::cout << " datanode :" << node << " no response ! try next ... " << std::endl;
                 //maybe have a blacklist
@@ -775,7 +780,6 @@ namespace lrc {
                     stripeLocation.add_dataloc(std::to_string(m_dn_info[m_fs_image[i][j]].clusterid));
 
                 } else {
-                    stripeLocation.add_dataloc("\n");
                     break;
                 }
             }
@@ -785,7 +789,6 @@ namespace lrc {
                     stripeLocation.add_localparityloc(m_fs_image[i][j]);
                     stripeLocation.add_localparityloc(std::to_string(m_dn_info[m_fs_image[i][j]].clusterid));
                 } else {
-                    stripeLocation.add_localparityloc("\n");
                     break;
                 }
             }
@@ -795,7 +798,6 @@ namespace lrc {
                     stripeLocation.add_globalparityloc(m_fs_image[i][j]);
                     stripeLocation.add_globalparityloc(std::to_string(m_dn_info[m_fs_image[i][j]].clusterid));
                 } else {
-                    stripeLocation.add_globalparityloc("\n");
                     break;
                 }
             }
@@ -827,62 +829,53 @@ namespace lrc {
         using XORCodingPlan = std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>;
         using LRCCodingPlan = std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>;
         coordinator::TransitionUpCMD_MODE mode = request->mode();
+
+
         if (mode == coordinator::TransitionUpCMD_MODE_BASIC) {
             //pick one cluster and one node as a gp-node in that cluster (simplified , just pick one from original g nodes in odd stripe)
             auto[migration_plans, coding_plans] = generate_basic_transition_plan(m_fs_image);
-
             //debug
-
-
+            std::cout << "transition up in basic mode ...." << std::endl;
+            int g = 1;
             //removing old global blocks
             //then perform coding job
-            for (const auto &stripe : coding_plans) {
-                int stripe_id = std::get<0>(stripe);
+            for (int i = 0; i < coding_plans.size(); ++i) {
+                g=std::get<3>(coding_plans[i]).size()+1;
+                int stripe_id = std::get<0>(coding_plans[i]);
                 bool res1 = delete_global_parity_of(stripe_id);
-                bool res2 = delete_global_parity_of(stripe_id+1);
+                bool res2 = delete_global_parity_of(stripe_id + 1);
 
-                const auto &fromuris = std::get<1>(stripe);
-                const auto &workinguri = std::get<2>(stripe);
-                const auto &touris = std::get<3>(stripe);
-
+                const auto &fromuris = std::get<1>(coding_plans[i]);
+                const auto &workinguri = std::get<2>(coding_plans[i]);
+                const auto &touris = std::get<3>(coding_plans[i]);
                 datanode::OP op;
-                int index = 0;
-                for (const auto &from : fromuris) {
-                    grpc::ClientContext askhandlingpullctx;
-                    datanode::OP op1;
-                    datanode::RequestResult handlingpullres;
-                    op1.set_index(index);
-                    op1.set_op(datanode::OP_CODEC_LRC);
-                    op1.add_to(workinguri);
-                    //no from uri so dn can decide it is a push command
-                    //should not delete , just normal download [denote by op_codec_lrc mode]
-                    auto status = m_dn_ptrs[from]->pull_perform_push(&askhandlingpullctx,op1,&handlingpullres);
-                    if(!status.ok())
-                    {
-                        std::cout << from << "can not serve pull \n";
-                        return grpc::Status::CANCELLED;
-                    }
-                    op.add_from(from);
-                }
+
+                std::cout << "perform coding job  ..." << std::endl;
 
                 //let working node know just forward to port ...+12220
+                std::cout << "ask others to prepared to receive calculated block from worker ..." << std::endl;
                 for (const auto &to : touris) {
                     grpc::ClientContext askhandlingpushctx;
-                    datanode::StripeId stripeId;
-                    stripeId.set_stripeid(stripe_id);
+                    datanode::UploadCMD uploadCmd;
                     datanode::RequestResult handlingpushres;
-                    auto status = m_dn_ptrs[to]->handleblocktransfer(&askhandlingpushctx,stripeId,&handlingpushres);
-                    if(!status.ok())
-                    {
+                    std::cout << "ask " << to << " to wait from port +12220" << std::endl;
+                    auto status = m_dn_ptrs[to]->handleupload(&askhandlingpushctx, uploadCmd, &handlingpushres);
+                    if (!status.ok()) {
                         std::cout << to << "can not serve push \n";
                         return grpc::Status::CANCELLED;
                     }
+                    std::cout << to << " prepared !" << std::endl;
                     op.add_to(to);
+                }
+                for (int j = 0; j < fromuris.size(); ++j) {
+                    op.add_from(fromuris[j]);
                 }
                 op.set_op(datanode::OP_CODEC_LRC);
                 op.set_stripeid(stripe_id);
                 grpc::ClientContext pppctx;
                 datanode::RequestResult pppres;
+                std::cout << "ask " << workinguri << " to wait blocks and calculate new global parities and forward ..."
+                          << std::endl;
                 auto status = m_dn_ptrs[workinguri]->pull_perform_push(&pppctx, op, &pppres);
                 if (!status.ok()) {
                     std::cout << workinguri << "perform ppp operation failed!\n";
@@ -891,103 +884,122 @@ namespace lrc {
                     return status;
                 }
 
-                //modify metadata
-                std::cout << "complete basic transition coding plan for stripe " << stripe_id << " and " <<stripe_id+1 <<std::endl;
-            }
+                for (int j = 0; j < fromuris.size(); ++j) {
+                    int thisstripe = stripe_id;
+                    grpc::ClientContext askpushctx;
+                    datanode::OP op1;
+                    datanode::RequestResult pushres;
+//                    op1.set_index(j);
+                    op1.set_op(datanode::OP_CODEC_LRC);
+                    op1.add_to(workinguri);
+                    if (2 * j < fromuris.size()) {
+                        op1.set_stripeid(stripe_id);
+                    } else {
+                        op1.set_stripeid(stripe_id + 1);
+                        thisstripe = stripe_id + 1;
+                    }
+                    //no from uri so dn can decide it is a push command
+                    //should not delete , just normal download [denote by op_codec_lrc mode]
+                    std::cout << "ask " << fromuris[j] << " to preparing " << thisstripe
+                              << " push to[without deletion] " << workinguri << "+22221+" << j * 23 << std::endl;
+                    auto status2 = m_dn_ptrs[fromuris[j]]->pull_perform_push(&askpushctx, op1, &pushres);
+                    if (!status2.ok()) {
+                        std::cout << fromuris[j] << "can not push \n";
+                        return grpc::Status::CANCELLED;
+                    }
+                    std::cout << fromuris[j] << " preprared !" << std::endl;
+                    op.add_from(fromuris[j]);
+                }
 
+                //modify metadata
+
+                std::cout << "complete basic transition coding plan for stripe " << stripe_id << " and "
+                          << stripe_id + 1 << std::endl;
+            }
 
             //migration all stripes
             for (const auto &nodepair : migration_plans) {
-                int stripe_id = std::get<0>(nodepair);
-                const auto &from = std::get<1>(nodepair);
-                const auto &to = std::get<2>(nodepair);
-                for (int j = 0; j < from.size(); ++j) {
+                int stripeid = std::get<0>(nodepair);
+                const auto &fromuris = std::get<1>(nodepair);
+                const auto &touris = std::get<2>(nodepair);
+                std::unordered_set<std::string> skipset(fromuris.cbegin(),fromuris.cend());
+                for (int j = 0; j < fromuris.size(); ++j) {
+                    if(0!=j&&0==j%g) {
+                        grpc::ClientContext deletectx;
+                        datanode::StripeId stripeId;
+                        stripeId.set_stripeid(stripeid+1);
+                        datanode::RequestResult deleteres;
+                        auto status = m_dn_ptrs[fromuris[j]]->clearstripe(&deletectx,stripeId,&deleteres);
+                        std::cout << "ask "<<fromuris[j]<<"just delete block" <<stripeid+1<<std::endl;
+                    }//skip local parity just delete
+                    grpc::ClientContext pullctx;
+                    datanode::OP op2;
+                    //migration pull nodes should not set fromuri
+                    op2.set_op(datanode::OP_CODEC_NO);
+                    op2.set_stripeid(stripeid);//store new stripe as stripeid
+//                    op2.set_index(0);
+                    datanode::RequestResult pullres;
+                    auto migrationstatus = m_dn_ptrs[touris[j]]->pull_perform_push(&pullctx, op2, &pullres);
+                    if (!migrationstatus.ok()) {
+                        std::cout << touris[j] << "can not handling pull request!\n";
+                        m_cn_logger->error("{} can not handling pull request!", touris[j]);
+                        return migrationstatus;
+                    }
                     grpc::ClientContext pushctx;
                     datanode::OP op;
                     op.set_op(datanode::OP_CODEC_NO);//so dn konw it is a migration task
-                    op.add_to(to[j]);//so dn konw it is a push command with delete
-                    op.set_stripeid(stripe_id+1);//stripe+1 for migration out
+                    op.add_to(touris[j]);//so dn konw it is a push command with delete
+                    op.set_stripeid(stripeid + 1);//stripe+1 for migration out
+//                    op.set_index(0);
                     datanode::RequestResult askforpushres;
-                    auto alivestatus = m_dn_ptrs[from[j]]->pull_perform_push(&pushctx, op,
-                                                                           &askforpushres);
+                    auto alivestatus = m_dn_ptrs[fromuris[j]]->pull_perform_push(&pushctx, op,
+                                                                                 &askforpushres);
                     if (!alivestatus.ok()) {
-                        std::cout << from[j] << "can not handling push request!\n";
-                        m_cn_logger->error("{} can not handling push request!", from[j]);
+                        std::cout << fromuris[j] << "can not handling push request!\n";
+                        m_cn_logger->error("{} can not handling push request!", fromuris[j]);
                         return alivestatus;
                     }
-                    grpc::ClientContext pullctx;
-                    datanode::OP op2;
-                    op2.add_from(from[j]);
-                    op2.set_op(datanode::OP_CODEC_NO);
-                    op2.set_stripeid(stripe_id);//store new stripe as stripeid
-                    datanode::RequestResult pullres;
-                    auto migrationstatus =m_dn_ptrs[to[j]]->pull_perform_push(&pullctx, op2, &pullres);
-                    if (!migrationstatus.ok()) {
-                        std::cout << to[j] << "can not handling pull request!\n";
-                        m_cn_logger->error("{} can not handling pull request!", to[j]);
-                        return migrationstatus;
-                    }
+
                 }
+                //modify metainfo
 
-                bool res3 = rename_block_to(stripe_id+1,stripe_id);//rename all originally valid placed block
+                bool res3 = rename_block_to(stripeid + 1, stripeid,skipset);//rename all originally valid placed block
 
-                if(res3) std::cout << "complete basic transition migration plan for stripe " << stripe_id << " and " <<stripe_id+1 <<std::endl;
+                if (res3)
+                    std::cout << "complete basic transition migration plan for stripe " << stripeid << " and "
+                              << stripeid + 1 << std::endl;
             }
-            //modify metainfo
-            //...
 
             return grpc::Status::OK;
-        }/*else if(mode == coordinator::TransitionUpCMD_MODE_BASIC_PART){
+        } else if (mode == coordinator::TransitionUpCMD_MODE_BASIC_PART) {
 
-            }*/else {
+
+        } else {
             const auto &coding_plans = generate_designed_transition_plan(m_fs_image);
 
             for (auto &plan : coding_plans) {
                 grpc::ClientContext pppctx;
                 datanode::RequestResult pppres;
                 datanode::OP op;
-                int stripe1 = std::get<0>(plan);
+                const auto &workingnode = std::get<3>(plan);
+                const auto &fromuris = std::get<2>(plan);
+                const auto &touris = std::get<4>(plan);
+                int stripeid = std::get<0>(plan);
                 int shift = std::get<1>(plan);
                 op.set_op(datanode::OP_CODEC_REUSE);
-                op.set_stripeid(stripe1);
-                const auto &from = std::get<2>(plan);
-                const auto &to = std::get<4>(plan);
-                const auto &working_node = std::get<3>(plan);
-                for (int i = 0; i < from.size(); ++i) {
-                    grpc::ClientContext handlingpushctx;
-                    datanode::RequestResult handlingpushres;
-                    datanode::OP op2;
-                    grpc::Status status;
-                    if (2 * i < from.size()) {
-                        op2.set_stripeid(stripe1);
-                    } else {
-                        op2.set_stripeid(stripe1 + 1);
-                    }
-                    op2.set_op(datanode::OP_CODEC_REUSE);
-                    op2.add_to(working_node);
-                    op2.set_index(i);
-                    status = m_dn_ptrs[from[i]]->pull_perform_push(&handlingpushctx, op2, &handlingpushres);
-                    if (!status.ok()) {
-                        std::cout << "ask for push failed\n";
-                        m_cn_logger->warn("{} handling push failed", from[i]);
-                        return status;
-                    }
-                    op.add_from(from[i]);
+                op.set_stripeid(stripeid);
+                op.add_multiby(shift);
+                for (int i = 0; i < fromuris.size(); ++i) {
+                    op.add_from(fromuris[i]);
                 }
-
-                for (const auto &node : to) {
+                for (const auto &node : touris) {
                     grpc::ClientContext handlingpullctx;
                     datanode::RequestResult handlingpullres;
-//                    datanode::OP op3;
-//                    op3.set_op(datanode::OP_CODEC_REUSE);
-//                    op3.set_stripeid(stripe1);//store as stripe1
-//                    op3.add_from(working_node);//no to node so dn konws it is a pull command
 
                     //so working_node only need to forward to 12220
-                    datanode::StripeId stripeId;
-                    stripeId.set_stripeid(stripe1);
+                    datanode::UploadCMD uploadCmd;
                     grpc::Status status2;
-                    status2 = m_dn_ptrs[node]->handleblocktransfer(&handlingpullctx, stripeId, &handlingpullres);
+                    status2 = m_dn_ptrs[node]->handleupload(&handlingpullctx, uploadCmd, &handlingpullres);
                     if (!status2.ok()) {
                         std::cout << "ask for pull failed\n";
                         m_cn_logger->warn("{} handling pull failed", node);
@@ -995,27 +1007,50 @@ namespace lrc {
                     }
                     op.add_to(node);
                 }
-                op.set_shift(shift);
+
                 grpc::Status status;
-                status = m_dn_ptrs[working_node]->pull_perform_push(&pppctx, op, &pppres);
+                status = m_dn_ptrs[workingnode]->pull_perform_push(&pppctx, op, &pppres);
                 if (!status.ok()) {
                     std::cout << "perform ppp failed\n";
-                    m_cn_logger->warn("{} perform ppp failed ", working_node);
+                    m_cn_logger->warn("{} perform ppp failed ", workingnode);
                     return status;
                 }
 
+                for (int i = 0; i < fromuris.size(); ++i) {
+                    grpc::ClientContext handlingpushctx;
+                    datanode::RequestResult handlingpushres;
+                    datanode::OP op2;
+                    grpc::Status status2;
+                    if (2 * i < fromuris.size()) {
+                        op2.set_stripeid(stripeid);
+                    } else {
+                        op2.set_stripeid(stripeid + 1);
+                    }
+                    op2.set_op(datanode::OP_CODEC_REUSE);
+                    op2.add_to(workingnode);
+//                    op2.set_index(i);
+                    status2 = m_dn_ptrs[fromuris[i]]->pull_perform_push(&handlingpushctx, op2, &handlingpushres);
+                    if (!status2.ok()) {
+                        std::cout << "ask for push failed\n";
+                        m_cn_logger->warn("{} handling push failed", fromuris[i]);
+                        return status;
+                    }
+                }
+
+                std::unordered_set<std::string> skipset;//no skip
                 //rename old stripeid+1 to stripeid
-                rename_block_to(stripe1+1,stripe1);
+                rename_block_to(stripeid + 1, stripeid,skipset);
 
 
+                std::cout << "complete designed transition plan for stripe " << stripeid << " and "
+                          << stripeid + 1 << std::endl;
             }
             std::cout << "transition over\n";
-
             //modify metainfo
             //...
-
             return grpc::Status::OK;
         }
+        return grpc::Status::OK;
     }
 
     std::pair<std::vector<std::tuple<int, std::vector<std::string>, std::vector<std::string >>>,
@@ -1078,8 +1113,7 @@ namespace lrc {
             for (; u < k; ++u) {
                 int c = m_dn_info[fsimage[i][u]].clusterid;
                 if (excluded.contains(c)) {
-                    if(!consideronce.contains(c))
-                    {
+                    if (!consideronce.contains(c)) {
                         overlap.push_back(c);
                         consideronce.insert(c);
                     }
@@ -1090,7 +1124,7 @@ namespace lrc {
             for (; fsimage[i][u] != "l"; ++u) {
                 int c = m_dn_info[fsimage[i][u]].clusterid;
                 if (excluded.contains(c)) {
-                    if(!consideronce.contains(c)){
+                    if (!consideronce.contains(c)) {
                         overlap.push_back(c);
                         consideronce.insert(c);
                     }
@@ -1109,7 +1143,7 @@ namespace lrc {
             auto target_g_cands = std::vector<std::string>(m_cluster_info[*candg.cbegin()].datanodesuri);
             std::random_shuffle(target_g_cands.begin(), target_g_cands.end());
             auto &target_coding_nodeuri = target_g_cands.front();
-            std::vector<std::string> to_g_nodes(target_g_cands.cbegin() + 1, target_g_cands.cbegin()+g);
+            std::vector<std::string> to_g_nodes(target_g_cands.cbegin() + 1, target_g_cands.cbegin() + g);
             std::vector<std::string> from_d_nodes(fsimage[i - 1].cbegin(), kpos);
             from_d_nodes.insert(from_d_nodes.end(),
                                 fsimage[i].cbegin(),
@@ -1126,7 +1160,7 @@ namespace lrc {
                 idx++;
                 std::random_shuffle(thiscluster.begin(), thiscluster.end());
                 to_d_nodes.insert(to_d_nodes.end(), thiscluster.cbegin(),
-                                  thiscluster.cbegin() + k+1 );//at lease k+1 nodes !
+                                  thiscluster.cbegin() + k + 1);//at lease k+1 nodes !
             }
 
 
@@ -1173,7 +1207,7 @@ namespace lrc {
             return {datacluster, {}, globalcluster};
         };
 
-        for (int i = 1; i < fsimage.size(); i+=2) {
+        for (int i = 1; i < fsimage.size(); i += 2) {
             auto kpos = std::find(fsimage[i - 1].cbegin(), fsimage[i - 1].cend(), "d");
             auto lpos = std::find(kpos, fsimage[i - 1].cend(), "l");
             auto gpos = std::find(lpos, fsimage[i - 1].cend(), "g");
@@ -1202,37 +1236,39 @@ namespace lrc {
     }
 
     bool FileSystemCN::FileSystemImpl::delete_global_parity_of(int stripeid) {
-        auto it=std::find(m_fs_image[stripeid].cbegin(),m_fs_image[stripeid].cend(),"l");
+        auto it = std::find(m_fs_image[stripeid].cbegin(), m_fs_image[stripeid].cend(), "l");
         ++it;
         grpc::Status status;
-        for(;*it!="g";++it){
+        for (; *it != "g"; ++it) {
             grpc::ClientContext deletectx;
             datanode::RequestResult deleteres;
             datanode::StripeId stripeId;
             stripeId.set_stripeid(stripeid);
-            status = m_dn_ptrs[*it]->clearstripe(&deletectx,stripeId,&deleteres);
-         }
+            std::cout << "delete " << *it << " global parity blocks of stripe : " << stripeid << std::endl;
+            status = m_dn_ptrs[*it]->clearstripe(&deletectx, stripeId, &deleteres);
+        }
         return true;
     }
 
-    bool FileSystemCN::FileSystemImpl::rename_block_to(int oldstripeid, int newstripeid) {
+    bool FileSystemCN::FileSystemImpl::rename_block_to(int oldstripeid, int newstripeid,const std::unordered_set<std::string>& skipset) {
         //rename if exist otherwise nop
-        for(const auto & node:m_fs_image[oldstripeid])
-        {
-            if(node=="d") continue;
-            if(node=="l") break;
+        for (const auto &node:m_fs_image[oldstripeid]) {
+            if (node == "d"||skipset.contains(node)) continue;
+            if (node == "l") break;
+            std::cout << "rename " << node << " old stripe : " << oldstripeid << " to new stripe : " << newstripeid
+                      << std::endl;
             grpc::ClientContext renamectx;
             datanode::RenameCMD renameCMD;
             renameCMD.set_oldid(oldstripeid);
             renameCMD.set_newid(newstripeid);
             datanode::RequestResult renameres;
-            m_dn_ptrs[node]->renameblock(&renamectx,renameCMD,&renameres);
+            m_dn_ptrs[node]->renameblock(&renamectx, renameCMD, &renameres);
         }
         return true;
     }
 
     grpc::Status FileSystemCN::FileSystemImpl::setplacementpolicy(::grpc::ServerContext *context,
-                                                                  const::coordinator::SetPlacementPolicyCMD *request,
+                                                                  const ::coordinator::SetPlacementPolicyCMD *request,
                                                                   ::coordinator::RequestResult *response) {
         m_placementpolicy = (!request->israndom());
         return grpc::Status::OK;
@@ -1242,32 +1278,131 @@ namespace lrc {
     FileSystemCN::FileSystemImpl::random_placement_resolve(ECSchema schema) {
         std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>> ret(3);
         int totalcluster = m_cluster_info.size();
-        std::vector<int> total(totalcluster,0);
-        std::iota(total.begin(),total.end(),0);
-        std::random_shuffle(total.begin(),total.end());
+        std::vector<int> total(totalcluster, 0);
+        std::iota(total.begin(), total.end(), 0);
+        std::random_shuffle(total.begin(), total.end());
         //pick first l+1 cluster
-        int i=0;
-        for(; i<schema.localparityblk;++i)
-        {
+        int i = 0;
+        for (; i < schema.localparityblk; ++i) {
             std::vector<std::string> thiscluster(m_cluster_info[total[i]].datanodesuri);
             std::random_shuffle(thiscluster.begin(), thiscluster.end());
-            int j=0;
-            for(;j<schema.globalparityblk;++j)
-            {
-                ret[0].insert({thiscluster[j],{FileSystemCN::FileSystemImpl::TYPE::DATA,false}});
+            int j = 0;
+            for (; j < schema.globalparityblk; ++j) {
+                ret[0].insert({thiscluster[j], {FileSystemCN::FileSystemImpl::TYPE::DATA, false}});
             }
-            ret[1].insert({thiscluster[j],{FileSystemCN::FileSystemImpl::TYPE::LP,false}});
+            ret[1].insert({thiscluster[j], {FileSystemCN::FileSystemImpl::TYPE::LP, false}});
         }
 
         //pick next cluster as gp
         std::vector<std::string> lastcluster(m_cluster_info[total[i]].datanodesuri);
         std::random_shuffle(lastcluster.begin(), lastcluster.end());
-        int j=0;
-        for(;j<schema.globalparityblk;++j)
-        {
-            ret[2].insert({lastcluster[j],{FileSystemCN::FileSystemImpl::TYPE::GP,false}});
+        int j = 0;
+        for (; j < schema.globalparityblk; ++j) {
+            ret[2].insert({lastcluster[j], {FileSystemCN::FileSystemImpl::TYPE::GP, false}});
         }
         return ret;
+    }
+
+    bool FileSystemCN::FileSystemImpl::refreshfilesystemimagebasic(
+            const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string >> &codingplan,
+            const std::tuple<int, std::vector<std::string>, std::vector<std::string >> &migrationplan) {
+        //copy stripe datanodes and put stripe+1 datanodes into a set
+        //replace stripe+1 nodes set ∩ migration src nodes with migration dst nodes
+        //merge stripe+1 set with stripe set
+        //set gp nodes with worker node and forwarding dst nodes
+        int modified_stripe = std::get<0>(codingplan)+1;
+        int k = std::get<1>(codingplan).size();//new k
+        int g = std::get<3>(codingplan).size() + 1;
+        int l = k / g;
+        const auto & be_migrated = std::get<1>(migrationplan);
+        const auto & dst_migrated = std::get<2>(migrationplan);
+        const auto & total_node = std::get<1>(codingplan);
+        const auto & new_gp_node = std::get<3>(codingplan);
+        std::vector<std::string> new_stripelocation(k+1+l+1+g+1,"");
+        std::unordered_map<std::string,std::string> be_migratedset_to_dst;
+        int j=0;
+        for(int i=0;i<be_migrated.size();++i)
+        {
+            be_migratedset_to_dst[be_migrated[i]]=dst_migrated[i];
+        }
+        std::vector<std::string> total_datanodeset;
+        for(const auto & node:total_node){
+            //all datanodes in both stripe
+            if(be_migratedset_to_dst.contains(node)){
+                new_stripelocation[j++]=be_migratedset_to_dst[node];
+            }else{
+                new_stripelocation[j++]=node;
+            }
+        }
+        new_stripelocation[j++]="d";
+        std::vector<std::string> total_lpnodeset;
+        for(int i=k/2+1;"l"!=m_fs_image[modified_stripe-1][i];++i){
+            //stayed stripe lp
+            new_stripelocation[j++]=m_fs_image[modified_stripe-1][i];
+        }
+        for(int i=k/2+1;"l"!=m_fs_image[modified_stripe][i];++i){
+            //stayed stripe lp
+            if(!be_migratedset_to_dst.contains(m_fs_image[modified_stripe][i])) new_stripelocation[j++]=m_fs_image[modified_stripe][i];
+            else new_stripelocation[j++]=m_fs_image[modified_stripe][i];
+        }
+        new_stripelocation[j++]="l";
+        new_stripelocation[j++]=std::get<2>(codingplan);
+        for(const auto & gp:new_gp_node)
+        {
+            new_stripelocation[j++]=gp;
+        }
+        new_stripelocation[j++]="g";
+        m_fs_image.erase(modified_stripe-1);
+        m_fs_image.erase(modified_stripe);
+        m_fs_image.insert({modified_stripe-1,std::move(new_stripelocation)});
+        return true;
+    }
+
+    bool FileSystemCN::FileSystemImpl::refreshfilesystemimagebasicpartial(
+            const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>> &codingplan,
+            const std::tuple<int, std::vector<std::string>, std::vector<std::string >> &migrationplan) {
+
+    }
+
+    bool FileSystemCN::FileSystemImpl::refreshfilesystemimagedesigned(
+            const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>> &codingplan,
+            const std::tuple<int, std::vector<std::string>, std::vector<std::string >> &migrationplan) {
+        //simplest
+        //merge both stripe datanodes and lp nodes
+        //reset gp nodes
+
+        std::vector<std::string> new_stripelocation;
+        int modified_stripe = std::get<0>(codingplan)+1;
+        const auto & unmodified_location2 = m_fs_image[modified_stripe];
+        const auto & unmodified_location1 = m_fs_image[modified_stripe-1];
+
+        auto d_marker1 = std::find(unmodified_location1.cbegin(),unmodified_location1.cend(),"d");
+        auto l_marker1 = std::find(unmodified_location1.cbegin(),unmodified_location1.cend(),"l");
+        auto d_marker2 = std::find(unmodified_location2.cbegin(),unmodified_location2.cend(),"d");
+        auto l_marker2 = std::find(unmodified_location2.cbegin(),unmodified_location2.cend(),"l");
+        for_each(unmodified_location1.begin(),d_marker1,[&](const std::string & loc){
+            new_stripelocation.push_back(loc);
+        });
+        for_each(unmodified_location2.begin(),d_marker2,[&](const std::string & loc){
+            new_stripelocation.push_back(loc);
+        });
+        for_each(d_marker1+1,l_marker1,[&](const std::string & loc){
+            new_stripelocation.push_back(loc);
+        });
+        for_each(d_marker2+1,l_marker2,[&](const std::string & loc){
+            new_stripelocation.push_back(loc);
+        });
+
+        const auto & forwarding_gp_node = std::get<3>(codingplan);
+        new_stripelocation.emplace_back(std::get<2>(codingplan));
+        new_stripelocation.insert(new_stripelocation.end(),forwarding_gp_node.cbegin(),forwarding_gp_node.cend());
+
+        m_fs_image.erase(modified_stripe);
+        m_fs_image.erase(modified_stripe-1);
+
+        m_fs_image.insert({modified_stripe-1,std::move(new_stripelocation)});
+
+        return true;
     }
 //CN in DN implementation
 /*

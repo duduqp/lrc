@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int main(){
+int main() {
 
 /*
      {
@@ -108,42 +108,32 @@ int main(){
 */
 
     {
-        lrc::RandomStripeGenerator("teststripe1.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe2.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe3.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe4.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe5.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe6.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe7.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe8.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe9.txt", 2, 64 * 1024 * 1024);
-        lrc::RandomStripeGenerator("teststripe10.txt", 2, 64 * 1024 * 1024);
         lrc::FileSystemClient fileSystemClient;
-        fileSystemClient.UploadStripe("teststripe1.txt", 0, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe2.txt", 1, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe3.txt", 2, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe4.txt", 3, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe5.txt", 4, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe6.txt", 5, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe7.txt", 6, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe8.txt", 7, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe9.txt", 8, {2, 1, 2,64});
-        fileSystemClient.UploadStripe("teststripe10.txt", 9, {2, 1, 2,64});
-
+        for (int i = 0; i < 10; ++i) {
+            lrc::RandomStripeGenerator("teststripe" + std::to_string(i) + ".txt", 2, 64 * 1024 * 1024);
+            fileSystemClient.UploadStripe("teststripe" + std::to_string(i) + ".txt", i, {2, 1, 2, 64}, true);
+        }
         auto stripelocs = fileSystemClient.ListStripes();
-        for (auto stripe : stripelocs) {
-            std::cout<<"stripeid: "<<stripe.stripeid<<std::endl;
-            for (auto node : stripe.blklocation) {
-                std::cout << (node=="\n" ? "":node) << "\t";
+        for (const auto &stripe : stripelocs) {
+            std::cout << "stripeid: " << stripe.stripeid << std::endl;
+            for (const auto &node : stripe.blklocation) {
+                std::cout << node << ("\n" == node ? "" : "\t");
             }
         }
         std::cout << std::endl;
 
-        fileSystemClient.DownLoadStripe("","",0);
+        fileSystemClient.DownLoadStripe("", "", 0);
 
-    }
         //get fs view
         //fileSystemClient.ListStripes();
-
+//        stripelocs = fileSystemClient.ListStripes();
+//        for (const auto &stripe : stripelocs) {
+//            std::cout << "stripeid: " << stripe.stripeid << std::endl;
+//            for (const auto &node : stripe.blklocation) {
+//                std::cout << node << ("\n" == node ? "" : "\t");
+//            }
+//        }
+//        std::cout << std::endl;
+    }
     return 0;
 }

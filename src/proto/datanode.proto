@@ -10,23 +10,20 @@ service FromDataNode{
 //From Coodinator to DN
 service FromCoodinator{
   //deal with dir creating too
-  rpc handleblocktransfer(StripeId) returns(RequestResult);
-  rpc handleblockpull(StripeId) returns(RequestResult);
-//  rpc createDir(Path) returns(RequestResult);
+  rpc handleupload(UploadCMD) returns(RequestResult);
+  rpc handledownload(DownloadCMD) returns(RequestResult);
   rpc clearallstripe(ClearallstripeCMD) returns(RequestResult);
-
   rpc dolocallyrepair(NodesLocation) returns(RequestResult);
-
   rpc docompleterepair(StripeLocation) returns(RequestResult);
-
   rpc clearstripe(StripeId) returns(RequestResult);
-
   rpc checkalive(CheckaliveCMD ) returns(RequestResult);
-
+  //with deletion , migration use only
+  rpc handlepull(HandlePullCMD) returns(RequestResult);
+  rpc handlepush(HandlePushCMD) returns(RequestResult);
+  //pull from handledownload nodes and perform some operations then push to some handleupload nodes
+  //worker node use only
   rpc pull_perform_push(OP) returns(RequestResult);
-
   rpc renameblock(RenameCMD) returns(RequestResult);
-
 }
 
 message RenameCMD{
@@ -35,12 +32,6 @@ message RenameCMD{
 }
 message CheckaliveCMD{
 
-}
-message PullPerformPushCMD{
-    NodesLocation src = 1;
-    Action op = 2;
-    NodesLocation dst = 3;
-    StripeInfo stripeinfo = 4;
 }
 message StripeId{
   int32 stripeid = 1;
@@ -63,8 +54,6 @@ message Path{
 }
 //From Client to DN {typically for single block transfer}
 service FromClient{
-
-
 }
 
 message OP{
@@ -75,16 +64,14 @@ message OP{
     XOR = 1 ;
     LRC = 2 ;
     REUSE = 3;
+    PARTIAL = 4;
   }
   CODEC op = 3;
-  int32 shift = 4 ;
-  int32 stripeid = 5;
-  int32 index = 6;
+  int32 stripeid = 4;
+  repeated int32 multiby = 5 ;
 }
 
-message Action{
-  int32 op = 1;
-}
+
 message StripeInfo{
   int32 stripeid = 1;
   int32 stripe_k = 2;
@@ -93,6 +80,22 @@ message StripeInfo{
 
 }
 
+message UploadCMD{
+
+}
+
+message DownloadCMD{
+
+}
+
+message HandlePullCMD{
+
+}
+
+message HandlePushCMD{
+
+
+}
 message RequestResult{
   bool trueorfalse=1;
 }

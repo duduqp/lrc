@@ -55,7 +55,7 @@ namespace lrc {
             std::unordered_map<int, std::vector<std::string>> m_fs_image;//read from meta[fsimage.xml] in initialize stage
             std::unordered_map<std::string, DataNodeInfo> m_dn_info;//cluster.xml
             std::unordered_map<int,ClusterInfo> m_cluster_info;
-
+            std::atomic<int> m_fs_nextstripeid{0};
 
             std::mutex m_stripeuploadcount_mtx;
             std::condition_variable m_uploadingcond;
@@ -107,7 +107,7 @@ namespace lrc {
 
 
             grpc::Status uploadStripe(::grpc::ServerContext *context, const ::coordinator::StripeInfo *request,
-                                      ::coordinator::StripeLocation *response) override;
+                                      ::coordinator::StripeDetail *response) override;
 
             bool initialize();
 
@@ -117,10 +117,11 @@ namespace lrc {
 
             void loadhistory();
 
+
             grpc::Status transitionup(::grpc::ServerContext *context, const::coordinator::TransitionUpCMD *request,
                                       ::coordinator::RequestResult *response) override;
 
-            grpc::Status reportblocktransfer(::grpc::ServerContext *context,const coordinator::StripeId *request,
+            grpc::Status reportblockupload(::grpc::ServerContext *context,const coordinator::StripeId *request,
                                              ::coordinator::RequestResult *response) override;
 
             void flushhistory();
@@ -135,7 +136,7 @@ namespace lrc {
 
 
             grpc::Status downloadStripe(::grpc::ServerContext *context, const::coordinator::StripeId *request,
-                                        ::coordinator::StripeLocation *response) override;
+                                        ::coordinator::StripeDetail *response) override;
 
             std::vector<bool> checknodesalive(const std::vector<std::string> & vector);
 
@@ -169,7 +170,7 @@ namespace lrc {
 
             bool delete_global_parity_of(int stripeid);
 
-            bool rename_block_to(int oldstripeid, int newstripeid);
+            bool rename_block_to(int oldstripeid, int newstripeid,const std::unordered_set<std::string> & skipset);
 
             grpc::Status
             setplacementpolicy(::grpc::ServerContext *context, const::coordinator::SetPlacementPolicyCMD *request,
@@ -177,6 +178,18 @@ namespace lrc {
 
             std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
             random_placement_resolve(ECSchema schema);
+
+            bool refreshfilesystemimagebasic(
+                    const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>> &codingplan,
+                    const std::tuple<int, std::vector<std::string>, std::vector<std::string>> &migrationplan);
+
+            bool refreshfilesystemimagebasicpartial(
+                    const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>> &codingplan,
+                    const std::tuple<int, std::vector<std::string>, std::vector<std::string>> &migrationplan);
+
+            bool refreshfilesystemimagedesigned(
+                    const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>> &codingplan,
+                    const std::tuple<int, std::vector<std::string>, std::vector<std::string>> &migrationplan);
         };
 
 

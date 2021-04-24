@@ -29,7 +29,8 @@ namespace lrc {
 
         std::string m_conf_path;
         std::string m_data_path{"./data/"};
-        std::string m_datatransfer_port;//socket listenning
+        std::string m_datanodeupload_port;//socket listenning
+        std::string m_datanodedownload_port;//socket listenning
         std::string m_log_path;
 
         std::shared_ptr<spdlog::logger> m_dn_logger;
@@ -77,35 +78,24 @@ namespace lrc {
         class FromCoordinatorImpl
                 : public std::enable_shared_from_this<lrc::FileSystemDN::FromCoordinatorImpl>,
                   public datanode::FromCoodinator::Service {
-
-            int m_defaultblocksize;
-        public:
-            int getMDefaultblocksize() const;
-
-            void setMDefaultblocksize(int mDefaultblocksize);
-
         private:
-            bool m_initialized{false};
-
-            FromCoordinatorImpl();
-
-        public:
-            virtual ~FromCoordinatorImpl();
-
-            grpc::Status pull_perform_push(::grpc::ServerContext *context, const::datanode::OP *request,
-                                           ::datanode::RequestResult *response) override;
-
-        private:
+            std::mutex notworking;
             std::string m_fs_uri;
             std::string m_dnfromcn_uri;
             std::string m_confpath;
-            std::string m_datatransfer_port;
+            std::string m_datanodeupload_port;
+            std::string m_datanodedownload_port;
+            int m_defaultblocksize;
 
             std::string m_datapath;//to read write clear ...
             //optional a buffer of a packet size ?
             std::shared_ptr<spdlog::logger> m_dnfromcnimpl_logger;
             std::shared_ptr<coordinator::FileSystem::Stub> m_fs_stub;
             std::shared_ptr<coordinator::FromDataNode::Stub> m_cnfromdn_stub;
+
+            bool m_initialized{false};
+            asio::io_context m_ioservice;
+
         public:
             /*
              * perfect factory
@@ -115,24 +105,14 @@ namespace lrc {
                 return std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl>(new FromCoordinatorImpl(std::forward<T>(t)...));
             }
 
-            const std::string &getMDnfromcnUri() const;
-
-            grpc::Status handleblockpull(::grpc::ServerContext *context, const::datanode::StripeId *request,
-                                         ::datanode::RequestResult *response) override;
-
-            const std::string &getMDatatransferPort() const;
-
-            const std::string &getMDatapath() const;
 
         private:
-            asio::io_context m_ioservice;
 
-            static std::shared_ptr<asio::ip::tcp::acceptor> prepareacceptor(FileSystemDN::FromCoordinatorImpl & dnimpl) {
+            static std::shared_ptr<asio::ip::tcp::acceptor> prepareacceptor(FileSystemDN::FromCoordinatorImpl & dnimpl,short port) {
 
                 using namespace asio;
                 static std::unordered_map<int,std::shared_ptr<asio::ip::tcp::acceptor>> mappings;
 
-                auto port = std::stoi(dnimpl.m_datatransfer_port);
                 if(mappings.contains(port)) return mappings[port];
 
                 auto acptptr = std::make_shared<ip::tcp::acceptor>(dnimpl.m_ioservice,
@@ -142,17 +122,21 @@ namespace lrc {
                 return acptptr;//auto move
             }
 
-
-        private:
-
             FromCoordinatorImpl(const std::string &mConfPath,
                                 const std::string &mDatapath
             );
-
+            FromCoordinatorImpl();
         public:
+            virtual ~FromCoordinatorImpl();
+
+            grpc::Status pull_perform_push(::grpc::ServerContext *context, const::datanode::OP *request,
+                                           ::datanode::RequestResult *response) override;
+
             void setMDnfromcnUri(const std::string &mDnfromcnUri);
 
-            void setMDatatransferPort(const std::string &mDatatransferPort);
+            void setMDatanodeuploadPort(const std::string &mDatanodeuploadPort);
+
+            void setMDatanodedownloadPort(const std::string &mDatanodedownloadPort);
 
             void setMDatapath(const std::string &mDatapath);
 
@@ -162,13 +146,11 @@ namespace lrc {
 
             const asio::io_context &getMIoservice() const;
 
-
-            bool isInitialized() const;
-
-            void setInitialized(bool initialized);
-
-            grpc::Status handleblocktransfer(::grpc::ServerContext *context, const ::datanode::StripeId *request,
+            grpc::Status handleupload(::grpc::ServerContext *context, const ::datanode::UploadCMD *request,
                                              ::datanode::RequestResult *response) override;
+
+            grpc::Status handledownload(::grpc::ServerContext *context, const ::datanode::DownloadCMD *request,
+                                      ::datanode::RequestResult *response) override;
 
             grpc::Status clearallstripe(::grpc::ServerContext *context, const ::datanode::ClearallstripeCMD *request,
                                         ::datanode::RequestResult *response) override;
@@ -195,6 +177,27 @@ namespace lrc {
 
             grpc::Status renameblock(::grpc::ServerContext *context, const::datanode::RenameCMD *request,
                                      ::datanode::RequestResult *response) override;
+
+
+            grpc::Status handlepull(::grpc::ServerContext *context, const::datanode::HandlePullCMD *request,
+                                    ::datanode::RequestResult *response) override;
+
+
+
+            const std::string &getMDnfromcnUri() const;
+
+            const std::string &getMDatanodeUploadPort() const;
+            const std::string &getMDatanodeDownloadPort() const;
+
+            const std::string &getMDatapath() const;
+
+            int getMDefaultblocksize() const;
+
+            void setMDefaultblocksize(int mDefaultblocksize);
+
+            bool isInitialized() const;
+
+            void setInitialized(bool initialized);
         };
 
 

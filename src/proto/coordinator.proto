@@ -6,12 +6,12 @@ package coordinator;
 //coordinator size implement
 service FileSystem{
   rpc createDir (Path)  returns(RequestResult);
-  rpc uploadStripe (StripeInfo) returns(StripeLocation);
-  rpc downloadStripe (StripeId) returns(StripeLocation);
+  rpc uploadStripe (StripeInfo) returns(StripeDetail);
+  rpc downloadStripe (StripeId) returns(StripeDetail);
   rpc downloadStripeWithHint(StripeIdWithHint) returns(StripeLocation);
   rpc deleteStripe(StripeId) returns(RequestResult);
   rpc uploadCheck(StripeInfo) returns(RequestResult);
-  rpc reportblocktransfer(StripeId)returns(RequestResult);
+  rpc reportblockupload(StripeId)returns(RequestResult);
   rpc listStripe(StripeId) returns(StripeLocation);
   rpc listAllStripes(ListAllStripeCMD) returns(stream StripeLocation);
   rpc transitionup(TransitionUpCMD) returns (RequestResult);
@@ -24,6 +24,7 @@ service FileSystem{
 service FromDataNode{
 
 }
+
 message StripeIdWithHint{
   StripeId stripeid =1;
   NodesLocation badlocations =2 ;
@@ -47,6 +48,11 @@ message StripeLocation{
   repeated string dataLoc = 1;
   repeated string localparityLoc = 2;
   repeated string globalparityLoc = 3;
+}
+
+message StripeDetail{
+  StripeLocation stripelocation = 1;
+  StripeId stripeid = 2;
 }
 
 message SetPlacementPolicyCMD{

@@ -10,7 +10,7 @@
 
 namespace lrc{
     static void GenLRCEncodingMatrix(std::tuple<int,int,int> stripeinfo ,
-                              int * matrix,bool designed = false){
+                              int * matrix,bool trivial = false){
         // param : in:{k,l,g} matrix[g*k]
         int k = std::get<0>(stripeinfo);
         int l = std::get<1>(stripeinfo);
@@ -21,7 +21,7 @@ namespace lrc{
         }
         int r = g ; //  assume g = k/l
         int width =ceil(log2(r+1));
-        int w =2*l* width;
+        int w =(trivial?l*width:2*l* width);
 
         // start at 1 , consider first local group
         int cursor = 0;
@@ -56,11 +56,12 @@ namespace lrc{
 
 
         //cache the matrix
-        LRCCoder(std::tuple<int,int,int> stripeinfo): k(std::get<0>(stripeinfo)),
+        LRCCoder(std::tuple<int,int,int> stripeinfo,bool trivial = false): k(std::get<0>(stripeinfo)),
                                                       l(std::get<1>(stripeinfo)), g(std::get<2>(stripeinfo))
         {
             generator_matrix = new int[k*g];
-            GenLRCEncodingMatrix(stripeinfo,generator_matrix);
+            GenLRCEncodingMatrix(stripeinfo,generator_matrix,trivial);
+            w =(trivial?l*ceil(log2(g+1)):2*l* ceil(log2(g+1)));
         }
         ~LRCCoder(){
             delete generator_matrix;
@@ -70,7 +71,7 @@ namespace lrc{
 
         void encode(char ** data_words,
                 char ** target_local_parities,char ** target_global_parities,
-                int w ,int cellsize /*to set 64 KB*/,bool trivial=false){
+                int cellsize /*to set 64 KB*/){
             //do encode
 
             //global
@@ -79,7 +80,7 @@ namespace lrc{
 //            jerasure_matrix_encode(k,g,w,generator_matrix,data_words,target_global_parities,cellsize);
 
             //local
-            if(!target_local_parities) {
+            if(target_local_parities) {
                 for (int j = 0; j < l; ++j) {
                     for (int i = 1; i < g; ++i) {
 
@@ -87,7 +88,6 @@ namespace lrc{
                     }
                 }
             }
-
 //
         }
 
@@ -117,7 +117,7 @@ namespace lrc{
         int k ;
         int l ;
         int g ;
-
+        int w ;
     };
 }
 

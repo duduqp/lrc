@@ -48,7 +48,7 @@ struct TableStruct_datanode_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[12]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[14]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -56,15 +56,21 @@ struct TableStruct_datanode_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_datanode_2eproto;
 namespace datanode {
-class Action;
-class ActionDefaultTypeInternal;
-extern ActionDefaultTypeInternal _Action_default_instance_;
 class CheckaliveCMD;
 class CheckaliveCMDDefaultTypeInternal;
 extern CheckaliveCMDDefaultTypeInternal _CheckaliveCMD_default_instance_;
 class ClearallstripeCMD;
 class ClearallstripeCMDDefaultTypeInternal;
 extern ClearallstripeCMDDefaultTypeInternal _ClearallstripeCMD_default_instance_;
+class DownloadCMD;
+class DownloadCMDDefaultTypeInternal;
+extern DownloadCMDDefaultTypeInternal _DownloadCMD_default_instance_;
+class HandlePullCMD;
+class HandlePullCMDDefaultTypeInternal;
+extern HandlePullCMDDefaultTypeInternal _HandlePullCMD_default_instance_;
+class HandlePushCMD;
+class HandlePushCMDDefaultTypeInternal;
+extern HandlePushCMDDefaultTypeInternal _HandlePushCMD_default_instance_;
 class NodesLocation;
 class NodesLocationDefaultTypeInternal;
 extern NodesLocationDefaultTypeInternal _NodesLocation_default_instance_;
@@ -74,9 +80,6 @@ extern OPDefaultTypeInternal _OP_default_instance_;
 class Path;
 class PathDefaultTypeInternal;
 extern PathDefaultTypeInternal _Path_default_instance_;
-class PullPerformPushCMD;
-class PullPerformPushCMDDefaultTypeInternal;
-extern PullPerformPushCMDDefaultTypeInternal _PullPerformPushCMD_default_instance_;
 class RenameCMD;
 class RenameCMDDefaultTypeInternal;
 extern RenameCMDDefaultTypeInternal _RenameCMD_default_instance_;
@@ -92,20 +95,25 @@ extern StripeInfoDefaultTypeInternal _StripeInfo_default_instance_;
 class StripeLocation;
 class StripeLocationDefaultTypeInternal;
 extern StripeLocationDefaultTypeInternal _StripeLocation_default_instance_;
+class UploadCMD;
+class UploadCMDDefaultTypeInternal;
+extern UploadCMDDefaultTypeInternal _UploadCMD_default_instance_;
 }  // namespace datanode
 PROTOBUF_NAMESPACE_OPEN
-template<> ::datanode::Action* Arena::CreateMaybeMessage<::datanode::Action>(Arena*);
 template<> ::datanode::CheckaliveCMD* Arena::CreateMaybeMessage<::datanode::CheckaliveCMD>(Arena*);
 template<> ::datanode::ClearallstripeCMD* Arena::CreateMaybeMessage<::datanode::ClearallstripeCMD>(Arena*);
+template<> ::datanode::DownloadCMD* Arena::CreateMaybeMessage<::datanode::DownloadCMD>(Arena*);
+template<> ::datanode::HandlePullCMD* Arena::CreateMaybeMessage<::datanode::HandlePullCMD>(Arena*);
+template<> ::datanode::HandlePushCMD* Arena::CreateMaybeMessage<::datanode::HandlePushCMD>(Arena*);
 template<> ::datanode::NodesLocation* Arena::CreateMaybeMessage<::datanode::NodesLocation>(Arena*);
 template<> ::datanode::OP* Arena::CreateMaybeMessage<::datanode::OP>(Arena*);
 template<> ::datanode::Path* Arena::CreateMaybeMessage<::datanode::Path>(Arena*);
-template<> ::datanode::PullPerformPushCMD* Arena::CreateMaybeMessage<::datanode::PullPerformPushCMD>(Arena*);
 template<> ::datanode::RenameCMD* Arena::CreateMaybeMessage<::datanode::RenameCMD>(Arena*);
 template<> ::datanode::RequestResult* Arena::CreateMaybeMessage<::datanode::RequestResult>(Arena*);
 template<> ::datanode::StripeId* Arena::CreateMaybeMessage<::datanode::StripeId>(Arena*);
 template<> ::datanode::StripeInfo* Arena::CreateMaybeMessage<::datanode::StripeInfo>(Arena*);
 template<> ::datanode::StripeLocation* Arena::CreateMaybeMessage<::datanode::StripeLocation>(Arena*);
+template<> ::datanode::UploadCMD* Arena::CreateMaybeMessage<::datanode::UploadCMD>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace datanode {
 
@@ -114,12 +122,13 @@ enum OP_CODEC : int {
   OP_CODEC_XOR = 1,
   OP_CODEC_LRC = 2,
   OP_CODEC_REUSE = 3,
+  OP_CODEC_PARTIAL = 4,
   OP_CODEC_OP_CODEC_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   OP_CODEC_OP_CODEC_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
 bool OP_CODEC_IsValid(int value);
 constexpr OP_CODEC OP_CODEC_CODEC_MIN = OP_CODEC_NO;
-constexpr OP_CODEC OP_CODEC_CODEC_MAX = OP_CODEC_REUSE;
+constexpr OP_CODEC OP_CODEC_CODEC_MAX = OP_CODEC_PARTIAL;
 constexpr int OP_CODEC_CODEC_ARRAYSIZE = OP_CODEC_CODEC_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* OP_CODEC_descriptor();
@@ -392,191 +401,6 @@ class CheckaliveCMD :
 };
 // -------------------------------------------------------------------
 
-class PullPerformPushCMD :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.PullPerformPushCMD) */ {
- public:
-  PullPerformPushCMD();
-  virtual ~PullPerformPushCMD();
-
-  PullPerformPushCMD(const PullPerformPushCMD& from);
-  PullPerformPushCMD(PullPerformPushCMD&& from) noexcept
-    : PullPerformPushCMD() {
-    *this = ::std::move(from);
-  }
-
-  inline PullPerformPushCMD& operator=(const PullPerformPushCMD& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline PullPerformPushCMD& operator=(PullPerformPushCMD&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return GetMetadataStatic().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return GetMetadataStatic().reflection;
-  }
-  static const PullPerformPushCMD& default_instance();
-
-  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const PullPerformPushCMD* internal_default_instance() {
-    return reinterpret_cast<const PullPerformPushCMD*>(
-               &_PullPerformPushCMD_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    2;
-
-  friend void swap(PullPerformPushCMD& a, PullPerformPushCMD& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(PullPerformPushCMD* other) {
-    if (other == this) return;
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline PullPerformPushCMD* New() const final {
-    return CreateMaybeMessage<PullPerformPushCMD>(nullptr);
-  }
-
-  PullPerformPushCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<PullPerformPushCMD>(arena);
-  }
-  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const PullPerformPushCMD& from);
-  void MergeFrom(const PullPerformPushCMD& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _cached_size_.Get(); }
-
-  private:
-  inline void SharedCtor();
-  inline void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(PullPerformPushCMD* other);
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "datanode.PullPerformPushCMD";
-  }
-  private:
-  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
-    return nullptr;
-  }
-  inline void* MaybeArenaPtr() const {
-    return nullptr;
-  }
-  public:
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-  private:
-  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
-    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
-    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
-  }
-
-  public:
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kSrcFieldNumber = 1,
-    kOpFieldNumber = 2,
-    kDstFieldNumber = 3,
-    kStripeinfoFieldNumber = 4,
-  };
-  // .datanode.NodesLocation src = 1;
-  bool has_src() const;
-  private:
-  bool _internal_has_src() const;
-  public:
-  void clear_src();
-  const ::datanode::NodesLocation& src() const;
-  ::datanode::NodesLocation* release_src();
-  ::datanode::NodesLocation* mutable_src();
-  void set_allocated_src(::datanode::NodesLocation* src);
-  private:
-  const ::datanode::NodesLocation& _internal_src() const;
-  ::datanode::NodesLocation* _internal_mutable_src();
-  public:
-
-  // .datanode.Action op = 2;
-  bool has_op() const;
-  private:
-  bool _internal_has_op() const;
-  public:
-  void clear_op();
-  const ::datanode::Action& op() const;
-  ::datanode::Action* release_op();
-  ::datanode::Action* mutable_op();
-  void set_allocated_op(::datanode::Action* op);
-  private:
-  const ::datanode::Action& _internal_op() const;
-  ::datanode::Action* _internal_mutable_op();
-  public:
-
-  // .datanode.NodesLocation dst = 3;
-  bool has_dst() const;
-  private:
-  bool _internal_has_dst() const;
-  public:
-  void clear_dst();
-  const ::datanode::NodesLocation& dst() const;
-  ::datanode::NodesLocation* release_dst();
-  ::datanode::NodesLocation* mutable_dst();
-  void set_allocated_dst(::datanode::NodesLocation* dst);
-  private:
-  const ::datanode::NodesLocation& _internal_dst() const;
-  ::datanode::NodesLocation* _internal_mutable_dst();
-  public:
-
-  // .datanode.StripeInfo stripeinfo = 4;
-  bool has_stripeinfo() const;
-  private:
-  bool _internal_has_stripeinfo() const;
-  public:
-  void clear_stripeinfo();
-  const ::datanode::StripeInfo& stripeinfo() const;
-  ::datanode::StripeInfo* release_stripeinfo();
-  ::datanode::StripeInfo* mutable_stripeinfo();
-  void set_allocated_stripeinfo(::datanode::StripeInfo* stripeinfo);
-  private:
-  const ::datanode::StripeInfo& _internal_stripeinfo() const;
-  ::datanode::StripeInfo* _internal_mutable_stripeinfo();
-  public:
-
-  // @@protoc_insertion_point(class_scope:datanode.PullPerformPushCMD)
- private:
-  class _Internal;
-
-  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::datanode::NodesLocation* src_;
-  ::datanode::Action* op_;
-  ::datanode::NodesLocation* dst_;
-  ::datanode::StripeInfo* stripeinfo_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  friend struct ::TableStruct_datanode_2eproto;
-};
-// -------------------------------------------------------------------
-
 class StripeId :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.StripeId) */ {
  public:
@@ -619,7 +443,7 @@ class StripeId :
                &_StripeId_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    2;
 
   friend void swap(StripeId& a, StripeId& b) {
     a.Swap(&b);
@@ -747,7 +571,7 @@ class StripeLocation :
                &_StripeLocation_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
   friend void swap(StripeLocation& a, StripeLocation& b) {
     a.Swap(&b);
@@ -942,7 +766,7 @@ class NodesLocation :
                &_NodesLocation_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    4;
 
   friend void swap(NodesLocation& a, NodesLocation& b) {
     a.Swap(&b);
@@ -1085,7 +909,7 @@ class ClearallstripeCMD :
                &_ClearallstripeCMD_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    5;
 
   friend void swap(ClearallstripeCMD& a, ClearallstripeCMD& b) {
     a.Swap(&b);
@@ -1200,7 +1024,7 @@ class Path :
                &_Path_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    6;
 
   friend void swap(Path& a, Path& b) {
     a.Swap(&b);
@@ -1335,7 +1159,7 @@ class OP :
                &_OP_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    7;
 
   friend void swap(OP& a, OP& b) {
     a.Swap(&b);
@@ -1405,6 +1229,8 @@ class OP :
     OP_CODEC_LRC;
   static constexpr CODEC REUSE =
     OP_CODEC_REUSE;
+  static constexpr CODEC PARTIAL =
+    OP_CODEC_PARTIAL;
   static inline bool CODEC_IsValid(int value) {
     return OP_CODEC_IsValid(value);
   }
@@ -1435,10 +1261,9 @@ class OP :
   enum : int {
     kFromFieldNumber = 1,
     kToFieldNumber = 2,
+    kMultibyFieldNumber = 5,
     kOpFieldNumber = 3,
-    kShiftFieldNumber = 4,
-    kStripeidFieldNumber = 5,
-    kIndexFieldNumber = 6,
+    kStripeidFieldNumber = 4,
   };
   // repeated string from = 1;
   int from_size() const;
@@ -1488,6 +1313,28 @@ class OP :
   std::string* _internal_add_to();
   public:
 
+  // repeated int32 multiby = 5;
+  int multiby_size() const;
+  private:
+  int _internal_multiby_size() const;
+  public:
+  void clear_multiby();
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_multiby(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      _internal_multiby() const;
+  void _internal_add_multiby(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      _internal_mutable_multiby();
+  public:
+  ::PROTOBUF_NAMESPACE_ID::int32 multiby(int index) const;
+  void set_multiby(int index, ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void add_multiby(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      multiby() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      mutable_multiby();
+
   // .datanode.OP.CODEC op = 3;
   void clear_op();
   ::datanode::OP_CODEC op() const;
@@ -1497,31 +1344,13 @@ class OP :
   void _internal_set_op(::datanode::OP_CODEC value);
   public:
 
-  // int32 shift = 4;
-  void clear_shift();
-  ::PROTOBUF_NAMESPACE_ID::int32 shift() const;
-  void set_shift(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_shift() const;
-  void _internal_set_shift(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // int32 stripeid = 5;
+  // int32 stripeid = 4;
   void clear_stripeid();
   ::PROTOBUF_NAMESPACE_ID::int32 stripeid() const;
   void set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value);
   private:
   ::PROTOBUF_NAMESPACE_ID::int32 _internal_stripeid() const;
   void _internal_set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // int32 index = 6;
-  void clear_index();
-  ::PROTOBUF_NAMESPACE_ID::int32 index() const;
-  void set_index(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_index() const;
-  void _internal_set_index(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:datanode.OP)
@@ -1531,138 +1360,10 @@ class OP :
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> from_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> to_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > multiby_;
+  mutable std::atomic<int> _multiby_cached_byte_size_;
   int op_;
-  ::PROTOBUF_NAMESPACE_ID::int32 shift_;
   ::PROTOBUF_NAMESPACE_ID::int32 stripeid_;
-  ::PROTOBUF_NAMESPACE_ID::int32 index_;
-  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  friend struct ::TableStruct_datanode_2eproto;
-};
-// -------------------------------------------------------------------
-
-class Action :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.Action) */ {
- public:
-  Action();
-  virtual ~Action();
-
-  Action(const Action& from);
-  Action(Action&& from) noexcept
-    : Action() {
-    *this = ::std::move(from);
-  }
-
-  inline Action& operator=(const Action& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline Action& operator=(Action&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return GetMetadataStatic().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return GetMetadataStatic().reflection;
-  }
-  static const Action& default_instance();
-
-  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Action* internal_default_instance() {
-    return reinterpret_cast<const Action*>(
-               &_Action_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    9;
-
-  friend void swap(Action& a, Action& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(Action* other) {
-    if (other == this) return;
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline Action* New() const final {
-    return CreateMaybeMessage<Action>(nullptr);
-  }
-
-  Action* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Action>(arena);
-  }
-  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Action& from);
-  void MergeFrom(const Action& from);
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
-      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _cached_size_.Get(); }
-
-  private:
-  inline void SharedCtor();
-  inline void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(Action* other);
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "datanode.Action";
-  }
-  private:
-  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
-    return nullptr;
-  }
-  inline void* MaybeArenaPtr() const {
-    return nullptr;
-  }
-  public:
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-  private:
-  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
-    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
-    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
-  }
-
-  public:
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kOpFieldNumber = 1,
-  };
-  // int32 op = 1;
-  void clear_op();
-  ::PROTOBUF_NAMESPACE_ID::int32 op() const;
-  void set_op(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_op() const;
-  void _internal_set_op(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:datanode.Action)
- private:
-  class _Internal;
-
-  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  ::PROTOBUF_NAMESPACE_ID::int32 op_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_datanode_2eproto;
 };
@@ -1710,7 +1411,7 @@ class StripeInfo :
                &_StripeInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    8;
 
   friend void swap(StripeInfo& a, StripeInfo& b) {
     a.Swap(&b);
@@ -1829,6 +1530,466 @@ class StripeInfo :
 };
 // -------------------------------------------------------------------
 
+class UploadCMD :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.UploadCMD) */ {
+ public:
+  UploadCMD();
+  virtual ~UploadCMD();
+
+  UploadCMD(const UploadCMD& from);
+  UploadCMD(UploadCMD&& from) noexcept
+    : UploadCMD() {
+    *this = ::std::move(from);
+  }
+
+  inline UploadCMD& operator=(const UploadCMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline UploadCMD& operator=(UploadCMD&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const UploadCMD& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const UploadCMD* internal_default_instance() {
+    return reinterpret_cast<const UploadCMD*>(
+               &_UploadCMD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    9;
+
+  friend void swap(UploadCMD& a, UploadCMD& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(UploadCMD* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline UploadCMD* New() const final {
+    return CreateMaybeMessage<UploadCMD>(nullptr);
+  }
+
+  UploadCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<UploadCMD>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const UploadCMD& from);
+  void MergeFrom(const UploadCMD& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(UploadCMD* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "datanode.UploadCMD";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
+    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:datanode.UploadCMD)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_datanode_2eproto;
+};
+// -------------------------------------------------------------------
+
+class DownloadCMD :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.DownloadCMD) */ {
+ public:
+  DownloadCMD();
+  virtual ~DownloadCMD();
+
+  DownloadCMD(const DownloadCMD& from);
+  DownloadCMD(DownloadCMD&& from) noexcept
+    : DownloadCMD() {
+    *this = ::std::move(from);
+  }
+
+  inline DownloadCMD& operator=(const DownloadCMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline DownloadCMD& operator=(DownloadCMD&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const DownloadCMD& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const DownloadCMD* internal_default_instance() {
+    return reinterpret_cast<const DownloadCMD*>(
+               &_DownloadCMD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    10;
+
+  friend void swap(DownloadCMD& a, DownloadCMD& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(DownloadCMD* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline DownloadCMD* New() const final {
+    return CreateMaybeMessage<DownloadCMD>(nullptr);
+  }
+
+  DownloadCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<DownloadCMD>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const DownloadCMD& from);
+  void MergeFrom(const DownloadCMD& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(DownloadCMD* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "datanode.DownloadCMD";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
+    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:datanode.DownloadCMD)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_datanode_2eproto;
+};
+// -------------------------------------------------------------------
+
+class HandlePullCMD :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.HandlePullCMD) */ {
+ public:
+  HandlePullCMD();
+  virtual ~HandlePullCMD();
+
+  HandlePullCMD(const HandlePullCMD& from);
+  HandlePullCMD(HandlePullCMD&& from) noexcept
+    : HandlePullCMD() {
+    *this = ::std::move(from);
+  }
+
+  inline HandlePullCMD& operator=(const HandlePullCMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline HandlePullCMD& operator=(HandlePullCMD&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const HandlePullCMD& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const HandlePullCMD* internal_default_instance() {
+    return reinterpret_cast<const HandlePullCMD*>(
+               &_HandlePullCMD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    11;
+
+  friend void swap(HandlePullCMD& a, HandlePullCMD& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(HandlePullCMD* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline HandlePullCMD* New() const final {
+    return CreateMaybeMessage<HandlePullCMD>(nullptr);
+  }
+
+  HandlePullCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<HandlePullCMD>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const HandlePullCMD& from);
+  void MergeFrom(const HandlePullCMD& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(HandlePullCMD* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "datanode.HandlePullCMD";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
+    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:datanode.HandlePullCMD)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_datanode_2eproto;
+};
+// -------------------------------------------------------------------
+
+class HandlePushCMD :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.HandlePushCMD) */ {
+ public:
+  HandlePushCMD();
+  virtual ~HandlePushCMD();
+
+  HandlePushCMD(const HandlePushCMD& from);
+  HandlePushCMD(HandlePushCMD&& from) noexcept
+    : HandlePushCMD() {
+    *this = ::std::move(from);
+  }
+
+  inline HandlePushCMD& operator=(const HandlePushCMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline HandlePushCMD& operator=(HandlePushCMD&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const HandlePushCMD& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const HandlePushCMD* internal_default_instance() {
+    return reinterpret_cast<const HandlePushCMD*>(
+               &_HandlePushCMD_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    12;
+
+  friend void swap(HandlePushCMD& a, HandlePushCMD& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(HandlePushCMD* other) {
+    if (other == this) return;
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline HandlePushCMD* New() const final {
+    return CreateMaybeMessage<HandlePushCMD>(nullptr);
+  }
+
+  HandlePushCMD* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<HandlePushCMD>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const HandlePushCMD& from);
+  void MergeFrom(const HandlePushCMD& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* _InternalSerialize(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(HandlePushCMD* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "datanode.HandlePushCMD";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_datanode_2eproto);
+    return ::descriptor_table_datanode_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:datanode.HandlePushCMD)
+ private:
+  class _Internal;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_datanode_2eproto;
+};
+// -------------------------------------------------------------------
+
 class RequestResult :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:datanode.RequestResult) */ {
  public:
@@ -1871,7 +2032,7 @@ class RequestResult :
                &_RequestResult_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    13;
 
   friend void swap(RequestResult& a, RequestResult& b) {
     a.Swap(&b);
@@ -2009,250 +2170,6 @@ inline void RenameCMD::set_newid(::PROTOBUF_NAMESPACE_ID::int32 value) {
 // -------------------------------------------------------------------
 
 // CheckaliveCMD
-
-// -------------------------------------------------------------------
-
-// PullPerformPushCMD
-
-// .datanode.NodesLocation src = 1;
-inline bool PullPerformPushCMD::_internal_has_src() const {
-  return this != internal_default_instance() && src_ != nullptr;
-}
-inline bool PullPerformPushCMD::has_src() const {
-  return _internal_has_src();
-}
-inline void PullPerformPushCMD::clear_src() {
-  if (GetArenaNoVirtual() == nullptr && src_ != nullptr) {
-    delete src_;
-  }
-  src_ = nullptr;
-}
-inline const ::datanode::NodesLocation& PullPerformPushCMD::_internal_src() const {
-  const ::datanode::NodesLocation* p = src_;
-  return p != nullptr ? *p : *reinterpret_cast<const ::datanode::NodesLocation*>(
-      &::datanode::_NodesLocation_default_instance_);
-}
-inline const ::datanode::NodesLocation& PullPerformPushCMD::src() const {
-  // @@protoc_insertion_point(field_get:datanode.PullPerformPushCMD.src)
-  return _internal_src();
-}
-inline ::datanode::NodesLocation* PullPerformPushCMD::release_src() {
-  // @@protoc_insertion_point(field_release:datanode.PullPerformPushCMD.src)
-  
-  ::datanode::NodesLocation* temp = src_;
-  src_ = nullptr;
-  return temp;
-}
-inline ::datanode::NodesLocation* PullPerformPushCMD::_internal_mutable_src() {
-  
-  if (src_ == nullptr) {
-    auto* p = CreateMaybeMessage<::datanode::NodesLocation>(GetArenaNoVirtual());
-    src_ = p;
-  }
-  return src_;
-}
-inline ::datanode::NodesLocation* PullPerformPushCMD::mutable_src() {
-  // @@protoc_insertion_point(field_mutable:datanode.PullPerformPushCMD.src)
-  return _internal_mutable_src();
-}
-inline void PullPerformPushCMD::set_allocated_src(::datanode::NodesLocation* src) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == nullptr) {
-    delete src_;
-  }
-  if (src) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
-    if (message_arena != submessage_arena) {
-      src = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, src, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  src_ = src;
-  // @@protoc_insertion_point(field_set_allocated:datanode.PullPerformPushCMD.src)
-}
-
-// .datanode.Action op = 2;
-inline bool PullPerformPushCMD::_internal_has_op() const {
-  return this != internal_default_instance() && op_ != nullptr;
-}
-inline bool PullPerformPushCMD::has_op() const {
-  return _internal_has_op();
-}
-inline void PullPerformPushCMD::clear_op() {
-  if (GetArenaNoVirtual() == nullptr && op_ != nullptr) {
-    delete op_;
-  }
-  op_ = nullptr;
-}
-inline const ::datanode::Action& PullPerformPushCMD::_internal_op() const {
-  const ::datanode::Action* p = op_;
-  return p != nullptr ? *p : *reinterpret_cast<const ::datanode::Action*>(
-      &::datanode::_Action_default_instance_);
-}
-inline const ::datanode::Action& PullPerformPushCMD::op() const {
-  // @@protoc_insertion_point(field_get:datanode.PullPerformPushCMD.op)
-  return _internal_op();
-}
-inline ::datanode::Action* PullPerformPushCMD::release_op() {
-  // @@protoc_insertion_point(field_release:datanode.PullPerformPushCMD.op)
-  
-  ::datanode::Action* temp = op_;
-  op_ = nullptr;
-  return temp;
-}
-inline ::datanode::Action* PullPerformPushCMD::_internal_mutable_op() {
-  
-  if (op_ == nullptr) {
-    auto* p = CreateMaybeMessage<::datanode::Action>(GetArenaNoVirtual());
-    op_ = p;
-  }
-  return op_;
-}
-inline ::datanode::Action* PullPerformPushCMD::mutable_op() {
-  // @@protoc_insertion_point(field_mutable:datanode.PullPerformPushCMD.op)
-  return _internal_mutable_op();
-}
-inline void PullPerformPushCMD::set_allocated_op(::datanode::Action* op) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == nullptr) {
-    delete op_;
-  }
-  if (op) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
-    if (message_arena != submessage_arena) {
-      op = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, op, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  op_ = op;
-  // @@protoc_insertion_point(field_set_allocated:datanode.PullPerformPushCMD.op)
-}
-
-// .datanode.NodesLocation dst = 3;
-inline bool PullPerformPushCMD::_internal_has_dst() const {
-  return this != internal_default_instance() && dst_ != nullptr;
-}
-inline bool PullPerformPushCMD::has_dst() const {
-  return _internal_has_dst();
-}
-inline void PullPerformPushCMD::clear_dst() {
-  if (GetArenaNoVirtual() == nullptr && dst_ != nullptr) {
-    delete dst_;
-  }
-  dst_ = nullptr;
-}
-inline const ::datanode::NodesLocation& PullPerformPushCMD::_internal_dst() const {
-  const ::datanode::NodesLocation* p = dst_;
-  return p != nullptr ? *p : *reinterpret_cast<const ::datanode::NodesLocation*>(
-      &::datanode::_NodesLocation_default_instance_);
-}
-inline const ::datanode::NodesLocation& PullPerformPushCMD::dst() const {
-  // @@protoc_insertion_point(field_get:datanode.PullPerformPushCMD.dst)
-  return _internal_dst();
-}
-inline ::datanode::NodesLocation* PullPerformPushCMD::release_dst() {
-  // @@protoc_insertion_point(field_release:datanode.PullPerformPushCMD.dst)
-  
-  ::datanode::NodesLocation* temp = dst_;
-  dst_ = nullptr;
-  return temp;
-}
-inline ::datanode::NodesLocation* PullPerformPushCMD::_internal_mutable_dst() {
-  
-  if (dst_ == nullptr) {
-    auto* p = CreateMaybeMessage<::datanode::NodesLocation>(GetArenaNoVirtual());
-    dst_ = p;
-  }
-  return dst_;
-}
-inline ::datanode::NodesLocation* PullPerformPushCMD::mutable_dst() {
-  // @@protoc_insertion_point(field_mutable:datanode.PullPerformPushCMD.dst)
-  return _internal_mutable_dst();
-}
-inline void PullPerformPushCMD::set_allocated_dst(::datanode::NodesLocation* dst) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == nullptr) {
-    delete dst_;
-  }
-  if (dst) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
-    if (message_arena != submessage_arena) {
-      dst = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, dst, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  dst_ = dst;
-  // @@protoc_insertion_point(field_set_allocated:datanode.PullPerformPushCMD.dst)
-}
-
-// .datanode.StripeInfo stripeinfo = 4;
-inline bool PullPerformPushCMD::_internal_has_stripeinfo() const {
-  return this != internal_default_instance() && stripeinfo_ != nullptr;
-}
-inline bool PullPerformPushCMD::has_stripeinfo() const {
-  return _internal_has_stripeinfo();
-}
-inline void PullPerformPushCMD::clear_stripeinfo() {
-  if (GetArenaNoVirtual() == nullptr && stripeinfo_ != nullptr) {
-    delete stripeinfo_;
-  }
-  stripeinfo_ = nullptr;
-}
-inline const ::datanode::StripeInfo& PullPerformPushCMD::_internal_stripeinfo() const {
-  const ::datanode::StripeInfo* p = stripeinfo_;
-  return p != nullptr ? *p : *reinterpret_cast<const ::datanode::StripeInfo*>(
-      &::datanode::_StripeInfo_default_instance_);
-}
-inline const ::datanode::StripeInfo& PullPerformPushCMD::stripeinfo() const {
-  // @@protoc_insertion_point(field_get:datanode.PullPerformPushCMD.stripeinfo)
-  return _internal_stripeinfo();
-}
-inline ::datanode::StripeInfo* PullPerformPushCMD::release_stripeinfo() {
-  // @@protoc_insertion_point(field_release:datanode.PullPerformPushCMD.stripeinfo)
-  
-  ::datanode::StripeInfo* temp = stripeinfo_;
-  stripeinfo_ = nullptr;
-  return temp;
-}
-inline ::datanode::StripeInfo* PullPerformPushCMD::_internal_mutable_stripeinfo() {
-  
-  if (stripeinfo_ == nullptr) {
-    auto* p = CreateMaybeMessage<::datanode::StripeInfo>(GetArenaNoVirtual());
-    stripeinfo_ = p;
-  }
-  return stripeinfo_;
-}
-inline ::datanode::StripeInfo* PullPerformPushCMD::mutable_stripeinfo() {
-  // @@protoc_insertion_point(field_mutable:datanode.PullPerformPushCMD.stripeinfo)
-  return _internal_mutable_stripeinfo();
-}
-inline void PullPerformPushCMD::set_allocated_stripeinfo(::datanode::StripeInfo* stripeinfo) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == nullptr) {
-    delete stripeinfo_;
-  }
-  if (stripeinfo) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
-    if (message_arena != submessage_arena) {
-      stripeinfo = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, stripeinfo, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  stripeinfo_ = stripeinfo;
-  // @@protoc_insertion_point(field_set_allocated:datanode.PullPerformPushCMD.stripeinfo)
-}
 
 // -------------------------------------------------------------------
 
@@ -2822,27 +2739,7 @@ inline void OP::set_op(::datanode::OP_CODEC value) {
   // @@protoc_insertion_point(field_set:datanode.OP.op)
 }
 
-// int32 shift = 4;
-inline void OP::clear_shift() {
-  shift_ = 0;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int32 OP::_internal_shift() const {
-  return shift_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int32 OP::shift() const {
-  // @@protoc_insertion_point(field_get:datanode.OP.shift)
-  return _internal_shift();
-}
-inline void OP::_internal_set_shift(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  
-  shift_ = value;
-}
-inline void OP::set_shift(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_shift(value);
-  // @@protoc_insertion_point(field_set:datanode.OP.shift)
-}
-
-// int32 stripeid = 5;
+// int32 stripeid = 4;
 inline void OP::clear_stripeid() {
   stripeid_ = 0;
 }
@@ -2862,48 +2759,51 @@ inline void OP::set_stripeid(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:datanode.OP.stripeid)
 }
 
-// int32 index = 6;
-inline void OP::clear_index() {
-  index_ = 0;
+// repeated int32 multiby = 5;
+inline int OP::_internal_multiby_size() const {
+  return multiby_.size();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 OP::_internal_index() const {
-  return index_;
+inline int OP::multiby_size() const {
+  return _internal_multiby_size();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 OP::index() const {
-  // @@protoc_insertion_point(field_get:datanode.OP.index)
-  return _internal_index();
+inline void OP::clear_multiby() {
+  multiby_.Clear();
 }
-inline void OP::_internal_set_index(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  
-  index_ = value;
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::_internal_multiby(int index) const {
+  return multiby_.Get(index);
 }
-inline void OP::set_index(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_index(value);
-  // @@protoc_insertion_point(field_set:datanode.OP.index)
+inline ::PROTOBUF_NAMESPACE_ID::int32 OP::multiby(int index) const {
+  // @@protoc_insertion_point(field_get:datanode.OP.multiby)
+  return _internal_multiby(index);
 }
-
-// -------------------------------------------------------------------
-
-// Action
-
-// int32 op = 1;
-inline void Action::clear_op() {
-  op_ = 0;
+inline void OP::set_multiby(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+  multiby_.Set(index, value);
+  // @@protoc_insertion_point(field_set:datanode.OP.multiby)
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::_internal_op() const {
-  return op_;
+inline void OP::_internal_add_multiby(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  multiby_.Add(value);
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 Action::op() const {
-  // @@protoc_insertion_point(field_get:datanode.Action.op)
-  return _internal_op();
+inline void OP::add_multiby(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_add_multiby(value);
+  // @@protoc_insertion_point(field_add:datanode.OP.multiby)
 }
-inline void Action::_internal_set_op(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  
-  op_ = value;
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+OP::_internal_multiby() const {
+  return multiby_;
 }
-inline void Action::set_op(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_op(value);
-  // @@protoc_insertion_point(field_set:datanode.Action.op)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+OP::multiby() const {
+  // @@protoc_insertion_point(field_list:datanode.OP.multiby)
+  return _internal_multiby();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+OP::_internal_mutable_multiby() {
+  return &multiby_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+OP::mutable_multiby() {
+  // @@protoc_insertion_point(field_mutable_list:datanode.OP.multiby)
+  return _internal_mutable_multiby();
 }
 
 // -------------------------------------------------------------------
@@ -2992,6 +2892,22 @@ inline void StripeInfo::set_stripe_g(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // -------------------------------------------------------------------
 
+// UploadCMD
+
+// -------------------------------------------------------------------
+
+// DownloadCMD
+
+// -------------------------------------------------------------------
+
+// HandlePullCMD
+
+// -------------------------------------------------------------------
+
+// HandlePushCMD
+
+// -------------------------------------------------------------------
+
 // RequestResult
 
 // bool trueorfalse = 1;
@@ -3017,6 +2933,10 @@ inline void RequestResult::set_trueorfalse(bool value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
