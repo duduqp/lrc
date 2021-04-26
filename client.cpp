@@ -123,17 +123,18 @@ int main() {
         std::cout << std::endl;
 
         fileSystemClient.DownLoadStripe("", "", 0);
+        fileSystemClient.TransformRedundancy(coordinator::TransitionUpCMD_MODE_BASIC);
 
         //get fs view
-        //fileSystemClient.ListStripes();
-//        stripelocs = fileSystemClient.ListStripes();
-//        for (const auto &stripe : stripelocs) {
-//            std::cout << "stripeid: " << stripe.stripeid << std::endl;
-//            for (const auto &node : stripe.blklocation) {
-//                std::cout << node << ("\n" == node ? "" : "\t");
-//            }
-//        }
-//        std::cout << std::endl;
+        fileSystemClient.ListStripes();
+        stripelocs = fileSystemClient.ListStripes();
+        for (const auto &stripe : stripelocs) {
+            std::cout << "stripeid: " << stripe.stripeid << std::endl;
+            for (const auto &node : stripe.blklocation) {
+                std::cout << node << ("\n" == node ? "" : "\t");
+            }
+        }
+        std::cout << std::endl;
     }
     return 0;
 }

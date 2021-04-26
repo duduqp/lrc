@@ -50,20 +50,16 @@ namespace lrc {
 
             //performance issue to refactor as a rw mutex
             std::mutex m_fsimage_mtx;
-            std::mutex m_transition_mtx;
             std::unordered_map<ECSchema,std::set<int>,ECSchemaHash,ECSchemaCMP> m_fs_stripeschema;//fsimage.xml
             std::unordered_map<int, std::vector<std::string>> m_fs_image;//read from meta[fsimage.xml] in initialize stage
             std::unordered_map<std::string, DataNodeInfo> m_dn_info;//cluster.xml
             std::unordered_map<int,ClusterInfo> m_cluster_info;
             std::atomic<int> m_fs_nextstripeid{0};
 
-            std::mutex m_stripeuploadcount_mtx;
-            std::condition_variable m_uploadingcond;
-            std::unordered_map<int,int> stripe_in_uploadingcounter;
-            std::mutex m_stripedownloadcount_mtx;
-            std::condition_variable m_downloadingcond;
-            std::unordered_map<int,int> stripe_in_downloadingcounter;
-            std::unordered_map<int,std::unordered_map<std::string,std::pair<TYPE,bool>>> stripe_in_uploading;// stripeid , unreceivedDNList
+            std::mutex m_stripeupdatingcount_mtx;
+            std::condition_variable m_updatingcond;
+            std::unordered_map<int,int> stripe_in_updatingcounter;
+            std::unordered_map<int,std::unordered_map<std::string,std::pair<TYPE,bool>>> stripe_in_updating;// stripeid , unreceivedDNList
 
             //stub
             std::map<std::string, std::unique_ptr<datanode::FromCoodinator::Stub>> m_dn_ptrs;
@@ -81,7 +77,7 @@ namespace lrc {
             grpc::Status listAllStripes(::grpc::ServerContext *context, const::coordinator::ListAllStripeCMD *request,
                                         ::grpc::ServerWriter<::coordinator::StripeLocation> *writer) override;
 
-            void updatestripeuploadcounter(int stripeid,std::string fromdatanode);
+            void updatestripeupdatingcounter(int stripeid, std::string fromdatanode_uri);
 
             bool isMInitialized() const;
 

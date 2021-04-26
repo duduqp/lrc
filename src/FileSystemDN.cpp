@@ -15,15 +15,15 @@
 namespace lrc {
 
     grpc::Status lrc::FileSystemDN::FromCoordinatorImpl::handleupload(::grpc::ServerContext *context,
-                                                                             const ::datanode::UploadCMD *request,
+                                                                      const ::datanode::UploadCMD *request,
 
-                                                                             ::datanode::RequestResult *response) {
+                                                                      ::datanode::RequestResult *response) {
 
 
         std::cout << "try prepare acceptor" << std::endl;
         std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl> holdme = get_sharedholder();
 
-        auto acptptr = prepareacceptor(*this,std::stoi(m_datanodeupload_port));
+        auto acptptr = prepareacceptor(*this, std::stoi(m_datanodeupload_port));
 
         if (acptptr) std::cout << "prepared acceptor" << std::endl;
         else {
@@ -33,7 +33,7 @@ namespace lrc {
         int blocksize = m_defaultblocksize * 1024 * 1024;
         std::cout << "default blk size:" << m_defaultblocksize << std::endl;
         auto handler = [_sockptr = std::move(
-                sockptr),ptr = std::move(acptptr), defaultblksize = m_defaultblocksize](
+                sockptr), ptr = std::move(acptptr), defaultblksize = m_defaultblocksize](
                 std::string datadir, int total_blksize,
                 std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl> _this) mutable {
             //move in the outer uniqueptr,it's safe
@@ -42,10 +42,10 @@ namespace lrc {
             ptr->accept(*_sockptr);
             std::vector<char> buf(1024 * 1024 * defaultblksize);
             std::cout << "accept client connection" << std::endl;
-            asio::read(*_sockptr,asio::buffer(&id,sizeof(id)));
-            std::cout << "this connection will handle block " <<id << std::endl;
+            asio::read(*_sockptr, asio::buffer(&id, sizeof(id)));
+            std::cout << "this connection will handle block " << id << std::endl;
             asio::read(*_sockptr, asio::buffer(buf, defaultblksize * 1024 * 1024));
-            std::cout << "receive block" <<id<< std::endl;
+            std::cout << "receive block" << id << std::endl;
             if (!std::filesystem::exists(std::filesystem::path{datadir})) std::filesystem::create_directory(datadir);
             std::cout << datadir + std::to_string(id) << std::endl;
             std::ofstream ofs(datadir + std::to_string(id), std::ios::binary | std::ios::out | std::ios::trunc);
@@ -70,7 +70,7 @@ namespace lrc {
         };
 
         try {
-            std::thread h(std::move(handler), m_datapath, blocksize,  holdme);
+            std::thread h(std::move(handler), m_datapath, blocksize, holdme);
             h.detach();
         } catch (std::exception &e) {
             std::cout << e.what() << std::endl;
@@ -159,6 +159,7 @@ namespace lrc {
     void FileSystemDN::FromCoordinatorImpl::setMDatanodedownloadPort(const std::string &mDatanodedownloadPort) {
         m_datanodedownload_port = mDatanodedownloadPort;
     }
+
     void FileSystemDN::FromCoordinatorImpl::setMDatapath(const std::string &mDatapath) {
         m_datapath = mDatapath;
     }
@@ -264,10 +265,10 @@ namespace lrc {
 
     grpc::Status
     FileSystemDN::FromCoordinatorImpl::handledownload(::grpc::ServerContext *context,
-                                                       const ::datanode::DownloadCMD *request,
-                                                       ::datanode::RequestResult *response) {
+                                                      const ::datanode::DownloadCMD *request,
+                                                      ::datanode::RequestResult *response) {
         std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl> holdme = get_sharedholder();
-        auto acptptr = prepareacceptor(*this,std::stoi(m_datanodedownload_port));
+        auto acptptr = prepareacceptor(*this, std::stoi(m_datanodedownload_port));
         auto sockptr = std::make_unique<asio::ip::tcp::socket>(m_ioservice);
         int blocksize = m_defaultblocksize * 1024 * 1024;
         auto handler = [_sockptr = std::move(
@@ -275,10 +276,10 @@ namespace lrc {
                 std::string datadir, int total_blksize,
                 std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl> _this) mutable {
             //move in the outer uniqueptr,it's safe
-            int id=-1;
+            int id = -1;
             std::vector<char> buf(1024 * 1024 * defaultblksize);
             ptr->accept(*_sockptr);
-            asio::read(*_sockptr,asio::buffer(&id,sizeof(id)));
+            asio::read(*_sockptr, asio::buffer(&id, sizeof(id)));
             std::cout << "accept client connection for download block " << id << std::endl;
             if (!std::filesystem::exists(std::filesystem::path{datadir})) {
                 _this->m_dnfromcnimpl_logger->warn("stripe not exists!");
@@ -294,7 +295,7 @@ namespace lrc {
             std::cout << "successfully send !\n";
         };
         try {
-            std::thread h(std::move(handler), m_datapath, blocksize,  holdme);
+            std::thread h(std::move(handler), m_datapath, blocksize, holdme);
             h.detach();
         } catch (std::exception &e) {
             std::cout << e.what() << std::endl;
@@ -320,67 +321,46 @@ namespace lrc {
 
         //delete
         int shift = 0;
-        int idx= 0;
+        int idx = 0;
 
 
-        std::cout << "mode" << mode <<"\n";
-        std::cout << "this thread" << holdme.get() <<"\n";
-        std::cout << "srcnums" << srcnums <<"\n";
-        std::cout << "tonums" << tonums <<"\n";
-        std::cout << "stripeid" << stripeid <<"\n";
+        std::cout << "mode" << mode << "\n";
+        std::cout << "this thread" << holdme.get() << "\n";
+        std::cout << "srcnums" << srcnums << "\n";
+        std::cout << "tonums" << tonums << "\n";
+        std::cout << "stripeid" << stripeid << "\n";
         std::shared_ptr<boost::barrier> oneshot_barrier(std::make_shared<boost::barrier>(srcnums + 1));
         std::shared_ptr<boost::barrier> receiving_barrier(std::make_shared<boost::barrier>(srcnums + 1));
         auto inmemorypushtask = [&](char *src, const std::string &dstip, short dstport,
-                                    int _defaultblocksize) {
+                                    int _defaultblocksize,int stripe_id) {
             asio::io_context pushctx;
             asio::ip::tcp::socket sock(pushctx);
 
-            std::cout << "will push in memory data to " << dstip << ":" << dstport << std::endl;
+            std::cout << "will push in memory data to " << dstip << ":" << dstport << "as "<<stripeid<<std::endl;
             asio::ip::tcp::endpoint ep(asio::ip::address_v4::from_string(dstip), dstport);
             sock.connect(ep);
             std::cout << "connection established with " << dstip << ":" << dstport << std::endl;
+            asio::write(sock, asio::buffer(&stripe_id,sizeof(stripe_id)));
             asio::write(sock, asio::buffer(src, _defaultblocksize * 1024 * 1024));
 
             std::cout << "successfully push a block to ipaddr:port" << dstip << ":" << dstport << std::endl;
         };
-        auto inmemorypulltask = [&](char **res, const std::string &src, int index, bool beremove = false) {
-            asio::io_context pullctx;
-            asio::ip::tcp::socket sock(pullctx);
 
-            int datatransferport_offset = beremove ? 22221 : 12220;//12220 for normal , 22221 for transition
-            auto ipaddr = uritoipaddr(src);
-            auto port = std::stoi(src.substr(src.find(':') + 1)) + datatransferport_offset;
-            asio::ip::tcp::endpoint ep(asio::ip::address_v4::from_string(ipaddr), port);
-            sock.connect(ep);
-
-            //pull a packet to gpbuffer[index]
-            asio::read(sock, asio::buffer(res[index], m_defaultblocksize * 1024 * 1024));
-
-            std::cout << "pull a block from" << src << std::endl;
-        };
-
-        auto pulltask = [&, _barrier = oneshot_barrier, _receiving_barrier = receiving_barrier](
-                std::shared_ptr<FileSystemDN::FromCoordinatorImpl> _this,
+        auto pulltask = [](
                 const std::string &pullingip, short pullingport,
                 const std::string &_datapath, char *target_region,
                 int _defaultblocksize, int _stripeid,
-                bool beflush = true) {
+                bool beflush = false) {
             asio::io_context pullctx;
-            asio::ip::tcp::acceptor acpt(pullctx);
+            asio::ip::tcp::socket sock(pullctx);
             std::cout << "thread prepare to pull from ipaddr:port" << pullingip << ":" << pullingport << std::endl;
             try {
-                //one port one acceptor,anyway,setoption
-                acpt.open(asio::ip::tcp::v4());
-                acpt.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-                acpt.bind(asio::ip::tcp::endpoint(asio::ip::address_v4::any(), pullingport));
-                acpt.listen();
-                std::cout << "listening  ,will pull block " << _stripeid << " from local port" << pullingport
+                asio::ip::tcp::endpoint ep(asio::ip::address::from_string(pullingip), pullingport);
+                sock.connect(ep);
+                std::cout << "connected  ,will pull block " << _stripeid << " from  ip:" << pullingip << " port:"
+                          << pullingport
                           << std::endl;
-                asio::ip::tcp::socket sock(pullctx);
-                _barrier->count_down_and_wait();
-                acpt.accept(sock);
-                std::cout << "connected  ,will pull block " << _stripeid << " from local port" << pullingport
-                          << std::endl;
+                asio::write(sock, asio::buffer(&_stripeid, sizeof(_stripeid)));
                 std::vector<char> res(_defaultblocksize * 1024 * 1024);
                 auto readn = asio::read(sock, asio::buffer(&res[0], _defaultblocksize * 1024 * 1024));
                 std::cout << readn << " bytes block successfully pulled " << std::endl;
@@ -397,83 +377,64 @@ namespace lrc {
 
                 }
                 std::cout << "successfully pull a block\n";
-                acpt.close();
-                _receiving_barrier->count_down_and_wait();
-            }catch(std::exception & e){
-                _receiving_barrier->count_down_and_wait();
-                std::cout << e.what()<<std::endl;
+            } catch (std::exception &e) {
+                std::cout << e.what() << std::endl;
             }
         };
 
-        auto pushtask = [&](std::shared_ptr<FileSystemDN::FromCoordinatorImpl> _this,
-                            const std::string &dstip, short port,
+        auto pushtask = [&](const std::string &dstip, short port,
                             const std::string &_datapath,
-                            int _defaultblocksize, int _stripeid,
+                            int _defaultblocksize, int src_stripeid,int dst_stripeid,
                             bool beremove = true) {
-
             asio::io_context pushctx;
             asio::ip::tcp::endpoint endpoint(asio::ip::address_v4::from_string(dstip), port);
             asio::ip::tcp::socket sock(pushctx);
-            std::cout << "thread prepare block " << _stripeid << "will push to ipaddr:port" << dstip << ":" << port
-                      << std::endl;
+            std::cout << "thread prepare block " << src_stripeid << "will push to ipaddr:port" << dstip << ":" << port
+                      <<"as" << "block "<<dst_stripeid <<std::endl;
             sock.connect(endpoint);
             std::cout << "connected to dst " << endpoint << std::endl;
-            std::string blkpath{_datapath + std::to_string(_stripeid)};
+            std::string blkpath{_datapath + std::to_string(src_stripeid)};
             if (!std::filesystem::exists(blkpath)) {
                 std::cout << "block not exists\n";
                 return;
             }
-            try{
-            std::vector<char> blk(_defaultblocksize * 1024 * 1024);
-            std::ifstream ifs(blkpath);
-            ifs.read(&blk[0], _defaultblocksize * 1024 * 1024);
-            std::cout << "read local block size: " << ifs.tellg() << std::endl;
-            asio::write(sock, asio::buffer(&blk[0], _defaultblocksize * 1024 * 1024));
-            //delete original
-            if (beremove) {
-                std::filesystem::remove(blkpath);
-                std::cout << "remove block " << stripeid << std::endl;
-            }
-            } catch (std::exception & e) {
-                std::cout << e.what()<<std::endl;
+            try {
+                std::vector<char> blk(_defaultblocksize * 1024 * 1024);
+                std::ifstream ifs(blkpath);
+                ifs.read(&blk[0], _defaultblocksize * 1024 * 1024);
+                std::cout << "read local block size: " << ifs.tellg() << std::endl;
+                asio::write(sock, asio::buffer(&dst_stripeid, sizeof(dst_stripeid)));
+                asio::write(sock, asio::buffer(&blk[0], _defaultblocksize * 1024 * 1024));
+                //delete original
+                if (beremove) {
+                    std::filesystem::remove(blkpath);
+                    std::cout << "remove block " << stripeid << std::endl;
+                }
+            } catch (std::exception &e) {
+                std::cout << e.what() << std::endl;
             }
         };
-        //wrapped function
-        auto inmemorypushtaskwithblocksize = std::bind(inmemorypushtask, std::placeholders::_1,
-                                                       std::placeholders::_2,
-                                                       std::placeholders::_3, m_defaultblocksize);
         if (mode == datanode::OP_CODEC_NO) {
             //just pull a block or push a block , note : means delete original
             //push or pull
             std::cout << m_dnfromcn_uri << "in migration status" << std::endl;
-            if (0 == tonums&&0==srcnums) {
-                //pull mode
-                const std::string &localip = uritoipaddr(m_dnfromcn_uri);
-                short listeningport = std::stoi(m_dnfromcn_uri.substr(m_dnfromcn_uri.find(':') + 1)) + 22221 + idx * 23;
-                std::cout << m_dnfromcn_uri << "will pull a block from port" << listeningport << std::endl;
-                char *none = nullptr;
-                std::thread t(pulltask, holdme,
-                              localip, listeningport,
-                              m_datapath, none,
-                              m_defaultblocksize, stripeid,
-                              true);
-
-                t.detach();
-            } else if (1==tonums && 0 == srcnums) {
+            if (0 == tonums && 0 == srcnums) {
+                //impossible case ?
+            } else if (1 == tonums && 0 == srcnums) {
                 //push mode
                 // migration same as handlingpull but once connection over , delete original block
                 //index = 0
                 //push local stripe stripeid
                 const std::string &dsturi = request->to(0);
-                const std::string &dstip =uritoipaddr(dsturi);
-                short dstport = std::stoi(dsturi.substr(dsturi.find(':') + 1)) + 22221 + idx * 23;
+                const std::string &dstip = uritoipaddr(dsturi);
+                short dstport = std::stoi(dsturi.substr(dsturi.find(':') + 1)) + 12220; // upload
                 std::cout << m_dnfromcn_uri << "will push block " << stripeid << " to " << dstip << ":" << dstport
                           << std::endl;
 
-                std::thread t(pushtask, holdme,
+                std::thread t(pushtask,
                               dstip, dstport,
                               m_datapath,
-                              m_defaultblocksize, stripeid,
+                              m_defaultblocksize, stripeid,stripeid-1,
                               true);
                 t.detach();
             }
@@ -481,7 +442,6 @@ namespace lrc {
             if (mode == datanode::OP_CODEC_LRC) {
                 if (0 != srcnums) {
                     //worker
-                    std::unique_lock<std::mutex> ulk(notworking);
                     std::cout << m_dnfromcn_uri << " is a worker " << std::endl;
                     std::cout << m_dnfromcn_uri << "will perform coding job " << std::endl;
                     std::cout << "schema: " << srcnums << " " << static_cast<int>(srcnums / (tonums + 1)) << " "
@@ -494,101 +454,67 @@ namespace lrc {
                     for (int i = 0; i < tonums + 1; ++i) {
                         res[i] = new char[m_defaultblocksize * 1024 * 1024];
                     }
-
-
                     //perform coding
-                    auto basiccodingandforwardingtask = [_barrier=oneshot_barrier,_receiving_barrier = receiving_barrier, forwardingtask = inmemorypushtaskwithblocksize,
-                            _tonums = tonums, _srcnums = srcnums,
-                            _gpbuffer = gpbuffer, _res = res,
-                            _defaultblocksize = m_defaultblocksize, _datapath = m_datapath, _stripeid = stripeid](
-                            std::vector<std::string> _touris,std::unique_lock<std::mutex> _ulk) mutable {
-                        _receiving_barrier->count_down_and_wait();
-                        _ulk.unlock();
-                        auto ecschema = std::make_tuple(_srcnums, static_cast<int>(_srcnums / (_tonums + 1)),
-                                                        _tonums + 1);
-                        LRCCoder coder(ecschema, true);
-                        int l = _srcnums / (_tonums + 1); //  2*(k' div g' = l')
-                        int w = l * ceil(log2(_tonums + 2));// w = 2*l'*...
-                        std::cout << "pulling blocks is completed , word length is : 2^" << w << std::endl;
-                        coder.display_matrix();
-                        coder.encode(_gpbuffer, NULL, _res, _defaultblocksize * 1024 * 1024);
-                        //push to ...+12220
-                        std::cout << "coding job completed , forwarding to others " << std::endl;
-                        boost::thread_group tp2;
-                        auto forwarding_barrier = std::make_shared<boost::barrier>(_tonums);
-                        for (int i = 1; i < _tonums + 1; ++i) {
-                            const std::string &uri = _touris[i - 1];
-                            const std::string &dstip = uritoipaddr(uri);
-                            short dstport = std::stoi(uri.substr(uri.find(':') + 1)) + 12220;
-                            tp2.create_thread(std::bind(forwardingtask, _res[i], dstip, dstport));
-                        }
-                        tp2.join_all();
-
-                        std::ofstream ofs(_datapath + std::to_string(_stripeid));
-                        ofs.write(_res[0], _defaultblocksize * 1024 * 1024);
-                        ofs.flush();
-                        std::cout << "successfully write new global pairty block in stripe " << _stripeid
-                                  << " to local\n";
-                        for (int i = 0; i < _srcnums; ++i) {
-                            delete[] _gpbuffer[i];
-                        }
-                        for (int i = 0; i < _tonums + 1; ++i) {
-                            delete[] _res[i];
-                        }
-                        delete[] _gpbuffer;
-                        delete[] _res;
-                    };
-
-                    std::vector<std::string> touris(tonums);
-                    for(int i=0;i<tonums;++i)
-                    {
-                        touris[i]=request->to(i);
-                    }
-                    std::thread t2(basiccodingandforwardingtask,std::move(touris),std::move(ulk));
-                    t2.detach();
-
                     std::cout << m_dnfromcn_uri << "will pull blocks first" << std::endl;
                     boost::thread_group tp;
-                    const std::string &localip = uritoipaddr(m_dnfromcn_uri);
-                    short listeningport_offset = std::stoi(m_dnfromcn_uri.substr(m_dnfromcn_uri.find(':') + 1)) + 22221;
                     for (int i = 0; i < srcnums; ++i) {
-                        tp.create_thread(std::bind(pulltask, holdme,
-                                                   localip, i * 23 + listeningport_offset,
+                        const auto &uri = request->from(i);
+                        const auto &ip = uritoipaddr(uri);
+                        short port = std::stoi(uri.substr(uri.find(':') + 1)) + 22220;//download
+                        tp.create_thread(std::bind(pulltask,
+                                                   ip, port,
                                                    m_datapath, gpbuffer[i],
                                                    m_defaultblocksize, (2 * i < srcnums ? stripeid : stripeid + 1),
                                                    false));
                     }
 
-                    oneshot_barrier->count_down_and_wait();
+                    tp.join_all();
+                    auto ecschema = std::make_tuple(srcnums, static_cast<int>(srcnums / (tonums + 1)),
+                                                    tonums + 1);
+                    LRCCoder coder(ecschema, true);
+                    int l = srcnums / (tonums + 1); //  2*(k' div g' = l')
+                    int w = l * ceil(log2(tonums + 2));// w = 2*l'*...
+                    std::cout << "pulling blocks is completed , word length is : 2^" << w << std::endl;
+                    coder.display_matrix();
+                    coder.encode(gpbuffer, NULL, res, m_defaultblocksize * 1024 * 1024);
+                    //push to ...+12220
+                    std::cout << "coding job completed , forwarding to others " << std::endl;
+                    boost::thread_group tp2;
+                    for (int i = 1; i < tonums + 1; ++i) {
+                        const std::string &uri = request->to(i - 1);
+                        const std::string &dstip = uritoipaddr(uri);
+                        short dstport = std::stoi(uri.substr(uri.find(':') + 1)) + 12220;
 
-                } else {
-                    //no deletion
-                    //preparepush task for stripeid to dst listeneing-port 22221+index*23 = index
-                    try {
-                        const std::string &dsturi = request->to(0);
-                        const std::string &dstip = uritoipaddr(dsturi);
-                        short dstport = std::stoi(dsturi.substr(dsturi.find(':') + 1)) + 22221 + idx * 23;
-                        std::cout << "in basic mode , prepare block " << stripeid
-                                  << " push to dstip:dstport :" << dstip << ":" << dstport << std::endl;
-                        std::thread t(pushtask, holdme, dstip, dstport, m_datapath, m_defaultblocksize, stripeid,
-                                      false);
-                        t.detach();
-                    } catch (...) {
-                        std::cout << "error when create push thread\n" << std::endl;
+                        tp2.create_thread(std::bind(inmemorypushtask, res[i], dstip, dstport,m_defaultblocksize,stripeid));
                     }
+                    tp2.join_all();
 
+                    std::ofstream ofs(m_datapath + std::to_string(stripeid));
+                    ofs.write(res[0], m_defaultblocksize * 1024 * 1024);
+                    ofs.flush();
+                    std::cout << "successfully write new global pairty block in stripe " << stripeid
+                              << " to local\n";
+                    for (int i = 0; i < srcnums; ++i) {
+                        delete[] gpbuffer[i];
+                    }
+                    for (int i = 0; i < tonums + 1; ++i) {
+                        delete[] res[i];
+                    }
+                    delete[] gpbuffer;
+                    delete[] res;
+                } else {
+                    //impossible case ?
                 }
             } else if (mode == datanode::OP_CODEC_REUSE) {
                 if (0 != srcnums) {
-
                     int multiby = pow(2, shift);
                     char **gpbuffer = new char *[srcnums];
                     for (int i = 0; i < srcnums; ++i) {
                         gpbuffer[i] = new char[m_defaultblocksize * 1024 * 1024];//packet
                     }
 
-                     //  1 [q1=(2^shift)] q1^2  q1^3...
-                     // 1 [q2=(2^shift)^2] q2^2 ...
+                    //  1 [q1=(2^shift)] q1^2  q1^3...
+                    // 1 [q2=(2^shift)^2] q2^2 ...
 
 
                     int q = multiby;
@@ -600,74 +526,98 @@ namespace lrc {
                         codingmatrix[i * (srcnums) + i + (tonums + 1)] = q;
                         q = galois_single_multiply(q, multiby, shift * 2);
                     }
-
                     boost::thread_group tp;
                     const std::string &localip = uritoipaddr(m_dnfromcn_uri);
                     short listeningport_offset = std::stoi(m_dnfromcn_uri.substr(m_dnfromcn_uri.find(':') + 1)) + 22221;
                     for (int i = 0; i < srcnums; ++i) {
                         //please no flush
                         short port = listeningport_offset + idx * 23;
-                        tp.create_thread(std::bind(pulltask, holdme,
+                        tp.create_thread(std::bind(pulltask,
                                                    localip, port,
                                                    m_datapath, gpbuffer[i],
                                                    m_defaultblocksize, stripeid,
                                                    false));
                     }
-
-                    oneshot_barrier->count_down_and_wait();
+                    tp.join_all();
                     //perform reuse style computation
-                    auto  designedcodingforwardingtask =[_receiving_barrier = receiving_barrier, forwardingtask = inmemorypushtaskwithblocksize,
-                            _tonums = tonums, _srcnums = srcnums,_shift=shift,
-                            _gpbuffer = gpbuffer, _res = res,
-                            _defaultblocksize = m_defaultblocksize, _datapath = m_datapath, _stripeid = stripeid](
-                            std::vector<std::string> _touris,std::vector<int> _codingmatrix) {
-                        _receiving_barrier->count_down_and_wait();
-                        int *bitmatrix = jerasure_matrix_to_bitmatrix((_srcnums), (_srcnums / 2), _shift * 2,
-                                                                      &_codingmatrix[0]);
-                        jerasure_bitmatrix_encode((_srcnums), (_srcnums / 2), _shift*2, bitmatrix, _gpbuffer,
-                                                  _res,
-                                                  _defaultblocksize * 1024 * 1024, sizeof(long));
-                        //forwarding global parities
-                        boost::thread_group tp2;
-                        for (int i = 0; i < _tonums; ++i) {
-                            const std::string &dsturi = _touris[i];
-                            const std::string &dstip = uritoipaddr(dsturi);
-                            short dstport = std::stoi(dsturi.substr(dsturi.find(':') + 1)) + 12220;
-                            tp2.create_thread(std::bind(forwardingtask, _res[i + 1],
-                                                        dstip, dstport));
-                        }
-                        tp2.join_all();
-                        //flush res[0] to local
-                        std::ofstream ofs(_datapath + std::to_string(_stripeid));
-                        ofs.write(_res[0], _defaultblocksize * 1024 * 1024);
-                        ofs.flush();
-                        std::cout << "successfully write new global pairty block in stripe " << _stripeid
-                                  << " to local\n";
-                        for (int i = 0; i < _srcnums; ++i) {
-                            delete[] _gpbuffer[i];
-                        }
-                        for (int i = 0; i < _tonums + 1; ++i) {
-                            delete[] _res[i];
-                        }
-                        delete[] _gpbuffer;
-                        delete[] _res;
-                    };
+                    int *bitmatrix = jerasure_matrix_to_bitmatrix((srcnums), (srcnums / 2), shift * 2,
+                                                                  &codingmatrix[0]);
+                    jerasure_bitmatrix_encode((srcnums), (srcnums / 2), shift * 2, bitmatrix, gpbuffer,
+                                              res,
+                                              m_defaultblocksize * 1024 * 1024, sizeof(long));
+                    //forwarding global parities
+                    boost::thread_group tp2;
+                    for (int i = 0; i < tonums; ++i) {
+                        const std::string &dsturi = request->to(i);
+                        const std::string &dstip = uritoipaddr(dsturi);
+                        short dstport = std::stoi(dsturi.substr(dsturi.find(':') + 1)) + 12220;
+                        tp2.create_thread(std::bind(inmemorypushtask, res[i + 1],
+                                                    dstip, dstport, m_defaultblocksize,stripeid));
+                    }
+                    tp2.join_all();
+                    //flush res[0] to local
+                    std::ofstream ofs(m_datapath + std::to_string(stripeid));
+                    ofs.write(res[0], m_defaultblocksize * 1024 * 1024);
+                    ofs.flush();
+                    std::cout << "successfully write new global pairty block in stripe " << stripeid
+                              << " to local\n";
+                    for (int i = 0; i < srcnums; ++i) {
+                        delete[] gpbuffer[i];
+                    }
+                    for (int i = 0; i < tonums + 1; ++i) {
+                        delete[] res[i];
+                    }
+                    delete[] gpbuffer;
+                    delete[] res;
+
+
                 } else {
-                    //srcnums == 0
-                    //reuse mode but a pure push command
-                    //with deletion
-                    const std::string &dsturi = request->to(0);
-                    const std::string &dstip = uritoipaddr(dsturi);
-                    short dstport = std::stoi(dsturi.substr(dsturi.find(':') + 1)) + 22221 + idx * 23;
-                    std::thread t(pushtask, holdme,
-                                  dstip, dstport,
-                                  m_datapath,
-                                  m_defaultblocksize, stripeid,
-                                  true);
-                    t.detach();
+                    //impossible case ?
+                }
+            }else if(mode == datanode::OP_CODEC_XOR) {
+                //perfrom pull and xor and store
+                char **lpbuffer=new char*[srcnums];
+                char *xorres=new char[m_defaultblocksize*1024*1024];
+                std::fill(xorres,xorres+m_defaultblocksize*1024*1024,0);
+                for(int i=0;i<srcnums;++i)
+                {
+                    lpbuffer[i]=new char[m_defaultblocksize*1024*1024];
                 }
 
-            } else if (mode == datanode::OP_CODEC_XOR) { ;
+                boost::thread_group tp;
+                for(int i=0;i<srcnums;++i)
+                {
+                    const auto & uri = request->from(i);
+                    const auto & srcip = uritoipaddr(uri);
+                    short srcport = std::stoi(uri.substr(uri.find(':')+1))+22220;
+                    tp.create_thread(std::bind(pulltask,srcip,srcport,m_datapath,lpbuffer[i],
+                            m_defaultblocksize,stripeid,false));
+                }
+                tp.join_all();
+
+                //perform xoring
+                for(int i =0;i<srcnums;++i)
+                {
+                    galois_region_xor(lpbuffer[i],xorres,m_defaultblocksize*1024*1024);
+                }
+
+                //flush to local
+                std::ofstream ofs(m_datapath+std::to_string(stripeid));
+                ofs.write(xorres,m_defaultblocksize*1024*1024);
+                ofs.flush();
+                std::cout << "successfully write "<<ofs.tellp()<<"bytes to local as block "<<stripeid<<std::endl;
+
+                //start another thread !
+                //keep alive
+                auto reporttask = [_holdme=holdme,_stripeid=stripeid](){
+                    grpc::ClientContext reportctx;
+                    coordinator::StripeId stripeId;
+                    stripeId.set_stripeid(_stripeid);
+                    coordinator::RequestResult reportres;
+                    _holdme->m_fs_stub->reportblockupload(&reportctx,stripeId,&reportres);
+                };
+                 std::thread report_t(reporttask);
+                 report_t.detach();
             }
         }
         response->set_trueorfalse(true);
@@ -676,18 +626,19 @@ namespace lrc {
 
     //these method used for migration[with deletion]
     grpc::Status
-    FileSystemDN::FromCoordinatorImpl::handlepull(::grpc::ServerContext *context, const::datanode::HandlePullCMD *request,
+    FileSystemDN::FromCoordinatorImpl::handlepull(::grpc::ServerContext *context,
+                                                  const ::datanode::HandlePullCMD *request,
                                                   ::datanode::RequestResult *response) {
-        short port = std::stoi(m_datanodeupload_port)+20000;
-        auto acptptr = prepareacceptor(*this,port);
+        short port = std::stoi(m_datanodeupload_port) + 20000;
+        auto acptptr = prepareacceptor(*this, port);
         auto sockptr = std::make_unique<asio::ip::tcp::socket>(m_ioservice);
-        auto handler = [_sockptr = std::move(sockptr), ptr = std::move(acptptr), defaultblksize = m_defaultblocksize
-               ,datadir=m_datapath]() {
+        auto handler = [_sockptr = std::move(sockptr), ptr = std::move(
+                acptptr), defaultblksize = m_defaultblocksize, datadir = m_datapath]() {
             //move in the outer uniqueptr,it's safe
-            int id=-1;
+            int id = -1;
             std::vector<char> buf(1024 * 1024 * defaultblksize);
             ptr->accept(*_sockptr);
-            asio::read(*_sockptr,asio::buffer(&id,sizeof(id)));
+            asio::read(*_sockptr, asio::buffer(&id, sizeof(id)));
             std::cout << "accept client connection for download block " << id << std::endl;
             if (!std::filesystem::exists(std::filesystem::path{datadir})) {
                 std::cout << "stripe not exists!" << std::endl;
@@ -709,7 +660,6 @@ namespace lrc {
 
 
     }
-
 
 
     FileSystemDN::~FileSystemDN() {
