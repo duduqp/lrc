@@ -177,17 +177,17 @@ namespace lrc {
 
     bool FileSystemCN::FileSystemImpl::initialize() {
         /* set default ecschema initialize all DN stubs , load DN info Cluster info */
-//parse /conf/configuration.xml
+        //parse /conf/configuration.xml
         //parse xml
         pugi::xml_document xdoc;
         xdoc.load_file(m_conf_path.c_str(), pugi::parse_default, pugi::encoding_utf8);
         auto propertynode = xdoc.child("properties").child("property");
-
         for (auto propattr = propertynode.first_attribute(); propattr; propattr = propattr.next_attribute()) {
             auto propname = propattr.name();
             auto propvalue = propattr.value();
             if (std::string{"fs_uri"} == propname) {
                 m_fs_uri = propvalue;
+                std::cout << "my coordinator uri :" << propvalue <<std::endl;
             }
         }
 
@@ -389,16 +389,475 @@ namespace lrc {
         flushhistory();
     }
 
+
+    std::vector<std::tuple<int, int, int>>  FileSystemCN::FileSystemImpl::singlestriperesolve(const std::tuple<int, int, int> & para){
+        std::vector<std::tuple<int, int, int>> ret;
+        auto[k, l, g] = para;
+        int r = k / l;
+
+        //cases
+        //case1:
+        int theta1 = 0;
+        int theta2 = 0;
+
+        if (r <= g) {
+            theta1 = g / r;
+            int i = 0;
+            for (i = 0; i + theta1 <= l; i += theta1) ret.emplace_back(theta1 * r, theta1, 0);
+            if (i < l) {
+                ret.emplace_back((l - i) * r, (l - i), 0);
+            }
+            ret.emplace_back(0, 0, g);
+            ret.emplace_back(-1, theta1, l - i);
+        } else if (0 == (r % (g + 1))) {
+            theta2 = r / (g + 1);
+            for (int i = 0; i < l; ++i) {
+                for (int j = 0; j < theta2; ++j) ret.emplace_back(g + 1, 0, 0);
+            }
+            ret.emplace_back(0, l, g);
+            ret.emplace_back(-1, -1, 0);
+        } else {
+            int m = r % (g + 1);
+            theta2 = r / (g + 1);
+            //each local group remains m data blocks and 1 lp block
+            // m[<=>r] < g -> case1
+            theta1 = g / m;
+            for (int i = 0; i < l; ++i) {
+                for (int j = 0; j < theta2; ++j) {
+                    ret.emplace_back(g + 1, 0, 0);
+                }
+            }
+
+            ret.emplace_back(-1, -1, -1);//acts as a marker
+
+            int i = 0;
+            for (i = 0; i + theta1 <= l; i += theta1) ret.emplace_back(theta1 * m, theta1, 0);
+            if (i < l) {
+                ret.emplace_back((l - i) * m, (l - i), 0);
+            }
+            ret.emplace_back(0, 0, g);
+
+            ret.emplace_back(-1, theta1, l - i);
+        }
+        return ret;
+    }
+
+    std::vector<std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>>
+    FileSystemCN::FileSystemImpl::generatelayout(const std::tuple<int, int, int> &para,
+                                                 FileSystemCN::FileSystemImpl::PLACE placement, int c, int stripenum,
+                                                 int step) {
+
+        std::vector<int> totalcluster(c, 0);
+        std::iota(totalcluster.begin(), totalcluster.end(), 0);
+        std::vector<std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>> stripeslayout;
+        auto[k, l, g] = para;
+        int r = k / l;
+
+        auto layout = singlestriperesolve(para);
+        if (placement == PLACE::SPARSE) {
+            for (int j = 0; j * step < stripenum; ++j) {
+                std::vector<std::vector<int>> datablock_location(step, std::vector<int>(k, -1));
+                std::vector<std::vector<int>> lpblock_location(step, std::vector<int>(l, -1));
+                std::vector<std::vector<int>> gpblock_location(step, std::vector<int>(g, -1));
+                if (r <= g) {
+                    // case1
+                    // s1: D0D1L0 D2D3L1 G0G1G2
+                    // s2: D0D1L0 D2D3L1 G0G1G2
+                    std::vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                    std::random_shuffle(clusters.begin(), clusters.end());
+                    int idx_l = 0;
+                    int idx_d = 0;
+                    int n = 0;
+                    //to pack residue
+                    auto[_ignore1, theta1, res_grpnum] = layout.back();
+
+                    int lim = (0 == res_grpnum ? layout.size() - 2 : layout.size() - 3);
+                    for (int i = 0; i < lim; ++i) {
+                        auto[cluster_k, cluster_l, cluster_g]=layout[i];
+                        for (int u = 0; u < step; ++u) {
+                            int idx_l1 = idx_l;
+                            int idx_d1 = idx_d;
+                            for (int x = 0; x < cluster_l; ++x) {
+                                lpblock_location[u][idx_l1] = clusters[n];
+                                idx_l1++;
+                                for (int m = 0; m < r; ++m) {
+                                    datablock_location[u][idx_d1] = clusters[n];
+                                    idx_d1++;
+                                }
+                            }
+                            n++;
+                        }
+                        idx_d += cluster_k;
+                        idx_l += cluster_l;
+                    }
+
+
+                    if (res_grpnum) {
+                        int cur_res_grp = 0;
+                        for (int x = 0; x < step; ++x) {
+                            if (cur_res_grp + res_grpnum > theta1) {
+                                n++;//next cluster
+                                cur_res_grp = 0;//zero
+                            }
+
+                            int cur_res_idxl = idx_l;
+                            int cur_res_idxd = idx_d;
+
+                            for (int y = 0; y < res_grpnum; ++y) {
+                                lpblock_location[x][cur_res_idxl++] = clusters[n];
+                                for (int i = 0; i < r; ++i) {
+                                    datablock_location[x][cur_res_idxd++] = clusters[n];
+                                }
+                            }
+
+                            cur_res_grp += res_grpnum;
+
+                            //put res_grpnum residue group into cluster
+                        }
+
+                    }
+
+
+                    //global cluster
+                    for (int x = 0; x < step; ++x) {
+                        for (int i = 0; i < g; ++i) gpblock_location[x][i] = clusters[n];
+                        n++;
+                    }
+
+
+                } else if (0 == r % (g + 1)) {
+
+                    //case2
+                    //D0D1D2   D3D4D5   G0G1L0L1
+                    vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                    random_shuffle(clusters.begin(), clusters.end());
+                    int n = 0;
+                    for (int i = 0; i < step; ++i) {
+                        int idxd = 0;
+                        for (int x = 0; x < layout.size() - 2; ++x) {
+                            for (int y = 0; y < g + 1; ++y) {
+                                datablock_location[i][idxd++] = clusters[n];
+                            }
+                            n++;
+                        }
+
+
+                        //g and l parity cluster
+                        for (int x = 0; x < g; ++x) {
+                            gpblock_location[i][x] = clusters[n];
+                        }
+                        for (int x = 0; x < l; ++x) {
+                            lpblock_location[i][x] = clusters[n];
+                        }
+                        n++;
+                    }
+
+
+                } else {
+                    //special case3
+                    vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                    random_shuffle(clusters.begin(), clusters.end());
+                    int residue = find(layout.cbegin(), layout.cend(), tuple<int, int, int>{-1, -1, -1}) - layout.cbegin();
+                    int round = (r / (g + 1)) * (g + 1);
+                    // [round,r)*cursor+lp
+                    auto[_ignore1, pack_cluster_cap, frac_cluster_num] = layout.back();
+                    int s = 0;
+
+
+                    int packed_cluster_num = 0;
+                    int packed_residue = 0;
+                    if (frac_cluster_num) {
+                        packed_cluster_num = (pack_cluster_cap / frac_cluster_num);
+                        packed_residue = step % packed_cluster_num;
+                        s = (0 != packed_residue) ? step / packed_cluster_num + 1 : step / packed_cluster_num;
+                    }//require s clusters to pack the residue groups
+
+
+
+
+                    int n = s;
+                    int m = residue + 1;
+                    int x = 0;
+                    int y = 0;
+                    int cursor = 1;
+                    int lim = (0 == frac_cluster_num ? layout.size() - 2 : layout.size() - 3);
+
+                    //TODO : cache optimization nested for loop
+                    for (; m < lim; ++m) {
+                        auto[residuecluster_k, residuecluster_l, residuecluster_g] = layout[m];
+                        int residuecluster_r = residuecluster_k / residuecluster_l;
+                        for (int u = 0; u < step; ++u) {
+                            int cur_cursor = cursor;
+                            for (x = 0; x < residuecluster_l; ++x) {
+                                for (y = 0; y < residuecluster_r; ++y) {
+                                    datablock_location[u][(cur_cursor - 1) * r + y + round] = clusters[n];
+                                }
+                                lpblock_location[u][cur_cursor - 1] = clusters[n];
+                                cur_cursor++;
+                            }
+                            n++;
+                        }
+                        cursor += residuecluster_l;
+
+                    }
+                    if (frac_cluster_num) {
+                        auto[res_k, res_l, res_g] = layout[m];
+                        int res_r = res_k / res_l;
+                        int cur_back = cursor;
+                        for (int u1 = 0; u1 < step; ++u1) {
+                            cursor = cur_back;
+                            if (0 != u1 && 0 == (u1 % packed_cluster_num)) {
+                                n++;
+                            }
+                            for (int x1 = 0; x1 < res_l; ++x1) {
+                                lpblock_location[u1][cursor - 1] = clusters[n];
+                                for (int y1 = 0; y1 < res_r; ++y1) {
+                                    datablock_location[u1][(cursor - 1) * r + round + y1] = clusters[n];
+                                }
+                                cursor++;
+                            }
+                        }
+                    }
+
+                    n++;
+                    //pack remained
+
+                    for (int u = 0; u < step; ++u) {
+                        for (x = 0; x < l; ++x) {
+                            for (y = 0; y < round; ++y) {
+                                datablock_location[u][x * r + y] = clusters[n];
+                                if (0 == ((y + 1) % (g + 1))) n++;
+                            }
+                        }
+                    }
+                    for (int u = 0; u < step; ++u) {
+                        for (x = 0; x < g; ++x) {
+                            gpblock_location[u][x] = clusters[n];
+                        }
+                        n++;
+                    }
+
+                }
+                for (int i = 0; i < step; ++i) {
+                    stripeslayout.emplace_back(datablock_location[i], lpblock_location[i], gpblock_location[i]);
+                }
+
+                datablock_location.assign(step, vector<int>(k, -1));
+                lpblock_location.assign(step, vector<int>(l, -1));
+                gpblock_location.assign(step, vector<int>(g, -1));
+            }
+        } else if (s == STATEGY::AGGERAGATE) {
+            for (int j = 0; j * step < stripenum; ++j) {
+                vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                random_shuffle(clusters.begin(), clusters.end());
+                vector<int> datablock_location(k, -1);
+                vector<int> lpblock_location(l, -1);
+                vector<int> gpblock_location(g, -1);
+                //ignore tuple if any element <0
+                int idxd = 0;
+                int idxl = 0;
+                int n = 0;
+                int r = k / l;
+                int idxr = 0;
+                int res_idxl = 0;
+                int round = (r / (g + 1)) * (g + 1);
+                for (auto cluster:layout) {
+                    if (auto[_k, _l, _g] = cluster;_k < 0 || _l < 0 || _g < 0) {
+                        continue;
+                    } else {
+                        //put _k data blocks ,_l lp blocks and _g gp blocks into this cluster
+
+                        if (r <= g) {
+                            for (int i = 0; i < _l; ++i) {
+                                lpblock_location[idxl++] = clusters[n];
+                            }
+                            for (int i = 0; i < _k; ++i) {
+                                datablock_location[idxd++] = clusters[n];
+                            }
+                            for (int i = 0; i < _g; ++i) {
+                                gpblock_location[i] = clusters[n];
+                            }
+
+                            n++;
+                        } else if (0 == (r % (g + 1))) {
+                            //inner group index idxr
+                            //group index idxl
+                            //each cluster contain idxl group's subgroup
+                            //D0D1   D2D3    G0L0
+                            //D4D5   D6D7    G1L1
+
+                            for (int i = 0; i < _k; ++i) {
+                                datablock_location[idxl * r + idxr] = clusters[n];
+                                idxr++;
+                            }
+                            if (idxr == r) {
+                                idxl++;//+= theta1
+                                idxr = 0;
+                            }
+                            for (int i = 0; i < _l; ++i) {
+                                lpblock_location[i] = clusters[n];
+                            }
+                            for (int i = 0; i < _g; ++i) {
+                                gpblock_location[i] = clusters[n];
+                            }
+                            n++;
+                        } else {
+                            //special case3
+                            //D0D1D2   D3D4D5   D6L0   G1G2   D7D8D9   D10D11D12   D14D15D16   D17L2
+                            //                  D13L1
+                            if (0 == _l && 0 == _g) {
+                                for (int i = 0; i < _k; ++i) {
+                                    datablock_location[idxl * r + idxr] = clusters[n];
+                                    idxr++;
+
+                                }
+                                if (idxr == round) {
+                                    idxl++;
+                                    idxr = 0;
+                                }
+                            } else if (0 == _g) {
+                                idxr = round;
+                                int res_idxr = idxr;
+                                for (int i = 0; i < _l; ++i) {
+                                    for (int x = 0; x < (_k / _l); ++x) {
+                                        datablock_location[res_idxl * r + res_idxr] = clusters[n];
+                                        res_idxr++;
+                                        if (res_idxr == r) {
+                                            lpblock_location[res_idxl] = clusters[n];
+                                            res_idxl++;
+                                            res_idxr = round;
+                                        }
+                                    }
+                                }
+
+                            } else {
+                                //gp cluster
+                                for (int i = 0; i < _g; ++i) {
+                                    gpblock_location[i] = clusters[n];
+                                }
+                            }
+                            n++;
+
+                        }
+                    }
+                }
+
+                for (int i = 0; i < step; ++i) {
+                    stripeslayout.emplace_back(datablock_location, lpblock_location, gpblock_location);
+                }
+            }
+        } else {
+
+            //random
+            vector<int> clusters(totalcluster.begin(), totalcluster.end());
+            for (int j = 0; j < stripenum; ++j) {
+                random_shuffle(clusters.begin(), clusters.end());
+                vector<int> datablock_location(k, -1);
+                vector<int> lpblock_location(l, -1);
+                vector<int> gpblock_location(g, -1);
+                int n = 0;
+                int idxl = 0;
+                int idxd = 0;
+                int idxr = 0;
+                if (r <= g) {
+                    for (auto cluster:layout) {
+                        auto[_k, _l, _g]=cluster;
+                        if (_k < 0) continue;
+                        for (int x = 0; x < _l; ++x) {
+                            int _r = _k / _l;//_r == r
+                            for (int y = 0; y < _r; ++y) {
+                                datablock_location[idxd] = clusters[n];
+                                idxd++;
+                            }
+                            lpblock_location[idxl] = clusters[n];
+                            idxl++;
+                        }
+
+                        for (int x = 0; x < _g; ++x) {
+                            gpblock_location[x] = clusters[n];
+                        }
+                        n++;
+                    }
+
+                } else if (0 == (r % (g + 1))) {
+
+                    for (auto cluster:layout) {
+                        auto[_k, _l, _g]= cluster;
+                        if (_k < 0 || _l < 0 || _g < 0) continue;
+                        for (int i = 0; i < _k; ++i) {
+                            datablock_location[idxd++] = clusters[n];
+                        }
+                        for (int i = 0; i < _l; ++i) {
+
+                            lpblock_location[idxl++] = clusters[n];
+                        }
+                        for (int i = 0; i < _g; ++i) {
+                            gpblock_location[i] = clusters[n];
+                        }
+                        n++;
+                    }
+                } else {
+                    int round = ((k / l) / (g + 1)) * (g + 1);
+
+                    for (auto cluster:layout) {
+                        auto[_k, _l, _g]= cluster;
+                        if (_k < 0 || _l < 0 || _g < 0) continue;
+                        if (_l == 0 && _g == 0) {
+                            //normal cluster
+                            for (int x = 0; x < g + 1; ++x) {
+                                datablock_location[idxd++] = clusters[n];
+                            }
+                            if (0 == (idxd % round)) {
+                                idxd = (idxd / r + 1) * r;
+                            }
+                            n++;
+                        } else if (_g == 0) {
+                            //residue cluster
+                            for (int x = 0; x < _l; ++x) {
+                                lpblock_location[idxl] = clusters[n];
+                                for (int y = 0; y < (_k / _l); ++y) {
+                                    datablock_location[idxl * r + round + y] = clusters[n];
+                                }
+                                idxl++;
+                            }
+                            n++;
+                        } else {
+                            //gp cluster
+                            for (int x = 0; x < _g; ++x) {
+                                gpblock_location[x] = clusters[n];
+                            }
+                        }
+
+                    }
+
+                }
+                stripeslayout.emplace_back(datablock_location, lpblock_location, gpblock_location);
+
+            }
+
+        }
+        return stripeslayout;
+
+    }
+
     std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
-    FileSystemCN::FileSystemImpl::placement_resolve(ECSchema ecSchema, bool designed_placement) {
+    FileSystemCN::FileSystemImpl::placement_resolve(ECSchema ecSchema, PLACE placement,int start,int step) {
 
-        if (!m_placementpolicy) return random_placement_resolve(ecSchema);
-        static std::vector<std::unordered_set<int>> stripe_local_group_history;
-        static int stripe_global_history = -1;
-
+        //propose step = 3 4 as future work
+        int k=ecSchema.datablk;
+        int l=ecSchema.localparityblk;
+        int g=ecSchema.globalparityblk;
         std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>> ret(3,
-                                                                                                              std::unordered_map<std::string, std::pair<TYPE, bool>>());
         std::vector<int> seq(m_cluster_info.size());
+        if (placement==PLACE::RANDOM){
+            ;
+        }else if(placement==PLACE::COMPACT){
+            ;
+        }else{
+
+        }
+
+                                                                                                              std::unordered_map<std::string, std::pair<TYPE, bool>>());
         if (stripe_local_group_history.empty()) {
             std::set<int> current_stripe_clusters;
             allrandom:
@@ -1557,6 +2016,8 @@ namespace lrc {
 
         return true;
     }
+
+
 //CN in DN implementation
 /*
 grpc::Status FileSystemCN::CoordinatorImpl::reportblocktransfer(::grpc::ServerContext *context,

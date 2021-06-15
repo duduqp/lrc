@@ -56,7 +56,12 @@ message StripeDetail{
 }
 
 message SetPlacementPolicyCMD{
-  bool israndom = 1 ;
+  enum PLACE{
+    COMPACT = 0;
+    RANDOM = 1;
+    SPARSE = 2;
+  }
+  PLACE place = 1;
 }
 message Path{
   string dstpath =1;

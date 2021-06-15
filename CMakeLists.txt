@@ -9,10 +9,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(spdlog_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
 # Protobuf
 set(protobuf_MODULE_COMPATIBLE TRUE)
-find_package(Protobuf CONFIG REQUIRED)
+find_package(protobuf CONFIG REQUIRED)
 message(STATUS "Using protobuf ${protobuf_VERSION}")
 
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
@@ -26,12 +25,13 @@ message(STATUS "Using gRPC ${gRPC_VERSION}")
 
 set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 set(_GRPC_GRPCPP_UNSECURE gRPC::grpc++_unsecure)
+set(_REFLECTION gRPC::grpc++_reflection)
+set(_GRPC_GRPCPP grpc++)
 # Proto file
 get_filename_component(cn_proto "${CMAKE_CURRENT_SOURCE_DIR}/src/proto/coordinator.proto" ABSOLUTE)
-message("${cn_proto}")
 get_filename_component(dn_proto "${CMAKE_CURRENT_SOURCE_DIR}/src/proto/datanode.proto" ABSOLUTE)
-#message("${dn_proto}")
 get_filename_component(cn_proto_path "${cn_proto}" PATH)
+message("${cn_proto}")
 message("${cn_proto_path}")
 
 
@@ -59,10 +59,8 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/proto")
 
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
-message(STATUS "${_REFLECTION}")
-
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost COMPONENTS thread REQUIRED)
+#find_package(Boost COMPONENTS thread REQUIRED)
 
 set(testsrc ${CMAKE_CURRENT_SOURCE_DIR}/test/test.cpp)
 add_executable(unittest ${testsrc})
@@ -82,11 +80,11 @@ foreach (_target
             ${_target}.cpp
             src/ToolBox.cpp)
     target_link_libraries(${_target}
-            #            ${_REFLECTION}
+            ${_REFLECTION}
+            ${_GRPC_GRPCPP}
             ${Boost_LIBRARIES}
-            ${_GRPC_GRPCPP_UNSECURE}
+	    ${_GRPC_GRPCPP_UNSECURE}
             ${_PROTOBUF_LIBPROTOBUF}
-            gRPC::grpc++_reflection
-            -lJerasure -lgf_complete
+            -lJerasure -lgf_complete -lboost_thread
             )
 endforeach ()

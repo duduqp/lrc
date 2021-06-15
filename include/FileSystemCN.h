@@ -36,6 +36,11 @@ namespace lrc {
                 DATA,LP,GP
             };
 
+            enum PLACE{
+                COMPACT,
+                RANDOM,
+                SPARSE
+            };
 
             std::shared_ptr<spdlog::logger> m_cn_logger;
 
@@ -46,8 +51,6 @@ namespace lrc {
             std::string m_fs_uri;
 
             ECSchema m_fs_defaultecschema;
-
-
             //performance issue to refactor as a rw mutex
             std::mutex m_fsimage_mtx;
             std::unordered_map<ECSchema,std::set<int>,ECSchemaHash,ECSchemaCMP> m_fs_stripeschema;//fsimage.xml
@@ -65,7 +68,7 @@ namespace lrc {
             std::map<std::string, std::unique_ptr<datanode::FromCoodinator::Stub>> m_dn_ptrs;
 
             //policy
-            bool m_placementpolicy{false};
+            PLACE m_placementpolicy{PLACE::SPARSE};
             bool askDNhandling(const std::string & dnuri,int stripeid);
         public:
             grpc::Status uploadCheck(::grpc::ServerContext *context, const::coordinator::StripeInfo *request,
@@ -113,19 +116,23 @@ namespace lrc {
 
             void loadhistory();
 
-
             grpc::Status transitionup(::grpc::ServerContext *context, const::coordinator::TransitionUpCMD *request,
                                       ::coordinator::RequestResult *response) override;
 
             grpc::Status reportblockupload(::grpc::ServerContext *context,const coordinator::StripeId *request,
                                              ::coordinator::RequestResult *response) override;
 
+            std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
+            placement_resolve(ECSchema ecSchema, PLACE placement,int start,int step=2);
+
+            std::vector<std::tuple<int, int, int>>  singlestriperesolve(const std::tuple<int, int, int> &);
+
+            std::vector<std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>>
+            generatelayout(const std::tuple<int, int, int> &para,PLACE placement,int start,int stripenum,int step = 2);
+
             void flushhistory();
 
-            std::vector<std::unordered_map<std::string,std::pair<TYPE,bool>>> placement_resolve(ECSchema ecSchema,bool designed_placement=false);
-
             virtual ~FileSystemImpl();
-
 
             grpc::Status listStripe(::grpc::ServerContext *context, const::coordinator::StripeId *request,
                                     ::coordinator::StripeLocation *response) override;
@@ -188,8 +195,6 @@ namespace lrc {
                     const std::tuple<int, std::vector<std::string>, std::vector<std::string>> &migrationplan);
         };
 
-
-
         class CoordinatorImpl final :public coordinator::FromDataNode::Service {
 
             std::shared_ptr<FileSystemImpl> m_fsimpl_ptr;
@@ -201,11 +206,7 @@ namespace lrc {
             CoordinatorImpl();
 
             CoordinatorImpl(const std::shared_ptr<FileSystemImpl> &mFsimplPtr) = delete;
-
-
-
         };
-
 
         void Run() {
             //need a builder
@@ -221,6 +222,7 @@ namespace lrc {
             builder.RegisterService(&m_fsimpl);
             // Finally assemble the server.
             std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
+            std::cout << fsimpl_rpc_uri <<std::endl;
             m_cn_logger->info("Server listening on {}", fsimpl_rpc_uri);
 
             // Wait for the server to shutdown. Note that some other thread must be
@@ -248,20 +250,13 @@ namespace lrc {
 
         //impl
         FileSystemImpl m_fsimpl;
-
         CoordinatorImpl m_cnimpl;
         std::shared_ptr<spdlog::logger> m_cn_logger;
-
-
         bool syncFileSystem() {
             //this func restore file system to last recorded history version
             //specifically , this function will enforce DNs to delete extra blocks
         }
-
-
     };
-
-
 }
 
 
