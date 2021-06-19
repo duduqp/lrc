@@ -24,7 +24,7 @@ namespace lrc{
 
     struct ECSchemaHash{
         std::size_t operator()(const ECSchema & ecSchema)const {
-            return std::hash<int>()(ecSchema.datablk)+std::hash<int>()(ecSchema.localparityblk)+std::hash<int>()(ecSchema.globalparityblk);
+            return std::hash<size_t>()(std::hash<int>()(ecSchema.datablk)+std::hash<int>()(ecSchema.localparityblk)+std::hash<int>()(ecSchema.globalparityblk));
         }
     };
 

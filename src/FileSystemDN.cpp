@@ -49,7 +49,7 @@ namespace lrc {
             if (!std::filesystem::exists(std::filesystem::path{datadir})) std::filesystem::create_directory(datadir);
             std::cout << datadir + std::to_string(id) << std::endl;
             std::ofstream ofs(datadir + std::to_string(id), std::ios::binary | std::ios::out | std::ios::trunc);
-            ofs.write(&buf[0], 1024 * 1024 * 64);
+            ofs.write(&buf[0], 1024 * 1024 * defaultblksize);
             std::cout << "successfully write : " << ofs.tellp() << "bytes" << std::endl;
             ofs.flush();
             grpc::ClientContext reportctx;
@@ -243,16 +243,12 @@ namespace lrc {
         m_fs_stub = std::move(coordinator::FileSystem::NewStub(grpc::CreateChannel(
                 m_fs_uri, grpc::InsecureChannelCredentials()
         )));
-        m_cnfromdn_stub = std::move(coordinator::FromDataNode::NewStub(grpc::CreateChannel(
-                m_fs_uri, grpc::InsecureChannelCredentials()
-        )));
 
         return true;
     }
 
     std::shared_ptr<lrc::FileSystemDN::FromCoordinatorImpl> FileSystemDN::FromCoordinatorImpl::get_sharedholder() {
         return shared_from_this();
-
     }
 
     FileSystemDN::FromCoordinatorImpl::FromCoordinatorImpl() {
@@ -288,7 +284,7 @@ namespace lrc {
             }
             std::ifstream ifs(datadir + std::to_string(id), std::ios::binary | std::ios::in);
             ifs.seekg(0);
-            ifs.read(&buf[0], 1024 * 1024 * 64);
+            ifs.read(&buf[0], 1024 * 1024 * defaultblksize);
             std::cout << "successfully read : " << ifs.tellg() << "bytes from " << datadir + std::to_string(id)
                       << std::endl;
             asio::write(*_sockptr, asio::buffer(buf, defaultblksize * 1024 * 1024));

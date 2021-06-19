@@ -36,7 +36,8 @@ namespace lrc {
         std::unique_lock ulk2(m_fsimage_mtx);
         int stripeid = m_fs_nextstripeid++;
         auto retstripeloc = response->mutable_stripelocation();
-        std::vector<std::unordered_map<std::string, std::pair<TYPE, bool>>> cand;
+        auto[cand_dn, cand_lp, cand_gp] = placement_resolve(
+                {request->stripe_k(), request->stripe_l(), request->stripe_g(), 64}, m_placementpolicy);
         if (m_fs_image.count(stripeid)) {
             ulk2.unlock();
             goto addstripelocation;
@@ -46,13 +47,16 @@ namespace lrc {
             if (stripe_in_updating.count(stripeid)) {
                 return grpc::Status::CANCELLED;
             }
-            cand = placement_resolve({request->stripe_k(), request->stripe_l(), request->stripe_g(), 64});
 
             std::unordered_map<std::string, std::pair<TYPE, bool>> combined;
-            for (int i = 0; i < cand.size(); ++i) {
-                for (auto node:cand[i]) {
-                    combined.insert(node);
-                }
+            for (const auto &dn : cand_dn) {
+                combined.insert(dn);
+            }
+            for (const auto &lp : cand_lp) {
+                combined.insert(lp);
+            }
+            for (const auto &gp : cand_gp) {
+                combined.insert(gp);
             }
             stripe_in_updating.insert({stripeid, combined});
             stripe_in_updatingcounter[stripeid] = stripe_in_updating[stripeid].size();
@@ -63,22 +67,15 @@ namespace lrc {
             m_cn_logger->info("{}", c.first);
         }
         addstripelocation:
-
-        //test hook
-
-//        askDNhandling("192.168.0.20:10001",0);
-
-
-
-        for (auto p:cand[0]) {
+        for (auto p:cand_dn) {
             retstripeloc->add_dataloc(p.first);
             if (!askDNhandling(p.first, stripeid)) return grpc::Status::CANCELLED;
         }
-        for (auto p:cand[1]) {
+        for (auto p:cand_lp) {
             retstripeloc->add_localparityloc(p.first);
             if (!askDNhandling(p.first, stripeid)) return grpc::Status::CANCELLED;
         }
-        for (auto p:cand[2]) {
+        for (auto p:cand_gp) {
             retstripeloc->add_globalparityloc(p.first);
             if (!askDNhandling(p.first, stripeid)) return grpc::Status::CANCELLED;
         }
@@ -187,7 +184,7 @@ namespace lrc {
             auto propvalue = propattr.value();
             if (std::string{"fs_uri"} == propname) {
                 m_fs_uri = propvalue;
-                std::cout << "my coordinator uri :" << propvalue <<std::endl;
+                std::cout << "my coordinator uri :" << propvalue << std::endl;
             }
         }
 
@@ -390,7 +387,8 @@ namespace lrc {
     }
 
 
-    std::vector<std::tuple<int, int, int>>  FileSystemCN::FileSystemImpl::singlestriperesolve(const std::tuple<int, int, int> & para){
+    std::vector<std::tuple<int, int, int>>
+    FileSystemCN::FileSystemImpl::singlestriperesolve(const std::tuple<int, int, int> &para) {
         std::vector<std::tuple<int, int, int>> ret;
         auto[k, l, g] = para;
         int r = k / l;
@@ -444,9 +442,10 @@ namespace lrc {
 
     std::vector<std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>>
     FileSystemCN::FileSystemImpl::generatelayout(const std::tuple<int, int, int> &para,
-                                                 FileSystemCN::FileSystemImpl::PLACE placement, int c, int stripenum,
+                                                 FileSystemCN::FileSystemImpl::PLACE placement, int stripenum,
                                                  int step) {
 
+        int c = m_cluster_info.size();
         std::vector<int> totalcluster(c, 0);
         std::iota(totalcluster.begin(), totalcluster.end(), 0);
         std::vector<std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>> stripeslayout;
@@ -490,8 +489,6 @@ namespace lrc {
                         idx_d += cluster_k;
                         idx_l += cluster_l;
                     }
-
-
                     if (res_grpnum) {
                         int cur_res_grp = 0;
                         for (int x = 0; x < step; ++x) {
@@ -509,28 +506,20 @@ namespace lrc {
                                     datablock_location[x][cur_res_idxd++] = clusters[n];
                                 }
                             }
-
                             cur_res_grp += res_grpnum;
-
                             //put res_grpnum residue group into cluster
                         }
-
                     }
-
-
                     //global cluster
                     for (int x = 0; x < step; ++x) {
                         for (int i = 0; i < g; ++i) gpblock_location[x][i] = clusters[n];
                         n++;
                     }
-
-
                 } else if (0 == r % (g + 1)) {
-
                     //case2
                     //D0D1D2   D3D4D5   G0G1L0L1
-                    vector<int> clusters(totalcluster.begin(), totalcluster.end());
-                    random_shuffle(clusters.begin(), clusters.end());
+                    std::vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                    std::random_shuffle(clusters.begin(), clusters.end());
                     int n = 0;
                     for (int i = 0; i < step; ++i) {
                         int idxd = 0;
@@ -540,8 +529,6 @@ namespace lrc {
                             }
                             n++;
                         }
-
-
                         //g and l parity cluster
                         for (int x = 0; x < g; ++x) {
                             gpblock_location[i][x] = clusters[n];
@@ -551,19 +538,16 @@ namespace lrc {
                         }
                         n++;
                     }
-
-
                 } else {
                     //special case3
-                    vector<int> clusters(totalcluster.begin(), totalcluster.end());
-                    random_shuffle(clusters.begin(), clusters.end());
-                    int residue = find(layout.cbegin(), layout.cend(), tuple<int, int, int>{-1, -1, -1}) - layout.cbegin();
+                    std::vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                    std::random_shuffle(clusters.begin(), clusters.end());
+                    int residue = std::find(layout.cbegin(), layout.cend(), std::tuple<int, int, int>{-1, -1, -1}) -
+                                  layout.cbegin();
                     int round = (r / (g + 1)) * (g + 1);
                     // [round,r)*cursor+lp
                     auto[_ignore1, pack_cluster_cap, frac_cluster_num] = layout.back();
                     int s = 0;
-
-
                     int packed_cluster_num = 0;
                     int packed_residue = 0;
                     if (frac_cluster_num) {
@@ -571,10 +555,6 @@ namespace lrc {
                         packed_residue = step % packed_cluster_num;
                         s = (0 != packed_residue) ? step / packed_cluster_num + 1 : step / packed_cluster_num;
                     }//require s clusters to pack the residue groups
-
-
-
-
                     int n = s;
                     int m = residue + 1;
                     int x = 0;
@@ -642,17 +622,17 @@ namespace lrc {
                     stripeslayout.emplace_back(datablock_location[i], lpblock_location[i], gpblock_location[i]);
                 }
 
-                datablock_location.assign(step, vector<int>(k, -1));
-                lpblock_location.assign(step, vector<int>(l, -1));
-                gpblock_location.assign(step, vector<int>(g, -1));
+                datablock_location.assign(step, std::vector<int>(k, -1));
+                lpblock_location.assign(step, std::vector<int>(l, -1));
+                gpblock_location.assign(step, std::vector<int>(g, -1));
             }
-        } else if (s == STATEGY::AGGERAGATE) {
+        } else if (placement == PLACE::COMPACT) {
             for (int j = 0; j * step < stripenum; ++j) {
-                vector<int> clusters(totalcluster.begin(), totalcluster.end());
-                random_shuffle(clusters.begin(), clusters.end());
-                vector<int> datablock_location(k, -1);
-                vector<int> lpblock_location(l, -1);
-                vector<int> gpblock_location(g, -1);
+                std::vector<int> clusters(totalcluster.begin(), totalcluster.end());
+                std::random_shuffle(clusters.begin(), clusters.end());
+                std::vector<int> datablock_location(k, -1);
+                std::vector<int> lpblock_location(l, -1);
+                std::vector<int> gpblock_location(g, -1);
                 //ignore tuple if any element <0
                 int idxd = 0;
                 int idxl = 0;
@@ -709,7 +689,6 @@ namespace lrc {
                                 for (int i = 0; i < _k; ++i) {
                                     datablock_location[idxl * r + idxr] = clusters[n];
                                     idxr++;
-
                                 }
                                 if (idxr == round) {
                                     idxl++;
@@ -729,7 +708,6 @@ namespace lrc {
                                         }
                                     }
                                 }
-
                             } else {
                                 //gp cluster
                                 for (int i = 0; i < _g; ++i) {
@@ -737,7 +715,6 @@ namespace lrc {
                                 }
                             }
                             n++;
-
                         }
                     }
                 }
@@ -749,12 +726,12 @@ namespace lrc {
         } else {
 
             //random
-            vector<int> clusters(totalcluster.begin(), totalcluster.end());
+            std::vector<int> clusters(totalcluster.begin(), totalcluster.end());
             for (int j = 0; j < stripenum; ++j) {
-                random_shuffle(clusters.begin(), clusters.end());
-                vector<int> datablock_location(k, -1);
-                vector<int> lpblock_location(l, -1);
-                vector<int> gpblock_location(g, -1);
+                std::random_shuffle(clusters.begin(), clusters.end());
+                std::vector<int> datablock_location(k, -1);
+                std::vector<int> lpblock_location(l, -1);
+                std::vector<int> gpblock_location(g, -1);
                 int n = 0;
                 int idxl = 0;
                 int idxd = 0;
@@ -778,9 +755,7 @@ namespace lrc {
                         }
                         n++;
                     }
-
                 } else if (0 == (r % (g + 1))) {
-
                     for (auto cluster:layout) {
                         auto[_k, _l, _g]= cluster;
                         if (_k < 0 || _l < 0 || _g < 0) continue;
@@ -832,109 +807,155 @@ namespace lrc {
 
                 }
                 stripeslayout.emplace_back(datablock_location, lpblock_location, gpblock_location);
-
             }
-
         }
         return stripeslayout;
-
     }
 
-    std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
-    FileSystemCN::FileSystemImpl::placement_resolve(ECSchema ecSchema, PLACE placement,int start,int step) {
-
-        //propose step = 3 4 as future work
-        int k=ecSchema.datablk;
-        int l=ecSchema.localparityblk;
-        int g=ecSchema.globalparityblk;
-        std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>> ret(3,
-        std::vector<int> seq(m_cluster_info.size());
-        if (placement==PLACE::RANDOM){
-            ;
-        }else if(placement==PLACE::COMPACT){
-            ;
-        }else{
-
-        }
-
-                                                                                                              std::unordered_map<std::string, std::pair<TYPE, bool>>());
-        if (stripe_local_group_history.empty()) {
-            std::set<int> current_stripe_clusters;
-            allrandom:
-            //random
-            //only maintain one cluster one local group
-            int total_cluster = m_cluster_info.size();
-            int local_group = ecSchema.localparityblk;
-
-            if (total_cluster < local_group) {
-                m_cn_logger->error("too few clusters!");
-                return ret;
-            }
-            //pick l cluster to hold
-            std::iota(seq.begin(), seq.end(), 0);
-            std::random_shuffle(seq.begin(), seq.end());
-        } else {
-            std::unordered_set<int> black_list;
-            for (auto s : stripe_local_group_history) {
-                black_list.merge(s);
-            }
-            black_list.insert(stripe_global_history);
-            seq.clear();
-            int candidate = 0;
-            while (candidate < m_cluster_info.size() && seq.size() < ecSchema.localparityblk) {
-                if (black_list.contains(candidate)) {
-                    candidate++;
-                } else {
-                    seq.push_back(candidate);
+    std::vector<FileSystemCN::FileSystemImpl::SingleStripeLayout>
+    FileSystemCN::FileSystemImpl::layout_convert_helper(
+            std::vector<SingleStripeLayout_bycluster> &layout, int step) {
+        //{c0,c0,c0,c1,c1,c1...}{...}{cn,cn,cn,...} -> {d00 d01 d02,d10,d11,d12,...}
+        std::vector<SingleStripeLayout> ret;
+        for (int j = 0; j * step < layout.size(); ++j) {
+            std::unordered_map<int, int> cluster_counter;
+            std::unordered_set<int> done;
+            for (int i = 0; i < step; ++i) {
+                const auto &[data_cluster, lp_cluster, gp_cluster] = layout[j * step + i];
+                for (auto c:data_cluster) {
+                    if (cluster_counter.contains(c)) {
+                        cluster_counter[c]++;
+                    } else {
+                        cluster_counter[c] = 1;
+                    }
+                }
+                for (auto c:lp_cluster) {
+                    if (cluster_counter.contains(c)) {
+                        cluster_counter[c]++;
+                    } else {
+                        cluster_counter[c] = 1;
+                    }
+                }
+                for (auto c:gp_cluster) {
+                    if (cluster_counter.contains(c)) {
+                        cluster_counter[c]++;
+                    } else {
+                        cluster_counter[c] = 1;
+                    }
                 }
             }
-            std::random_shuffle(seq.begin(), seq.end());
-            seq.push_back(stripe_global_history);
-        }
-
-        for (int i = 0; i < ecSchema.localparityblk; ++i) {
-            int cluster_dn_num = m_cluster_info[seq[i]].datanodesuri.size();
-            assert(cluster_dn_num > ecSchema.globalparityblk);
-            std::vector<int> dns(cluster_dn_num);
-            std::iota(dns.begin(), dns.end(), 0);
-            std::random_shuffle(dns.begin(), dns.end());
-            for (int j = 0; j < ecSchema.globalparityblk; ++j) {
-                ret[0].insert({m_cluster_info[seq[i]].datanodesuri[dns[j]], {TYPE::DATA, false}});
+            std::unordered_map<int, std::vector<std::string>> picked_nodes;
+            for (auto c:cluster_counter) {
+                std::vector<std::string> picked;
+                std::sample(m_cluster_info[c.first].datanodesuri.cbegin(), m_cluster_info[c.first].datanodesuri.cend(),
+                            std::back_inserter(picked_nodes), c.second, std::mt19937{std::random_device{}()});
+                picked_nodes.insert({c.first, picked});
             }
-            ret[1].insert({m_cluster_info[seq[i]].datanodesuri[dns[ecSchema.globalparityblk]], {TYPE::LP, false}});
-        }
-        std::vector<int> global_parities(m_cluster_info[seq[ecSchema.localparityblk]].datanodesuri.size());
-        std::iota(global_parities.begin(), global_parities.end(), 0);
-        std::random_shuffle(global_parities.begin(), global_parities.end());
-        assert(global_parities.size() >= ecSchema.globalparityblk);
-        for (int j = 0; j < ecSchema.globalparityblk; ++j) {
-            ret[2].insert(
-                    {m_cluster_info[seq[ecSchema.localparityblk]].datanodesuri[global_parities[j]], {TYPE::GP, false}});
-        }
+            std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> data_nodes;
+            std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> lp_nodes;
+            std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> gp_nodes;
+            //second pass
+            for (int i = 0; i < step; ++i) {
+                const auto &[data_cluster, lp_cluster, gp_cluster] = layout[j * step + i];
+                for (auto c:data_cluster) {
+                    data_nodes.insert({picked_nodes[c][cluster_counter[c]--], std::make_pair(TYPE::DATA, false)});
+                }
 
-        if (stripe_local_group_history.empty()) {
-            stripe_local_group_history.push_back(
-                    std::unordered_set<int>(seq.begin(), seq.begin() + ecSchema.localparityblk));
-            stripe_global_history = seq[ecSchema.localparityblk];
-        } else {
-            // if 2-merge pattern , then stripe history size up to 1
-            stripe_local_group_history.clear();
-            stripe_global_history = -1;
-        }
-        for (auto d:ret[0]) {
-            std::cout << "datanodes : " << d.first;
-        }
-        std::cout << "\n";
-        for (auto lp:ret[1]) {
-            std::cout << "lps : " << lp.first;
-        }
-        std::cout << "\n";
+                for (auto c:lp_cluster) {
+                    lp_nodes.insert({picked_nodes[c][cluster_counter[c]--], std::make_pair(TYPE::LP, false)});
+                }
 
-        for (auto gp:ret[2]) {
-            std::cout << "gps : " << gp.first;
+                for (auto c:gp_cluster) {
+                    gp_nodes.insert({picked_nodes[c][cluster_counter[c]--], std::make_pair(TYPE::GP, false)});
+                }
+                ret.emplace_back(data_nodes, lp_nodes, gp_nodes);
+            }
         }
-        std::cout << "\n";
         return ret;
+    }
+
+    FileSystemCN::FileSystemImpl::SingleStripeLayout
+    FileSystemCN::FileSystemImpl::placement_resolve(ECSchema ecSchema,
+                                                    PLACE placement) {
+
+        //propose step = 3 4 as future work
+        //move correspoding cursor
+        if (placement == PLACE::RANDOM) {
+            if (random_placement_layout_cursor.contains(ecSchema)) {
+                //if require resize
+                int cursor = random_placement_layout_cursor[ecSchema];
+                if (cursor == random_placement_layout[ecSchema].size()) {
+                    //double size
+                    int appendsize = cursor;
+                    auto genentry = generatelayout(
+                            {ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
+                            PLACE::RANDOM, appendsize);
+                    auto appendentry = layout_convert_helper(genentry);
+                    random_placement_layout[ecSchema].insert(random_placement_layout[ecSchema].cend(),
+                                                             appendentry.cbegin(), appendentry.cend());
+                }
+                return random_placement_layout[ecSchema][cursor++];
+            } else {
+                //initially 100 stripes
+                //resize double ...
+                auto initentry = generatelayout({ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
+                                                PLACE::RANDOM, 100);
+                random_placement_layout.insert({ecSchema,
+                                                layout_convert_helper(initentry)});
+                random_placement_layout_cursor[ecSchema] = 0;
+                return random_placement_layout[ecSchema][random_placement_layout_cursor[ecSchema]++];
+            }
+        } else if (placement == PLACE::COMPACT) {
+            if (compact_placement_layout_cursor.contains(ecSchema)) {
+                //if require resize
+                int cursor = compact_placement_layout_cursor[ecSchema];
+                if (cursor == compact_placement_layout[ecSchema].size()) {
+                    //double size
+                    int appendsize = cursor;
+                    auto genentry = generatelayout(
+                            {ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
+                            PLACE::COMPACT, appendsize);
+                    auto appendentry = layout_convert_helper(genentry);
+                    compact_placement_layout[ecSchema].insert(compact_placement_layout[ecSchema].cend(),
+                                                              appendentry.cbegin(), appendentry.cend());
+                }
+                return compact_placement_layout[ecSchema][cursor++];
+            } else {
+                //initially 100 stripes
+                //resize double ...
+                auto initentry = generatelayout({ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
+                                                PLACE::COMPACT, 100);
+                compact_placement_layout.insert({ecSchema,
+                                                 layout_convert_helper(initentry)});
+                compact_placement_layout_cursor[ecSchema] = 0;
+                return compact_placement_layout[ecSchema][random_placement_layout_cursor[ecSchema]++];
+            }
+        } else {
+            if (sparse_placement_layout_cursor.contains(ecSchema)) {
+                //if require resize
+                int cursor = sparse_placement_layout_cursor[ecSchema];
+                if (cursor == sparse_placement_layout[ecSchema].size()) {
+                    //double size
+                    int appendsize = cursor;
+                    auto genentry = generatelayout(
+                            {ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
+                            PLACE::SPARSE, appendsize);
+                    auto appendentry = layout_convert_helper(genentry);
+                    sparse_placement_layout[ecSchema].insert(random_placement_layout[ecSchema].cend(),
+                                                             appendentry.cbegin(), appendentry.cend());
+                }
+                return sparse_placement_layout[ecSchema][cursor++];
+            } else {
+                //initially 100 stripes
+                //resize double ...
+                auto initentry = generatelayout({ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
+                                                PLACE::SPARSE, 100);
+                sparse_placement_layout.insert({ecSchema,
+                                                layout_convert_helper(initentry)});
+                sparse_placement_layout_cursor[ecSchema] = 0;
+                return sparse_placement_layout[ecSchema][random_placement_layout_cursor[ecSchema]++];
+            }
+        }
     }
 
     grpc::Status
@@ -1288,36 +1309,31 @@ namespace lrc {
         // {stripeid, fromnodes, codingnodes, tonodes}
         using XORCodingPlan = std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>;
         using LRCCodingPlan = std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>;
+
+        using ForwardingPlan = std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>;;
         coordinator::TransitionUpCMD_MODE mode = request->mode();
-
-
         if (mode == coordinator::TransitionUpCMD_MODE_BASIC) {
             //pick one cluster and one node as a gp-node in that cluster (simplified , just pick one from original g nodes in odd stripe)
             auto[migration_plans, coding_plans] = generate_basic_transition_plan(m_fs_image);
             std::cout << "transition up in basic mode ...." << std::endl;
             //display plans
-            for(const auto  & migration_plan:migration_plans)
-            {
-                int thisstripe=std::get<0>(migration_plan);
-                const auto & src = std::get<1>(migration_plan);
-                const auto & dst = std::get<2>(migration_plan);
-                std::cout << "for new stripe " << thisstripe<<std::endl;
-                std::cout << "stripe" <<  thisstripe+1 << "migrated out : "<<std::endl;
-                for(const auto & out : src)
-                {
+            for (const auto &migration_plan:migration_plans) {
+                int thisstripe = std::get<0>(migration_plan);
+                const auto &src = std::get<1>(migration_plan);
+                const auto &dst = std::get<2>(migration_plan);
+                std::cout << "for new stripe " << thisstripe << std::endl;
+                std::cout << "stripe" << thisstripe + 1 << "migrated out : " << std::endl;
+                for (const auto &out : src) {
                     std::cout << out << "\t";
                 }
                 std::cout << std::endl;
-                std::cout << "stripe" <<  thisstripe << "migrated in : "<<std::endl;
-                std::cout << "migrated in : "<<std::endl;
-                for(const auto & in : dst)
-                {
+                std::cout << "stripe" << thisstripe << "migrated in : " << std::endl;
+                std::cout << "migrated in : " << std::endl;
+                for (const auto &in : dst) {
                     std::cout << in << "\t";
                 }
                 std::cout << std::endl;
             }
-
-
 
 
             int g = 1;
@@ -1484,7 +1500,7 @@ namespace lrc {
 
                 //begin xor plan
                 std::cout << "migration completed! then perform xoring\n";
-                std::cout << "xoring task :" << xor_nodes.size()<<std::endl;
+                std::cout << "xoring task :" << xor_nodes.size() << std::endl;
 
                 if (xor_nodes.size()) stripe_in_updatingcounter[stripeid] = xor_nodes.size();
                 for (int j = 0; j < xor_nodes.size(); ++j) {
@@ -1546,97 +1562,51 @@ namespace lrc {
                 const auto &touris = std::get<4>(plan);
                 int stripeid = std::get<0>(plan);
                 int shift = std::get<1>(plan);
-                op.
-                        set_op(datanode::OP_CODEC_REUSE);
-                op.
-                        set_stripeid(stripeid);
-                op.
-                        add_multiby(shift);
-                for (
-                        int i = 0;
-                        i < fromuris.
-
-                                size();
-
-                        ++i) {
-                    op.
-                            add_from(fromuris[i]);
+                op.set_op(datanode::OP_CODEC_REUSE);
+                op.set_stripeid(stripeid);
+                op.add_multiby(shift);
+                for (int i = 0;i < fromuris.size();++i) {
+                    op.add_from(fromuris[i]);
                 }
-                for (
-                    const auto &node
-                        : touris) {
+                for (const auto &node: touris) {
                     grpc::ClientContext handlingpullctx;
                     datanode::RequestResult handlingpullres;
-
 //so working_node only need to forward to 12220
                     datanode::UploadCMD uploadCmd;
                     grpc::Status status2;
                     status2 = m_dn_ptrs[node]->handleupload(&handlingpullctx, uploadCmd, &handlingpullres);
-                    if (!status2.
-
-                            ok()
-
-                            ) {
+                    if (!status2.ok()) {
                         std::cout << "ask for pull failed\n";
                         m_cn_logger->warn("{} handling pull failed", node);
-                        return
-                                status2;
+                        return status2;
                     }
-                    op.
-                            add_to(node);
+                    op.add_to(node);
                 }
-
                 grpc::Status status;
                 status = m_dn_ptrs[workingnode]->pull_perform_push(&pppctx, op, &pppres);
-                if (!status.
-
-                        ok()
-
-                        ) {
+                if (!status.ok()) {
                     std::cout << "perform ppp failed\n";
                     m_cn_logger->warn("{} perform ppp failed ", workingnode);
-                    return
-                            status;
+                    return status;
                 }
-
-                for (
-                        int i = 0;
-                        i < fromuris.
-
-                                size();
-
-                        ++i) {
+                for (int i = 0;i < fromuris.size();++i) {
                     grpc::ClientContext handlingpushctx;
                     datanode::RequestResult handlingpushres;
                     datanode::OP op2;
                     grpc::Status status2;
-                    if (2 * i < fromuris.
-
-                            size()
-
-                            ) {
-                        op2.
-                                set_stripeid(stripeid);
+                    if (2 * i < fromuris.size()) {
+                        op2.set_stripeid(stripeid);
                     } else {
-                        op2.
-                                set_stripeid(stripeid
-                                             + 1);
+                        op2.set_stripeid(stripeid+1);
                     }
-                    op2.
-                            set_op(datanode::OP_CODEC_REUSE);
-                    op2.
-                            add_to(workingnode);
+                    op2.set_op(datanode::OP_CODEC_REUSE);
+                    op2.add_to(workingnode);
 //                    op2.set_index(i);
                     status2 = m_dn_ptrs[fromuris[i]]->pull_perform_push(&handlingpushctx, op2, &handlingpushres);
-                    if (!status2.
-
-                            ok()
-
-                            ) {
+                    if (!status2.ok()) {
                         std::cout << "ask for push failed\n";
                         m_cn_logger->warn("{} handling push failed", fromuris[i]);
-                        return
-                                status;
+                        return status;
                     }
                 }
 
@@ -1645,7 +1615,6 @@ namespace lrc {
                 rename_block_to(stripeid
                                 + 1, stripeid, skipset);
 
-
                 std::cout << "complete designed transition plan for stripe " << stripeid << " and "
                           << stripeid + 1 <<
                           std::endl;
@@ -1653,11 +1622,9 @@ namespace lrc {
             std::cout << "transition over\n";
 //modify metainfo
 //...
-            return
-                    grpc::Status::OK;
+            return grpc::Status::OK;
         }
-        return
-                grpc::Status::OK;
+        return grpc::Status::OK;
     }
 
     std::pair<std::vector<std::tuple<int, std::vector<std::string>, std::vector<std::string >>>,
@@ -1719,7 +1686,7 @@ namespace lrc {
             std::unordered_set<int> consideronce;
             for (; u < k; ++u) {
                 int c = m_dn_info[fsimage[i][u]].clusterid;
-                if (excluded.contains(c)||candg.contains(c)) {
+                if (excluded.contains(c) || candg.contains(c)) {
                     if (!consideronce.contains(c)) {
                         overlap.push_back(c);
                         consideronce.insert(c);
@@ -1730,7 +1697,7 @@ namespace lrc {
             ++u;
             for (; fsimage[i][u] != "l"; ++u) {
                 int c = m_dn_info[fsimage[i][u]].clusterid;
-                if (excluded.contains(c)||candg.contains(c)) {
+                if (excluded.contains(c) || candg.contains(c)) {
                     if (!consideronce.contains(c)) {
                         overlap.push_back(c);
                         consideronce.insert(c);
@@ -1876,40 +1843,17 @@ namespace lrc {
         return true;
     }
 
-    grpc::Status FileSystemCN::FileSystemImpl::setplacementpolicy(::grpc::ServerContext *context,
-                                                                  const ::coordinator::SetPlacementPolicyCMD *request,
-                                                                  ::coordinator::RequestResult *response) {
-        m_placementpolicy = (!request->israndom());
-        return grpc::Status::OK;
-    }
-
-    std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
-    FileSystemCN::FileSystemImpl::random_placement_resolve(ECSchema schema) {
-        std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>> ret(3);
-        int totalcluster = m_cluster_info.size();
-        std::vector<int> total(totalcluster, 0);
-        std::iota(total.begin(), total.end(), 0);
-        std::random_shuffle(total.begin(), total.end());
-        //pick first l+1 cluster
-        int i = 0;
-        for (; i < schema.localparityblk; ++i) {
-            std::vector<std::string> thiscluster(m_cluster_info[total[i]].datanodesuri);
-            std::random_shuffle(thiscluster.begin(), thiscluster.end());
-            int j = 0;
-            for (; j < schema.globalparityblk; ++j) {
-                ret[0].insert({thiscluster[j], {FileSystemCN::FileSystemImpl::TYPE::DATA, false}});
-            }
-            ret[1].insert({thiscluster[j], {FileSystemCN::FileSystemImpl::TYPE::LP, false}});
+    grpc::Status
+    FileSystemCN::FileSystemImpl::setplacementpolicy(::grpc::ServerContext *context,
+                                                     const ::coordinator::SetPlacementPolicyCMD *request,
+                                                     ::coordinator::RequestResult *response) {
+        if (coordinator::SetPlacementPolicyCMD_PLACE_RANDOM == request->place()) {
+            m_placementpolicy = PLACE::RANDOM;
+        } else if (coordinator::SetPlacementPolicyCMD_PLACE_COMPACT == request->place()) {
+            m_placementpolicy = PLACE::COMPACT;
+        } else {
+            m_placementpolicy = PLACE::SPARSE;
         }
-
-        //pick next cluster as gp
-        std::vector<std::string> lastcluster(m_cluster_info[total[i]].datanodesuri);
-        std::random_shuffle(lastcluster.begin(), lastcluster.end());
-        int j = 0;
-        for (; j < schema.globalparityblk; ++j) {
-            ret[2].insert({lastcluster[j], {FileSystemCN::FileSystemImpl::TYPE::GP, false}});
-        }
-        return ret;
     }
 
     bool FileSystemCN::FileSystemImpl::refreshfilesystemimagebasic(
@@ -1934,11 +1878,10 @@ namespace lrc {
             be_migratedset_to_dst[be_migrated[i]] = dst_migrated[i];
         }
         std::vector<std::string> total_datanodeset;
-        for(int i=0;i<total_node.size()/2;++i)
-        {
+        for (int i = 0; i < total_node.size() / 2; ++i) {
             new_stripelocation[j++] = total_node[i];
         }
-        for (int i=total_node.size()/2;i<total_node.size();++i) {
+        for (int i = total_node.size() / 2; i < total_node.size(); ++i) {
             //all datanodes in both stripe
             if (be_migratedset_to_dst.contains(total_node[i])) {
                 new_stripelocation[j++] = be_migratedset_to_dst[total_node[i]];

@@ -106,7 +106,7 @@ namespace lrc{
         bool DeleteDir(const std::string & dstpath) ;
 
 
-        bool TransformRedundancy(coordinator::TransitionUpCMD_MODE mode=coordinator::TransitionUpCMD_MODE_BASIC);
+        bool TransformRedundancy(coordinator::TransitionUpCMD_MODE mode=coordinator::TransitionUpCMD_MODE_BASIC,bool doubled = false);
 
         std::vector<StripeInfo> ListStripes() const;
 

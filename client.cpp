@@ -110,8 +110,8 @@ int main() {
     {
         lrc::FileSystemClient fileSystemClient;
         for (int i = 0; i < 10; ++i) {
-            lrc::RandomStripeGenerator("teststripe" + std::to_string(i) + ".txt", 2, 64 * 1024 * 1024);
-            fileSystemClient.UploadStripe("teststripe" + std::to_string(i) + ".txt", i, {2, 1, 2, 64}, true);
+            lrc::RandomStripeGenerator("teststripe" + std::to_string(i) + ".txt", 6, 1 * 1024 * 1024);
+            fileSystemClient.UploadStripe("teststripe" + std::to_string(i) + ".txt", i, {6, 2, 2, 1}, true);
         }
         auto stripelocs = fileSystemClient.ListStripes();
         for (const auto &stripe : stripelocs) {
@@ -122,19 +122,19 @@ int main() {
         }
         std::cout << std::endl;
 
-        fileSystemClient.DownLoadStripe("", "", 0);
-        fileSystemClient.TransformRedundancy(coordinator::TransitionUpCMD_MODE_BASIC);
-
-        //get fs view
-        fileSystemClient.ListStripes();
-        stripelocs = fileSystemClient.ListStripes();
-        for (const auto &stripe : stripelocs) {
-            std::cout << "stripeid: " << stripe.stripeid << std::endl;
-            for (const auto &node : stripe.blklocation) {
-                std::cout << node << ("\n" == node ? "" : "\t");
-            }
-        }
-        std::cout << std::endl;
+//        fileSystemClient.DownLoadStripe("", "", 0);
+//        fileSystemClient.TransformRedundancy(coordinator::TransitionUpCMD_MODE_BASIC);
+//
+//        //get fs view
+//        fileSystemClient.ListStripes();
+//        stripelocs = fileSystemClient.ListStripes();
+//        for (const auto &stripe : stripelocs) {
+//            std::cout << "stripeid: " << stripe.stripeid << std::endl;
+//            for (const auto &node : stripe.blklocation) {
+//                std::cout << node << ("\n" == node ? "" : "\t");
+//            }
+//        }
+//        std::cout << std::endl;
     }
     return 0;
 }

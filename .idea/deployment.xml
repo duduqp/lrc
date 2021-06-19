@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" deleteMissingItems="true" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" serverName="ubuntu" preserveTimestamps="false" deleteMissingItems="true" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="Remote GDB Server (36b38b97-d476-41ed-8d70-b55e755ba209)">
         <serverdata>
@@ -9,7 +9,7 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="Remote Host (781e53c9-b7c0-4f2e-b844-4e5b14f0397f)">
+      <paths name="Remote Host (9a19b98d-7e26-4464-a8e7-a53332390fde)">
         <serverdata>
           <mappings>
             <mapping deploy="/home/dqp/lrc" local="$PROJECT_DIR$" />
@@ -18,6 +18,13 @@
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
           </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="ubuntu">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/dqp/lrc" local="$PROJECT_DIR$" web="/" />
+          </mappings>
         </serverdata>
       </paths>
     </serverData>

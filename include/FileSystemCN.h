@@ -14,6 +14,9 @@
 #include "devcommon.h"
 
 namespace lrc {
+
+
+
     class FileSystemCN {
     public:
 
@@ -25,12 +28,9 @@ namespace lrc {
                      const std::string &mClusterPath = "./conf/cluster.xml");
 
         class FileSystemImpl final :public coordinator::FileSystem::Service{
-            bool m_initialized{false};
-        public:
-            grpc::Status deleteStripe(::grpc::ServerContext *context, const::coordinator::StripeId *request,
-                                      ::coordinator::RequestResult *response) override;
 
         private:
+            bool m_initialized{false};
             //logger itself is thread safe
             enum TYPE{
                 DATA,LP,GP
@@ -41,6 +41,9 @@ namespace lrc {
                 RANDOM,
                 SPARSE
             };
+            typedef std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> StripeLayoutGroup;
+            typedef std::tuple<StripeLayoutGroup,StripeLayoutGroup,StripeLayoutGroup> SingleStripeLayout;
+            typedef std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> SingleStripeLayout_bycluster;
 
             std::shared_ptr<spdlog::logger> m_cn_logger;
 
@@ -69,8 +72,23 @@ namespace lrc {
 
             //policy
             PLACE m_placementpolicy{PLACE::SPARSE};
-            bool askDNhandling(const std::string & dnuri,int stripeid);
+
+            //use a pre computed layout
+            //there are 3 types placement
+            std::unordered_map<lrc::ECSchema,std::vector<SingleStripeLayout>,ECSchemaHash,ECSchemaCMP> random_placement_layout;
+            std::unordered_map<lrc::ECSchema,int,ECSchemaHash,ECSchemaCMP> random_placement_layout_cursor;
+
+            std::unordered_map<lrc::ECSchema,std::vector<SingleStripeLayout>,ECSchemaHash,ECSchemaCMP> compact_placement_layout;
+            std::unordered_map<lrc::ECSchema,int,ECSchemaHash,ECSchemaCMP> compact_placement_layout_cursor;
+
+            std::unordered_map<lrc::ECSchema,std::vector<SingleStripeLayout>,ECSchemaHash,ECSchemaCMP> sparse_placement_layout;
+            std::unordered_map<lrc::ECSchema,int,ECSchemaHash,ECSchemaCMP> sparse_placement_layout_cursor;
         public:
+            grpc::Status deleteStripe(::grpc::ServerContext *context, const::coordinator::StripeId *request,
+                                      ::coordinator::RequestResult *response) override;
+
+
+            bool askDNhandling(const std::string & dnuri,int stripeid);
             grpc::Status uploadCheck(::grpc::ServerContext *context, const::coordinator::StripeInfo *request,
                                      ::coordinator::RequestResult *response) override;
 
@@ -122,13 +140,13 @@ namespace lrc {
             grpc::Status reportblockupload(::grpc::ServerContext *context,const coordinator::StripeId *request,
                                              ::coordinator::RequestResult *response) override;
 
-            std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
-            placement_resolve(ECSchema ecSchema, PLACE placement,int start,int step=2);
+            SingleStripeLayout
+            placement_resolve(ECSchema ecSchema, PLACE placement);
 
             std::vector<std::tuple<int, int, int>>  singlestriperesolve(const std::tuple<int, int, int> &);
 
-            std::vector<std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>>
-            generatelayout(const std::tuple<int, int, int> &para,PLACE placement,int start,int stripenum,int step = 2);
+            std::vector<SingleStripeLayout_bycluster>
+            generatelayout(const std::tuple<int, int, int> &para,PLACE placement,int stripenum,int step = 2);
 
             void flushhistory();
 
@@ -178,9 +196,11 @@ namespace lrc {
             grpc::Status
             setplacementpolicy(::grpc::ServerContext *context, const::coordinator::SetPlacementPolicyCMD *request,
                                ::coordinator::RequestResult *response) override;
+            
+            std::vector<SingleStripeLayout>
+            layout_convert_helper(
+                    std::vector<SingleStripeLayout_bycluster> & layout,int step =2);
 
-            std::vector<std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>>>
-            random_placement_resolve(ECSchema schema);
 
             bool refreshfilesystemimagebasic(
                     const std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>> &codingplan,

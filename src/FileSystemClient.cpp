@@ -234,7 +234,7 @@ namespace lrc {
     bool FileSystemClient::SetRandomPlaceMentPolicy(bool israndom) {
         grpc::ClientContext setpolicyctx;
         coordinator::SetPlacementPolicyCMD setPlacementPolicyCmd;
-        setPlacementPolicyCmd.set_israndom(israndom);
+        setPlacementPolicyCmd.set_place(coordinator::SetPlacementPolicyCMD_PLACE_RANDOM);
         coordinator::RequestResult setpolicyres;
         m_fileSystem_ptr->setplacementpolicy(&setpolicyctx, setPlacementPolicyCmd, &setpolicyres);
         return false;
@@ -287,7 +287,7 @@ namespace lrc {
             sock.connect(ep);
             asio::write(sock,asio::buffer(&stripe_id,sizeof(stripe_id)));
 
-            asio::read(sock, asio::buffer(dataptrs[idx], 64 * 1024 * 1024));
+            asio::read(sock, asio::buffer(dataptrs[idx], m_default_blk_size * 1024 * 1024));
             std::cout << "thread read a block!" << std::endl;
         };
 
@@ -304,7 +304,7 @@ namespace lrc {
         std::ofstream ofs("./download/" + std::to_string(stripe_id),
                           std::ios::binary | std::ios::trunc | std::ios::out);
         for (int i = 0; i < stripeLocation.dataloc_size(); ++i) {
-            ofs.write(dataptrs[i], 64 * 1024 * 1024);
+            ofs.write(dataptrs[i], m_default_blk_size * 1024 * 1024);
             ofs.flush();
         }
         std::cout << ofs.tellp() << "bytes successfully downloaded!" << std::endl;
@@ -313,7 +313,7 @@ namespace lrc {
         return true;
     }
 
-    bool FileSystemClient::TransformRedundancy(coordinator::TransitionUpCMD_MODE mode) {
+    bool FileSystemClient::TransformRedundancy(coordinator::TransitionUpCMD_MODE mode,bool doubled) {
         grpc::ClientContext transitionctx;
         coordinator::TransitionUpCMD transitionUpCmd;
         transitionUpCmd.set_mode(mode);

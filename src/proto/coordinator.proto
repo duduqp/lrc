@@ -82,4 +82,5 @@ message TransitionUpCMD{
       DESIGNED = 2;
     }
     MODE mode = 1;
+    int32 step = 2;
 }

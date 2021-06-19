@@ -105,6 +105,32 @@ template<> ::coordinator::TransitionUpCMD* Arena::CreateMaybeMessage<::coordinat
 PROTOBUF_NAMESPACE_CLOSE
 namespace coordinator {
 
+enum SetPlacementPolicyCMD_PLACE : int {
+  SetPlacementPolicyCMD_PLACE_COMPACT = 0,
+  SetPlacementPolicyCMD_PLACE_RANDOM = 1,
+  SetPlacementPolicyCMD_PLACE_SPARSE = 2,
+  SetPlacementPolicyCMD_PLACE_SetPlacementPolicyCMD_PLACE_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
+  SetPlacementPolicyCMD_PLACE_SetPlacementPolicyCMD_PLACE_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
+};
+bool SetPlacementPolicyCMD_PLACE_IsValid(int value);
+constexpr SetPlacementPolicyCMD_PLACE SetPlacementPolicyCMD_PLACE_PLACE_MIN = SetPlacementPolicyCMD_PLACE_COMPACT;
+constexpr SetPlacementPolicyCMD_PLACE SetPlacementPolicyCMD_PLACE_PLACE_MAX = SetPlacementPolicyCMD_PLACE_SPARSE;
+constexpr int SetPlacementPolicyCMD_PLACE_PLACE_ARRAYSIZE = SetPlacementPolicyCMD_PLACE_PLACE_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* SetPlacementPolicyCMD_PLACE_descriptor();
+template<typename T>
+inline const std::string& SetPlacementPolicyCMD_PLACE_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, SetPlacementPolicyCMD_PLACE>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function SetPlacementPolicyCMD_PLACE_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    SetPlacementPolicyCMD_PLACE_descriptor(), enum_t_value);
+}
+inline bool SetPlacementPolicyCMD_PLACE_Parse(
+    const std::string& name, SetPlacementPolicyCMD_PLACE* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<SetPlacementPolicyCMD_PLACE>(
+    SetPlacementPolicyCMD_PLACE_descriptor(), name, value);
+}
 enum TransitionUpCMD_MODE : int {
   TransitionUpCMD_MODE_BASIC = 0,
   TransitionUpCMD_MODE_BASIC_PART = 1,
@@ -1165,18 +1191,50 @@ class SetPlacementPolicyCMD :
 
   // nested types ----------------------------------------------------
 
+  typedef SetPlacementPolicyCMD_PLACE PLACE;
+  static constexpr PLACE COMPACT =
+    SetPlacementPolicyCMD_PLACE_COMPACT;
+  static constexpr PLACE RANDOM =
+    SetPlacementPolicyCMD_PLACE_RANDOM;
+  static constexpr PLACE SPARSE =
+    SetPlacementPolicyCMD_PLACE_SPARSE;
+  static inline bool PLACE_IsValid(int value) {
+    return SetPlacementPolicyCMD_PLACE_IsValid(value);
+  }
+  static constexpr PLACE PLACE_MIN =
+    SetPlacementPolicyCMD_PLACE_PLACE_MIN;
+  static constexpr PLACE PLACE_MAX =
+    SetPlacementPolicyCMD_PLACE_PLACE_MAX;
+  static constexpr int PLACE_ARRAYSIZE =
+    SetPlacementPolicyCMD_PLACE_PLACE_ARRAYSIZE;
+  static inline const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor*
+  PLACE_descriptor() {
+    return SetPlacementPolicyCMD_PLACE_descriptor();
+  }
+  template<typename T>
+  static inline const std::string& PLACE_Name(T enum_t_value) {
+    static_assert(::std::is_same<T, PLACE>::value ||
+      ::std::is_integral<T>::value,
+      "Incorrect type passed to function PLACE_Name.");
+    return SetPlacementPolicyCMD_PLACE_Name(enum_t_value);
+  }
+  static inline bool PLACE_Parse(const std::string& name,
+      PLACE* value) {
+    return SetPlacementPolicyCMD_PLACE_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
   enum : int {
-    kIsrandomFieldNumber = 1,
+    kPlaceFieldNumber = 1,
   };
-  // bool israndom = 1;
-  void clear_israndom();
-  bool israndom() const;
-  void set_israndom(bool value);
+  // .coordinator.SetPlacementPolicyCMD.PLACE place = 1;
+  void clear_place();
+  ::coordinator::SetPlacementPolicyCMD_PLACE place() const;
+  void set_place(::coordinator::SetPlacementPolicyCMD_PLACE value);
   private:
-  bool _internal_israndom() const;
-  void _internal_set_israndom(bool value);
+  ::coordinator::SetPlacementPolicyCMD_PLACE _internal_place() const;
+  void _internal_set_place(::coordinator::SetPlacementPolicyCMD_PLACE value);
   public:
 
   // @@protoc_insertion_point(class_scope:coordinator.SetPlacementPolicyCMD)
@@ -1184,7 +1242,7 @@ class SetPlacementPolicyCMD :
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
-  bool israndom_;
+  int place_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_coordinator_2eproto;
 };
@@ -2397,24 +2455,24 @@ inline void StripeDetail::set_allocated_stripeid(::coordinator::StripeId* stripe
 
 // SetPlacementPolicyCMD
 
-// bool israndom = 1;
-inline void SetPlacementPolicyCMD::clear_israndom() {
-  israndom_ = false;
+// .coordinator.SetPlacementPolicyCMD.PLACE place = 1;
+inline void SetPlacementPolicyCMD::clear_place() {
+  place_ = 0;
 }
-inline bool SetPlacementPolicyCMD::_internal_israndom() const {
-  return israndom_;
+inline ::coordinator::SetPlacementPolicyCMD_PLACE SetPlacementPolicyCMD::_internal_place() const {
+  return static_cast< ::coordinator::SetPlacementPolicyCMD_PLACE >(place_);
 }
-inline bool SetPlacementPolicyCMD::israndom() const {
-  // @@protoc_insertion_point(field_get:coordinator.SetPlacementPolicyCMD.israndom)
-  return _internal_israndom();
+inline ::coordinator::SetPlacementPolicyCMD_PLACE SetPlacementPolicyCMD::place() const {
+  // @@protoc_insertion_point(field_get:coordinator.SetPlacementPolicyCMD.place)
+  return _internal_place();
 }
-inline void SetPlacementPolicyCMD::_internal_set_israndom(bool value) {
+inline void SetPlacementPolicyCMD::_internal_set_place(::coordinator::SetPlacementPolicyCMD_PLACE value) {
   
-  israndom_ = value;
+  place_ = value;
 }
-inline void SetPlacementPolicyCMD::set_israndom(bool value) {
-  _internal_set_israndom(value);
-  // @@protoc_insertion_point(field_set:coordinator.SetPlacementPolicyCMD.israndom)
+inline void SetPlacementPolicyCMD::set_place(::coordinator::SetPlacementPolicyCMD_PLACE value) {
+  _internal_set_place(value);
+  // @@protoc_insertion_point(field_set:coordinator.SetPlacementPolicyCMD.place)
 }
 
 // -------------------------------------------------------------------
@@ -2563,6 +2621,11 @@ inline void TransitionUpCMD::set_mode(::coordinator::TransitionUpCMD_MODE value)
 
 PROTOBUF_NAMESPACE_OPEN
 
+template <> struct is_proto_enum< ::coordinator::SetPlacementPolicyCMD_PLACE> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::coordinator::SetPlacementPolicyCMD_PLACE>() {
+  return ::coordinator::SetPlacementPolicyCMD_PLACE_descriptor();
+}
 template <> struct is_proto_enum< ::coordinator::TransitionUpCMD_MODE> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::coordinator::TransitionUpCMD_MODE>() {
