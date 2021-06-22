@@ -37,7 +37,7 @@ namespace lrc {
             /*
              * debug : response datanodes uri
              * */
-            std::cout << "datanode : \n";
+            std::cout << "stripe : "<<stripeDetail.stripeid().stripeid()<<" datanode : \n";
             for (const auto &d : stripeLocation.dataloc()) {
                 std::cout << d << " ";
             }
@@ -85,6 +85,7 @@ namespace lrc {
                     char **_datablks, char **_localparityblks, char **_globalparityblks, char *dstbuffer,
                     int startblockindex)
                     mutable {
+                std::cout << "thread for "<<_stripeid<<std::endl;
                 asio::io_context _ioc;
                 asio::error_code ec;
                 int cursor = 0;
@@ -158,8 +159,6 @@ namespace lrc {
 
                             }
                         }
-
-
                         //blocking sync
                         asio::write(sock_data,asio::buffer(&_stripeid,sizeof(_stripeid)));
                         asio::write(sock_data, asio::buffer(dstbuffer, chunklen), ec);
@@ -186,12 +185,12 @@ namespace lrc {
             stripeInfo.set_stripeid(stripeDetail.stripeid().stripeid());
             auto checkstatus = m_fileSystem_ptr->uploadCheck(&checkresultclientContext, stripeInfo, &checkres);
             if (checkstatus.ok() && checkres.trueorfalse()) {
+                std::cout << "upload stripe success!"<<std::endl;
                 m_client_logger->info("upload stripe success!");
                 return true;
             }
-
+            std::cout << "upload stripe failed,please retry!"<<std::endl;
             m_client_logger->error("upload stripe failed,please retry!");
-
             grpc::ClientContext rollbackctx;
             coordinator::StripeId stripeId;
             stripeId.set_stripeid(stripeid);

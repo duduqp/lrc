@@ -25,7 +25,7 @@ namespace lrc {
 
         auto acptptr = prepareacceptor(*this, std::stoi(m_datanodeupload_port));
 
-        if (acptptr) std::cout << "prepared acceptor" << std::endl;
+        if (acptptr) std::cout << "prepared acceptor on port " <<m_datanodeupload_port << std::endl;
         else {
             std::cout << "prepared acceptor failed!" << std::endl;
         }
@@ -73,7 +73,8 @@ namespace lrc {
             std::thread h(std::move(handler), m_datapath, blocksize, holdme);
             h.detach();
         } catch (std::exception &e) {
-            std::cout << e.what() << std::endl;
+            std::cout << "exception"<<std::endl;
+            std::cout<<e.what() << std::endl;
         }
         std::cout << "receive askDNhandling rpc!\n";
         response->set_trueorfalse(true);

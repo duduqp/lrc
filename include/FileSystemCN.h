@@ -56,7 +56,9 @@ namespace lrc {
             ECSchema m_fs_defaultecschema;
             //performance issue to refactor as a rw mutex
             std::mutex m_fsimage_mtx;
-            std::unordered_map<ECSchema,std::set<int>,ECSchemaHash,ECSchemaCMP> m_fs_stripeschema;//fsimage.xml
+
+//            std::unordered_map<ECSchema,std::set<int>,ECSchemaHash,ECSchemaCMP> m_fs_stripeschema;//fsimage.xml
+
             std::unordered_map<int, std::vector<std::string>> m_fs_image;//read from meta[fsimage.xml] in initialize stage
             std::unordered_map<std::string, DataNodeInfo> m_dn_info;//cluster.xml
             std::unordered_map<int,ClusterInfo> m_cluster_info;

@@ -33,17 +33,15 @@ namespace lrc {
     grpc::Status
     FileSystemCN::FileSystemImpl::uploadStripe(::grpc::ServerContext *context, const ::coordinator::StripeInfo *request,
                                                ::coordinator::StripeDetail *response) {
+        std::unique_lock ulk1(m_stripeupdatingcount_mtx);
         std::unique_lock ulk2(m_fsimage_mtx);
         int stripeid = m_fs_nextstripeid++;
         auto retstripeloc = response->mutable_stripelocation();
-        auto[cand_dn, cand_lp, cand_gp] = placement_resolve(
-                {request->stripe_k(), request->stripe_l(), request->stripe_g(), 64}, m_placementpolicy);
+        auto [ cand_dn, cand_lp, cand_gp] = placement_resolve(
+                {request->stripe_k(), request->stripe_l(), request->stripe_g(), 1}, m_placementpolicy);
         if (m_fs_image.count(stripeid)) {
-            ulk2.unlock();
             goto addstripelocation;
-            return grpc::Status::OK;
         } else {
-            ulk2.unlock();
             if (stripe_in_updating.count(stripeid)) {
                 return grpc::Status::CANCELLED;
             }
@@ -309,6 +307,7 @@ namespace lrc {
 
     void FileSystemCN::FileSystemImpl::updatestripeupdatingcounter(int stripeid, std::string fromdatanode_uri) {
 
+        std::scoped_lock lockGuard(m_stripeupdatingcount_mtx);
         std::cout << fromdatanode_uri << " updatestripeupdatingcounter for" << stripeid << std::endl;
 
         // stripe_in_updating[stripeid][fromdatanode_uri] = true; //this line truely distributed env only
@@ -343,8 +342,8 @@ namespace lrc {
                 m_fs_image[stripeid].push_back("g");//marker
 
                 //associate schema to this stripe
-                ECSchema ecSchema(datauris.size(), lpuris.size(), gpuris.size(), 64);
-                m_fs_stripeschema[ecSchema].insert(stripeid);
+//                ECSchema ecSchema(datauris.size(), lpuris.size(), gpuris.size(), m_fs_defaultecschema.blksize);
+//                m_fs_stripeschema[ecSchema].insert(stripeid);
             }
             stripe_in_updating.erase(stripeid);
             stripe_in_updatingcounter.erase(stripeid);
@@ -848,25 +847,40 @@ namespace lrc {
             for (auto c:cluster_counter) {
                 std::vector<std::string> picked;
                 std::sample(m_cluster_info[c.first].datanodesuri.cbegin(), m_cluster_info[c.first].datanodesuri.cend(),
-                            std::back_inserter(picked_nodes), c.second, std::mt19937{std::random_device{}()});
+                            std::back_inserter(picked), c.second, std::mt19937{std::random_device{}()});
                 picked_nodes.insert({c.first, picked});
             }
-            std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> data_nodes;
-            std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> lp_nodes;
-            std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> gp_nodes;
             //second pass
             for (int i = 0; i < step; ++i) {
-                const auto &[data_cluster, lp_cluster, gp_cluster] = layout[j * step + i];
+                std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> data_nodes;
+                std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> lp_nodes;
+                std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> gp_nodes;
+                auto [data_cluster, lp_cluster, gp_cluster] = layout[j * step + i];
                 for (auto c:data_cluster) {
-                    data_nodes.insert({picked_nodes[c][cluster_counter[c]--], std::make_pair(TYPE::DATA, false)});
+                    data_nodes.insert({picked_nodes[c][cluster_counter[c]-1], std::make_pair(TYPE::DATA, false)});
+                    cluster_counter[c]--;
+                    if(0==cluster_counter[c])
+                    {
+                        cluster_counter.erase(c);
+                    }
                 }
 
                 for (auto c:lp_cluster) {
-                    lp_nodes.insert({picked_nodes[c][cluster_counter[c]--], std::make_pair(TYPE::LP, false)});
+                    lp_nodes.insert({picked_nodes[c][cluster_counter[c]-1], std::make_pair(TYPE::LP, false)});
+                    cluster_counter[c]--;
+                    if(0==cluster_counter[c])
+                    {
+                        cluster_counter.erase(c);
+                    }
                 }
 
                 for (auto c:gp_cluster) {
-                    gp_nodes.insert({picked_nodes[c][cluster_counter[c]--], std::make_pair(TYPE::GP, false)});
+                    gp_nodes.insert({picked_nodes[c][cluster_counter[c]-1], std::make_pair(TYPE::GP, false)});
+                    cluster_counter[c]--;
+                    if(0==cluster_counter[c])
+                    {
+                        cluster_counter.erase(c);
+                    }
                 }
                 ret.emplace_back(data_nodes, lp_nodes, gp_nodes);
             }
@@ -894,7 +908,8 @@ namespace lrc {
                     random_placement_layout[ecSchema].insert(random_placement_layout[ecSchema].cend(),
                                                              appendentry.cbegin(), appendentry.cend());
                 }
-                return random_placement_layout[ecSchema][cursor++];
+                random_placement_layout_cursor[ecSchema]++;
+                return random_placement_layout[ecSchema][cursor];
             } else {
                 //initially 100 stripes
                 //resize double ...
@@ -919,7 +934,8 @@ namespace lrc {
                     compact_placement_layout[ecSchema].insert(compact_placement_layout[ecSchema].cend(),
                                                               appendentry.cbegin(), appendentry.cend());
                 }
-                return compact_placement_layout[ecSchema][cursor++];
+                compact_placement_layout_cursor[ecSchema]++;
+                return compact_placement_layout[ecSchema][cursor];
             } else {
                 //initially 100 stripes
                 //resize double ...
@@ -928,7 +944,7 @@ namespace lrc {
                 compact_placement_layout.insert({ecSchema,
                                                  layout_convert_helper(initentry)});
                 compact_placement_layout_cursor[ecSchema] = 0;
-                return compact_placement_layout[ecSchema][random_placement_layout_cursor[ecSchema]++];
+                return compact_placement_layout[ecSchema][compact_placement_layout_cursor[ecSchema]++];
             }
         } else {
             if (sparse_placement_layout_cursor.contains(ecSchema)) {
@@ -941,10 +957,11 @@ namespace lrc {
                             {ecSchema.datablk, ecSchema.localparityblk, ecSchema.globalparityblk},
                             PLACE::SPARSE, appendsize);
                     auto appendentry = layout_convert_helper(genentry);
-                    sparse_placement_layout[ecSchema].insert(random_placement_layout[ecSchema].cend(),
+                    sparse_placement_layout[ecSchema].insert(sparse_placement_layout[ecSchema].cend(),
                                                              appendentry.cbegin(), appendentry.cend());
                 }
-                return sparse_placement_layout[ecSchema][cursor++];
+                sparse_placement_layout_cursor[ecSchema]++;
+                return sparse_placement_layout[ecSchema][cursor];
             } else {
                 //initially 100 stripes
                 //resize double ...
@@ -953,7 +970,7 @@ namespace lrc {
                 sparse_placement_layout.insert({ecSchema,
                                                 layout_convert_helper(initentry)});
                 sparse_placement_layout_cursor[ecSchema] = 0;
-                return sparse_placement_layout[ecSchema][random_placement_layout_cursor[ecSchema]++];
+                return sparse_placement_layout[ecSchema][sparse_placement_layout_cursor[ecSchema]++];
             }
         }
     }
@@ -963,9 +980,9 @@ namespace lrc {
                                               ::coordinator::RequestResult *response) {
         //handle client upload check
         //check if stripeid success or not
-        std::unique_lock uniqueLock(m_stripeupdatingcount_mtx, std::adopt_lock);
-        //6s deadline
-        auto res = m_updatingcond.wait_for(uniqueLock, std::chrono::seconds(6), [&]() {
+        std::unique_lock uniqueLock(m_stripeupdatingcount_mtx);
+        //60s deadline
+        auto res = m_updatingcond.wait_for(uniqueLock, std::chrono::seconds(60), [&]() {
             return !stripe_in_updatingcounter.contains(request->stripeid());
         });
         response->set_trueorfalse(res);
@@ -977,9 +994,10 @@ namespace lrc {
     FileSystemCN::FileSystemImpl::reportblockupload(::grpc::ServerContext *context,
                                                     const ::coordinator::StripeId *request,
                                                     ::coordinator::RequestResult *response) {
+        std::cout << "datanode " << context->peer()<<" receive block of stripe "<<request->stripeid()<<" from client successfully!\n";
         m_cn_logger->info("datanode {} receive block of stripe {} from client successfully!", context->peer(),
                           request->stripeid());
-        std::scoped_lock lockGuard(m_stripeupdatingcount_mtx);
+//        std::scoped_lock lockGuard(m_stripeupdatingcount_mtx);
         updatestripeupdatingcounter(request->stripeid(), context->peer());
         response->set_trueorfalse(true);
         return grpc::Status::OK;
@@ -1005,6 +1023,7 @@ namespace lrc {
     FileSystemCN::FileSystemImpl::deleteStripe(::grpc::ServerContext *context, const ::coordinator::StripeId *request,
                                                ::coordinator::RequestResult *response) {
 
+        std::cout << "delete stripe" <<request->stripeid()<<std::endl;
         std::scoped_lock slk(m_stripeupdatingcount_mtx, m_fsimage_mtx);
         for (auto dnuri:stripe_in_updating[request->stripeid()]) {
             grpc::ClientContext deletestripectx;
