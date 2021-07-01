@@ -254,6 +254,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_coordinator_2eproto::offsets[]
   PROTOBUF_FIELD_OFFSET(::coordinator::StripeInfo, stripe_k_),
   PROTOBUF_FIELD_OFFSET(::coordinator::StripeInfo, stripe_l_),
   PROTOBUF_FIELD_OFFSET(::coordinator::StripeInfo, stripe_g_),
+  PROTOBUF_FIELD_OFFSET(::coordinator::StripeInfo, blksize_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::coordinator::StripeLocation, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -298,19 +299,20 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_coordinator_2eproto::offsets[]
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::coordinator::TransitionUpCMD, mode_),
+  PROTOBUF_FIELD_OFFSET(::coordinator::TransitionUpCMD, step_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::coordinator::StripeIdWithHint)},
   { 7, -1, sizeof(::coordinator::NodesLocation)},
   { 13, -1, sizeof(::coordinator::StripeId)},
   { 19, -1, sizeof(::coordinator::StripeInfo)},
-  { 28, -1, sizeof(::coordinator::StripeLocation)},
-  { 36, -1, sizeof(::coordinator::StripeDetail)},
-  { 43, -1, sizeof(::coordinator::SetPlacementPolicyCMD)},
-  { 49, -1, sizeof(::coordinator::Path)},
-  { 55, -1, sizeof(::coordinator::RequestResult)},
-  { 61, -1, sizeof(::coordinator::ListAllStripeCMD)},
-  { 66, -1, sizeof(::coordinator::TransitionUpCMD)},
+  { 29, -1, sizeof(::coordinator::StripeLocation)},
+  { 37, -1, sizeof(::coordinator::StripeDetail)},
+  { 44, -1, sizeof(::coordinator::SetPlacementPolicyCMD)},
+  { 50, -1, sizeof(::coordinator::Path)},
+  { 56, -1, sizeof(::coordinator::RequestResult)},
+  { 62, -1, sizeof(::coordinator::ListAllStripeCMD)},
+  { 67, -1, sizeof(::coordinator::TransitionUpCMD)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -333,43 +335,44 @@ const char descriptor_table_protodef_coordinator_2eproto[] PROTOBUF_SECTION_VARI
   "ator.StripeId\0220\n\014badlocations\030\002 \001(\0132\032.co"
   "ordinator.NodesLocation\"!\n\rNodesLocation"
   "\022\020\n\010NodesUri\030\001 \003(\t\"\034\n\010StripeId\022\020\n\010stripe"
-  "id\030\001 \001(\005\"T\n\nStripeInfo\022\020\n\010stripeid\030\001 \001(\005"
+  "id\030\001 \001(\005\"e\n\nStripeInfo\022\020\n\010stripeid\030\001 \001(\005"
   "\022\020\n\010stripe_k\030\002 \001(\005\022\020\n\010stripe_l\030\003 \001(\005\022\020\n\010"
-  "stripe_g\030\004 \001(\005\"R\n\016StripeLocation\022\017\n\007data"
-  "Loc\030\001 \003(\t\022\026\n\016localparityLoc\030\002 \003(\t\022\027\n\017glo"
-  "balparityLoc\030\003 \003(\t\"l\n\014StripeDetail\0223\n\016st"
-  "ripelocation\030\001 \001(\0132\033.coordinator.StripeL"
-  "ocation\022\'\n\010stripeid\030\002 \001(\0132\025.coordinator."
-  "StripeId\"~\n\025SetPlacementPolicyCMD\0227\n\005pla"
-  "ce\030\001 \001(\0162(.coordinator.SetPlacementPolic"
-  "yCMD.PLACE\",\n\005PLACE\022\013\n\007COMPACT\020\000\022\n\n\006RAND"
-  "OM\020\001\022\n\n\006SPARSE\020\002\"\027\n\004Path\022\017\n\007dstpath\030\001 \001("
-  "\t\"$\n\rRequestResult\022\023\n\013trueorfalse\030\001 \001(\010\""
-  "\022\n\020ListAllStripeCMD\"s\n\017TransitionUpCMD\022/"
-  "\n\004mode\030\001 \001(\0162!.coordinator.TransitionUpC"
-  "MD.MODE\"/\n\004MODE\022\t\n\005BASIC\020\000\022\016\n\nBASIC_PART"
-  "\020\001\022\014\n\010DESIGNED\020\0022\247\006\n\nFileSystem\022:\n\tcreat"
-  "eDir\022\021.coordinator.Path\032\032.coordinator.Re"
-  "questResult\022B\n\014uploadStripe\022\027.coordinato"
-  "r.StripeInfo\032\031.coordinator.StripeDetail\022"
-  "B\n\016downloadStripe\022\025.coordinator.StripeId"
-  "\032\031.coordinator.StripeDetail\022T\n\026downloadS"
-  "tripeWithHint\022\035.coordinator.StripeIdWith"
-  "Hint\032\033.coordinator.StripeLocation\022A\n\014del"
-  "eteStripe\022\025.coordinator.StripeId\032\032.coord"
-  "inator.RequestResult\022B\n\013uploadCheck\022\027.co"
-  "ordinator.StripeInfo\032\032.coordinator.Reque"
-  "stResult\022F\n\021reportblockupload\022\025.coordina"
-  "tor.StripeId\032\032.coordinator.RequestResult"
-  "\022@\n\nlistStripe\022\025.coordinator.StripeId\032\033."
-  "coordinator.StripeLocation\022N\n\016listAllStr"
-  "ipes\022\035.coordinator.ListAllStripeCMD\032\033.co"
-  "ordinator.StripeLocation0\001\022H\n\014transition"
-  "up\022\034.coordinator.TransitionUpCMD\032\032.coord"
-  "inator.RequestResult\022T\n\022setplacementpoli"
-  "cy\022\".coordinator.SetPlacementPolicyCMD\032\032"
-  ".coordinator.RequestResult2\016\n\014FromDataNo"
-  "deb\006proto3"
+  "stripe_g\030\004 \001(\005\022\017\n\007blksize\030\005 \001(\005\"R\n\016Strip"
+  "eLocation\022\017\n\007dataLoc\030\001 \003(\t\022\026\n\016localparit"
+  "yLoc\030\002 \003(\t\022\027\n\017globalparityLoc\030\003 \003(\t\"l\n\014S"
+  "tripeDetail\0223\n\016stripelocation\030\001 \001(\0132\033.co"
+  "ordinator.StripeLocation\022\'\n\010stripeid\030\002 \001"
+  "(\0132\025.coordinator.StripeId\"~\n\025SetPlacemen"
+  "tPolicyCMD\0227\n\005place\030\001 \001(\0162(.coordinator."
+  "SetPlacementPolicyCMD.PLACE\",\n\005PLACE\022\013\n\007"
+  "COMPACT\020\000\022\n\n\006RANDOM\020\001\022\n\n\006SPARSE\020\002\"\027\n\004Pat"
+  "h\022\017\n\007dstpath\030\001 \001(\t\"$\n\rRequestResult\022\023\n\013t"
+  "rueorfalse\030\001 \001(\010\"\022\n\020ListAllStripeCMD\"\201\001\n"
+  "\017TransitionUpCMD\022/\n\004mode\030\001 \001(\0162!.coordin"
+  "ator.TransitionUpCMD.MODE\022\014\n\004step\030\002 \001(\005\""
+  "/\n\004MODE\022\t\n\005BASIC\020\000\022\016\n\nBASIC_PART\020\001\022\014\n\010DE"
+  "SIGNED\020\0022\247\006\n\nFileSystem\022:\n\tcreateDir\022\021.c"
+  "oordinator.Path\032\032.coordinator.RequestRes"
+  "ult\022B\n\014uploadStripe\022\027.coordinator.Stripe"
+  "Info\032\031.coordinator.StripeDetail\022B\n\016downl"
+  "oadStripe\022\025.coordinator.StripeId\032\031.coord"
+  "inator.StripeDetail\022T\n\026downloadStripeWit"
+  "hHint\022\035.coordinator.StripeIdWithHint\032\033.c"
+  "oordinator.StripeLocation\022A\n\014deleteStrip"
+  "e\022\025.coordinator.StripeId\032\032.coordinator.R"
+  "equestResult\022B\n\013uploadCheck\022\027.coordinato"
+  "r.StripeInfo\032\032.coordinator.RequestResult"
+  "\022F\n\021reportblockupload\022\025.coordinator.Stri"
+  "peId\032\032.coordinator.RequestResult\022@\n\nlist"
+  "Stripe\022\025.coordinator.StripeId\032\033.coordina"
+  "tor.StripeLocation\022N\n\016listAllStripes\022\035.c"
+  "oordinator.ListAllStripeCMD\032\033.coordinato"
+  "r.StripeLocation0\001\022H\n\014transitionup\022\034.coo"
+  "rdinator.TransitionUpCMD\032\032.coordinator.R"
+  "equestResult\022T\n\022setplacementpolicy\022\".coo"
+  "rdinator.SetPlacementPolicyCMD\032\032.coordin"
+  "ator.RequestResult2\016\n\014FromDataNodeb\006prot"
+  "o3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_coordinator_2eproto_deps[1] = {
 };
@@ -389,7 +392,7 @@ static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_coo
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_coordinator_2eproto_once;
 static bool descriptor_table_coordinator_2eproto_initialized = false;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_coordinator_2eproto = {
-  &descriptor_table_coordinator_2eproto_initialized, descriptor_table_protodef_coordinator_2eproto, "coordinator.proto", 1650,
+  &descriptor_table_coordinator_2eproto_initialized, descriptor_table_protodef_coordinator_2eproto, "coordinator.proto", 1682,
   &descriptor_table_coordinator_2eproto_once, descriptor_table_coordinator_2eproto_sccs, descriptor_table_coordinator_2eproto_deps, 11, 0,
   schemas, file_default_instances, TableStruct_coordinator_2eproto::offsets,
   file_level_metadata_coordinator_2eproto, 11, file_level_enum_descriptors_coordinator_2eproto, file_level_service_descriptors_coordinator_2eproto,
@@ -1094,15 +1097,15 @@ StripeInfo::StripeInfo(const StripeInfo& from)
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&stripeid_, &from.stripeid_,
-    static_cast<size_t>(reinterpret_cast<char*>(&stripe_g_) -
-    reinterpret_cast<char*>(&stripeid_)) + sizeof(stripe_g_));
+    static_cast<size_t>(reinterpret_cast<char*>(&blksize_) -
+    reinterpret_cast<char*>(&stripeid_)) + sizeof(blksize_));
   // @@protoc_insertion_point(copy_constructor:coordinator.StripeInfo)
 }
 
 void StripeInfo::SharedCtor() {
   ::memset(&stripeid_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&stripe_g_) -
-      reinterpret_cast<char*>(&stripeid_)) + sizeof(stripe_g_));
+      reinterpret_cast<char*>(&blksize_) -
+      reinterpret_cast<char*>(&stripeid_)) + sizeof(blksize_));
 }
 
 StripeInfo::~StripeInfo() {
@@ -1129,8 +1132,8 @@ void StripeInfo::Clear() {
   (void) cached_has_bits;
 
   ::memset(&stripeid_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&stripe_g_) -
-      reinterpret_cast<char*>(&stripeid_)) + sizeof(stripe_g_));
+      reinterpret_cast<char*>(&blksize_) -
+      reinterpret_cast<char*>(&stripeid_)) + sizeof(blksize_));
   _internal_metadata_.Clear();
 }
 
@@ -1166,6 +1169,13 @@ const char* StripeInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID:
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 32)) {
           stripe_g_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 blksize = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 40)) {
+          blksize_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -1219,6 +1229,12 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(4, this->_internal_stripe_g(), target);
   }
 
+  // int32 blksize = 5;
+  if (this->blksize() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(5, this->_internal_blksize(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -1261,6 +1277,13 @@ size_t StripeInfo::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
         this->_internal_stripe_g());
+  }
+
+  // int32 blksize = 5;
+  if (this->blksize() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_blksize());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1306,6 +1329,9 @@ void StripeInfo::MergeFrom(const StripeInfo& from) {
   if (from.stripe_g() != 0) {
     _internal_set_stripe_g(from._internal_stripe_g());
   }
+  if (from.blksize() != 0) {
+    _internal_set_blksize(from._internal_blksize());
+  }
 }
 
 void StripeInfo::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -1333,6 +1359,7 @@ void StripeInfo::InternalSwap(StripeInfo* other) {
   swap(stripe_k_, other->stripe_k_);
   swap(stripe_l_, other->stripe_l_);
   swap(stripe_g_, other->stripe_g_);
+  swap(blksize_, other->blksize_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata StripeInfo::GetMetadata() const {
@@ -2598,12 +2625,16 @@ TransitionUpCMD::TransitionUpCMD(const TransitionUpCMD& from)
   : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  mode_ = from.mode_;
+  ::memcpy(&mode_, &from.mode_,
+    static_cast<size_t>(reinterpret_cast<char*>(&step_) -
+    reinterpret_cast<char*>(&mode_)) + sizeof(step_));
   // @@protoc_insertion_point(copy_constructor:coordinator.TransitionUpCMD)
 }
 
 void TransitionUpCMD::SharedCtor() {
-  mode_ = 0;
+  ::memset(&mode_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&step_) -
+      reinterpret_cast<char*>(&mode_)) + sizeof(step_));
 }
 
 TransitionUpCMD::~TransitionUpCMD() {
@@ -2629,7 +2660,9 @@ void TransitionUpCMD::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  mode_ = 0;
+  ::memset(&mode_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&step_) -
+      reinterpret_cast<char*>(&mode_)) + sizeof(step_));
   _internal_metadata_.Clear();
 }
 
@@ -2646,6 +2679,13 @@ const char* TransitionUpCMD::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPAC
           ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
           CHK_(ptr);
           _internal_set_mode(static_cast<::coordinator::TransitionUpCMD_MODE>(val));
+        } else goto handle_unusual;
+        continue;
+      // int32 step = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          step_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
         } else goto handle_unusual;
         continue;
       default: {
@@ -2681,6 +2721,12 @@ failure:
       1, this->_internal_mode(), target);
   }
 
+  // int32 step = 2;
+  if (this->step() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_step(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target, stream);
@@ -2701,6 +2747,13 @@ size_t TransitionUpCMD::ByteSizeLong() const {
   if (this->mode() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_mode());
+  }
+
+  // int32 step = 2;
+  if (this->step() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_step());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2737,6 +2790,9 @@ void TransitionUpCMD::MergeFrom(const TransitionUpCMD& from) {
   if (from.mode() != 0) {
     _internal_set_mode(from._internal_mode());
   }
+  if (from.step() != 0) {
+    _internal_set_step(from._internal_step());
+  }
 }
 
 void TransitionUpCMD::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -2761,6 +2817,7 @@ void TransitionUpCMD::InternalSwap(TransitionUpCMD* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(mode_, other->mode_);
+  swap(step_, other->step_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TransitionUpCMD::GetMetadata() const {

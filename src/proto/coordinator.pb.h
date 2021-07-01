@@ -691,6 +691,7 @@ class StripeInfo :
     kStripeKFieldNumber = 2,
     kStripeLFieldNumber = 3,
     kStripeGFieldNumber = 4,
+    kBlksizeFieldNumber = 5,
   };
   // int32 stripeid = 1;
   void clear_stripeid();
@@ -728,6 +729,15 @@ class StripeInfo :
   void _internal_set_stripe_g(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
+  // int32 blksize = 5;
+  void clear_blksize();
+  ::PROTOBUF_NAMESPACE_ID::int32 blksize() const;
+  void set_blksize(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_blksize() const;
+  void _internal_set_blksize(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:coordinator.StripeInfo)
  private:
   class _Internal;
@@ -737,6 +747,7 @@ class StripeInfo :
   ::PROTOBUF_NAMESPACE_ID::int32 stripe_k_;
   ::PROTOBUF_NAMESPACE_ID::int32 stripe_l_;
   ::PROTOBUF_NAMESPACE_ID::int32 stripe_g_;
+  ::PROTOBUF_NAMESPACE_ID::int32 blksize_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_coordinator_2eproto;
 };
@@ -1765,6 +1776,7 @@ class TransitionUpCMD :
 
   enum : int {
     kModeFieldNumber = 1,
+    kStepFieldNumber = 2,
   };
   // .coordinator.TransitionUpCMD.MODE mode = 1;
   void clear_mode();
@@ -1775,12 +1787,22 @@ class TransitionUpCMD :
   void _internal_set_mode(::coordinator::TransitionUpCMD_MODE value);
   public:
 
+  // int32 step = 2;
+  void clear_step();
+  ::PROTOBUF_NAMESPACE_ID::int32 step() const;
+  void set_step(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_step() const;
+  void _internal_set_step(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:coordinator.TransitionUpCMD)
  private:
   class _Internal;
 
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   int mode_;
+  ::PROTOBUF_NAMESPACE_ID::int32 step_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_coordinator_2eproto;
 };
@@ -2099,6 +2121,26 @@ inline void StripeInfo::_internal_set_stripe_g(::PROTOBUF_NAMESPACE_ID::int32 va
 inline void StripeInfo::set_stripe_g(::PROTOBUF_NAMESPACE_ID::int32 value) {
   _internal_set_stripe_g(value);
   // @@protoc_insertion_point(field_set:coordinator.StripeInfo.stripe_g)
+}
+
+// int32 blksize = 5;
+inline void StripeInfo::clear_blksize() {
+  blksize_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 StripeInfo::_internal_blksize() const {
+  return blksize_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 StripeInfo::blksize() const {
+  // @@protoc_insertion_point(field_get:coordinator.StripeInfo.blksize)
+  return _internal_blksize();
+}
+inline void StripeInfo::_internal_set_blksize(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  blksize_ = value;
+}
+inline void StripeInfo::set_blksize(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_blksize(value);
+  // @@protoc_insertion_point(field_set:coordinator.StripeInfo.blksize)
 }
 
 // -------------------------------------------------------------------
@@ -2589,6 +2631,26 @@ inline void TransitionUpCMD::_internal_set_mode(::coordinator::TransitionUpCMD_M
 inline void TransitionUpCMD::set_mode(::coordinator::TransitionUpCMD_MODE value) {
   _internal_set_mode(value);
   // @@protoc_insertion_point(field_set:coordinator.TransitionUpCMD.mode)
+}
+
+// int32 step = 2;
+inline void TransitionUpCMD::clear_step() {
+  step_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 TransitionUpCMD::_internal_step() const {
+  return step_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 TransitionUpCMD::step() const {
+  // @@protoc_insertion_point(field_get:coordinator.TransitionUpCMD.step)
+  return _internal_step();
+}
+inline void TransitionUpCMD::_internal_set_step(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  step_ = value;
+}
+inline void TransitionUpCMD::set_step(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_step(value);
+  // @@protoc_insertion_point(field_set:coordinator.TransitionUpCMD.step)
 }
 
 #ifdef __GNUC__

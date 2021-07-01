@@ -41,9 +41,14 @@ namespace lrc {
                 RANDOM,
                 SPARSE
             };
-            typedef std::unordered_map<std::string, std::pair<FileSystemCN::FileSystemImpl::TYPE, bool>> StripeLayoutGroup;
+            typedef std::unordered_map<std::string, std::tuple<int,FileSystemCN::FileSystemImpl::TYPE, bool>> StripeLayoutGroup;
             typedef std::tuple<StripeLayoutGroup,StripeLayoutGroup,StripeLayoutGroup> SingleStripeLayout;
-            typedef std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> SingleStripeLayout_bycluster;
+            typedef std::tuple<std::vector<int>,std::vector<int>, std::vector<int>> SingleStripeLayout_bycluster;
+            typedef std::tuple<std::vector<int>,std::vector<int>,std::vector<std::string>,std::string> Partial_Coding_Plan;
+            typedef std::tuple<std::vector<int>,std::vector<std::string>,std::vector<std::string>> Migration_Plan;
+            typedef std::tuple<std::vector<int>,std::vector<int>,std::vector<std::string>,std::string,std::vector<std::string>> Global_Coding_Plan;
+
+            typedef std::tuple<std::vector<Partial_Coding_Plan>,Global_Coding_Plan,Migration_Plan,std::vector<Partial_Coding_Plan>> Transition_Plan;
 
             std::shared_ptr<spdlog::logger> m_cn_logger;
 
@@ -67,7 +72,7 @@ namespace lrc {
             std::mutex m_stripeupdatingcount_mtx;
             std::condition_variable m_updatingcond;
             std::unordered_map<int,int> stripe_in_updatingcounter;
-            std::unordered_map<int,std::unordered_map<std::string,std::pair<TYPE,bool>>> stripe_in_updating;// stripeid , unreceivedDNList
+            std::unordered_map<int,StripeLayoutGroup> stripe_in_updating;// stripeid , unreceivedDNList
 
             //stub
             std::map<std::string, std::unique_ptr<datanode::FromCoodinator::Stub>> m_dn_ptrs;
@@ -85,6 +90,11 @@ namespace lrc {
 
             std::unordered_map<lrc::ECSchema,std::vector<SingleStripeLayout>,ECSchemaHash,ECSchemaCMP> sparse_placement_layout;
             std::unordered_map<lrc::ECSchema,int,ECSchemaHash,ECSchemaCMP> sparse_placement_layout_cursor;
+
+
+
+
+
         public:
             grpc::Status deleteStripe(::grpc::ServerContext *context, const::coordinator::StripeId *request,
                                       ::coordinator::RequestResult *response) override;
@@ -128,6 +138,7 @@ namespace lrc {
             grpc::Status uploadStripe(::grpc::ServerContext *context, const ::coordinator::StripeInfo *request,
                                       ::coordinator::StripeDetail *response) override;
 
+
             bool initialize();
 
             bool initcluster() ;
@@ -149,6 +160,8 @@ namespace lrc {
 
             std::vector<SingleStripeLayout_bycluster>
             generatelayout(const std::tuple<int, int, int> &para,PLACE placement,int stripenum,int step = 2);
+
+
 
             void flushhistory();
 
@@ -183,6 +196,16 @@ namespace lrc {
             grpc::Status
             downloadStripeWithHint(::grpc::ServerContext *context, const::coordinator::StripeIdWithHint *request,
                                    ::coordinator::StripeLocation *response) override;
+
+            Transition_Plan
+            generate_transition_plan(const std::vector<SingleStripeLayout> & layout,
+                                     const std::tuple<int, int, int> &para_before,
+                                     const std::tuple<int, int, int> &para_after,
+                                     int from,
+                                     bool partial_gp = true,
+                                     bool partial_lp=  true,
+                                     int step=2);
+
 
             std::pair<std::vector<std::tuple<int, std::vector<std::string>, std::vector<std::string>>>,
             std::vector<std::tuple<int, std::vector<std::string>, std::string, std::vector<std::string>>>>

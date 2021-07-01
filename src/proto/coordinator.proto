@@ -41,7 +41,7 @@ message StripeInfo{
   int32 stripe_k = 2;
   int32 stripe_l = 3;
   int32 stripe_g = 4;
-
+  int32 blksize =  5;
 }
 
 message StripeLocation{

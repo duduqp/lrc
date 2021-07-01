@@ -20,6 +20,7 @@ namespace lrc {
         stripeInfo.set_stripe_k(ecschema.datablk);
         stripeInfo.set_stripe_l(ecschema.localparityblk);
         stripeInfo.set_stripe_g(ecschema.globalparityblk);
+        stripeInfo.set_blksize(ecschema.blksize);
         coordinator::StripeDetail stripeDetail;
         auto res = m_fileSystem_ptr->uploadStripe(&getlocationclientContext, stripeInfo, &stripeDetail);
 
