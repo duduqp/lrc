@@ -2025,6 +2025,7 @@ namespace lrc {
                                                            bool partial_lp,
                                                            int step) {
         std::vector<Partial_Coding_Plan> p1;
+        std::vector<Global_Coding_Plan> p2;
         std::vector<Partial_Coding_Plan> p4;
         auto[k, l, g] = para_before;
         auto[_k, _l, _g]= para_after;
@@ -2076,7 +2077,6 @@ namespace lrc {
                 to_cluster.erase(_clusterid);
             }
         }
-
 
 
         std::unordered_map<int, std::vector<std::string>> migration_mapping;
@@ -2131,8 +2131,7 @@ namespace lrc {
             //reconsx
             std::vector<int> stripeids, blkids;
             std::vector<std::string> fromdns;
-            std::vector<int> stripeids_globalplan, blkids_globalplan;
-            std::vector<std::string> fromdns_globalplan, todns_globalplan;
+            std::vector<std::string> todns_globalplan;
             //pick gp nodes
             int pickedgpcluster = -1;
             std::sample(candgp_cluster.cbegin(), candgp_cluster.cend(), &pickedgpcluster, 1,
@@ -2143,37 +2142,69 @@ namespace lrc {
                         std::mt19937{std::random_device{}()});
 
 
+            const auto &worker = todns_globalplan[0];
+
             for (const auto &c:cluster_tmp_datablock) {
                 if (partial_gp && c.second.size() > _g) {
                     //need partial
-                    for (const auto &clusterdninfo:c.second) {
-                        const auto &[_dnuri, _blkinfo] = clusterdninfo;
-                        const auto &[_stripeid, _blkid, _type] = _blkinfo;
-                        fromdns.emplace_back(_dnuri);
-                        stripeids.emplace_back(_stripeid);
-                        blkids.emplace_back(_blkid);
+                    for (int j = 0; j < _g; ++j) {
+                        for (const auto &clusterdninfo:c.second) {
+                            const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                            const auto &[_stripeid, _blkid, _type] = _blkinfo;
+                            fromdns.emplace_back(_dnuri);
+                            stripeids.emplace_back(_stripeid);
+                            blkids.emplace_back(_blkid);
+                        }
+                        auto gatewayuri = m_cluster_info[c.first].gatewayuri;
+                        p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, gatewayuri));
+                        //clear
+                        fromdns.clear();
+                        stripeids.clear();
+                        blkids.clear();
                     }
-                    auto gatewayuri = m_cluster_info[c.first].gatewayuri;
-                    fromdns_globalplan.push_back(gatewayuri);
-                    stripeids_globalplan.push_back(from);
-                    blkids_globalplan.push_back(-1);
-                    p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, gatewayuri));
                 } else {
-                    //or send data blocks to
+                    //or send data blocks to gp cluster gateway as a special partial plan
                     for (const auto &clusterdninfo:c.second) {
                         const auto &[_dnuri, _blkinfo] = clusterdninfo;
                         const auto &[_stripeid, _blkid, _blktype] = _blkinfo;
-                        fromdns_globalplan.emplace_back(_dnuri);
-                        stripeids_globalplan.emplace_back(_stripeid);
-                        blkids_globalplan.emplace_back(_blkid);
+                        stripeids.push_back(_stripeid);
+                        blkids.push_back(_blkid);
+                        fromdns.emplace_back(_dnuri);
+                        p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, worker));
+                        fromdns.clear();
+                        stripeids.clear();
+                        blkids.clear();
                     }
-                };
+                }
             }
 
 
-            Global_Coding_Plan p2{std::make_tuple(stripeids_globalplan, blkids_globalplan, fromdns_globalplan,
-                                                  m_cluster_info[pickedgpcluster].gatewayuri,
-                                                  todns_globalplan)};
+            for (int j = 0; j < _g; ++j) {
+
+                for (const auto &c:cluster_tmp_datablock) {
+                    if (partial_gp && c.second.size() > _g) {
+                        //already partial coded , stored on that cluster's gateway
+                        auto gatewayuri = m_cluster_info[c.first].gatewayuri;
+                        fromdns.emplace_back(gatewayuri);
+                        stripeids.emplace_back(from);
+                        blkids.emplace_back(-j);
+                    } else {
+                        //or send data blocks to
+                        for (const auto &clusterdninfo:c.second) {
+                            const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                            const auto &[_stripeid, _blkid, _blktype] = _blkinfo;
+                            fromdns.emplace_back(worker);//from gp cluster gateway
+                            stripeids.emplace_back(_stripeid);
+                            blkids.emplace_back(_blkid);
+                        }
+
+                    };
+                }
+                p2.emplace_back(std::make_tuple(stripeids, blkids, fromdns, todns_globalplan[j]));
+                stripeids.clear();
+                blkids.clear();
+                fromdns.clear();
+            }
 
 
             auto tocluster_iter = to_cluster.begin();
@@ -2185,14 +2216,13 @@ namespace lrc {
             for (int j = 0; j < migration_from.size(); ++j) {
                 int srcci = m_dn_info[migration_from[j]].clusterid;
                 if (partial_lp && 0 != j && 0 == j % r) {
-                    const auto &worker = *todns_iter;
+                    const auto &partworker = *todns_iter;
                     ++todns_iter;
                     p4.emplace_back(std::make_tuple(std::vector<int>(to_partialfrom.size(), from),
                                                     std::vector<int>(to_partialfrom.size(), -1), to_partialfrom,
-                                                    worker));
+                                                    partworker));
+                    to_partialfrom.clear();
                 }
-                migration_to.emplace_back(*todns_iter);
-                ++todns_iter;
 
                 if (srcci != lastc) {
                     todns_iter = nullptr;
@@ -2204,20 +2234,22 @@ namespace lrc {
                 if (nullptr == todns_iter) {
                     todns_iter = &m_cluster_info[tmpc].datanodesuri[0];
                 }
+                migration_to.emplace_back(*todns_iter);
                 if (partial_lp) {
                     to_partialfrom.emplace_back(*todns_iter);
-                    ++todns_iter;
                 }
+                ++todns_iter;
             }
             if (!to_partialfrom.empty()) {
-                const auto &worker = *todns_iter;
+                const auto &partworker = *todns_iter;
                 ++todns_iter;
                 p4.emplace_back(std::make_tuple(std::vector<int>(to_partialfrom.size(), from),
-                                                std::vector<int>(to_partialfrom.size(), -1), to_partialfrom, worker));
+                                                std::vector<int>(to_partialfrom.size(), -1), to_partialfrom,
+                                                partworker));
             }
 
-            Migration_Plan p3=std::make_tuple(migration_stripe,migration_from,migration_to);
-            return {p1,p2,p3,p4};
+            Migration_Plan p3 = std::make_tuple(migration_stripe, migration_from, migration_to);
+            return {p1, p2, p3, p4};
         } else if (0 == (r % (g + 1))) {
             cluster_cap = _g + (_g / g);
             //migration
@@ -2244,70 +2276,99 @@ namespace lrc {
                         cluster_tmp_datablock[ci].emplace(_dnuri, std::make_tuple(from + i, _blkid, TYPE::DATA));
                     }
                 }
+
+
             }
 
 
             //reconsx
             std::vector<int> stripeids, blkids;
             std::vector<std::string> fromdns;
-            std::vector<int> stripeids_globalplan, blkids_globalplan;
-            std::vector<std::string> fromdns_globalplan, todns_globalplan;
+            std::vector<std::string> todns_globalplan;
             //pick gp nodes
-            //first consider residue cluster
-
-
             int pickedgpcluster = -1;
             int skiplp = 0;
-            for(auto ci:residue_cluster)
-            {
-                if(candgp_cluster.contains(ci))
-                {
-                   if(pickedgpcluster!=-1) pickedgpcluster=ci;
-                   skiplp+=l;
+            for (auto ci:residue_cluster) {
+                if (candgp_cluster.contains(ci)) {
+                    if (pickedgpcluster != -1) pickedgpcluster = ci;
+                    skiplp += l;
                 }
             }
 
-            if(pickedgpcluster!=-1) {
+            if (pickedgpcluster != -1) {
                 std::sample(candgp_cluster.cbegin(), candgp_cluster.cend(), &pickedgpcluster, 1,
                             std::mt19937{std::random_device{}()});
             }
             to_cluster.erase(pickedgpcluster);
             auto candgps = m_cluster_info[pickedgpcluster].datanodesuri;
-            std::sample(candgps.cbegin(), candgps.cend(), todns_globalplan.begin(), _g,
+            std::sample(candgps.cbegin(), candgps.cend(), todns_globalplan.begin(), _g + _l - skiplp,
                         std::mt19937{std::random_device{}()});
 
+
+            const auto &worker = todns_globalplan[0];
 
             for (const auto &c:cluster_tmp_datablock) {
                 if (partial_gp && c.second.size() > _g) {
                     //need partial
-                    for (const auto &clusterdninfo:c.second) {
-                        const auto &[_dnuri, _blkinfo] = clusterdninfo;
-                        const auto &[_stripeid, _blkid, _type] = _blkinfo;
-                        fromdns.emplace_back(_dnuri);
-                        stripeids.emplace_back(_stripeid);
-                        blkids.emplace_back(_blkid);
+                    for (int j = 0; j < _g; ++j) {
+                        for (const auto &clusterdninfo:c.second) {
+                            const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                            const auto &[_stripeid, _blkid, _type] = _blkinfo;
+                            fromdns.emplace_back(_dnuri);
+                            stripeids.emplace_back(_stripeid);
+                            blkids.emplace_back(_blkid);
+                        }
+                        auto gatewayuri = m_cluster_info[c.first].gatewayuri;
+                        p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, gatewayuri));
+                        //clear
+                        fromdns.clear();
+                        stripeids.clear();
+                        blkids.clear();
                     }
-                    auto gatewayuri = m_cluster_info[c.first].gatewayuri;
-                    fromdns_globalplan.push_back(gatewayuri);
-                    stripeids_globalplan.push_back(from);
-                    blkids_globalplan.push_back(-1);
-                    p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, gatewayuri));
                 } else {
-                    //or send data blocks to
+                    //or send data blocks to gp cluster gateway as a special partial plan
                     for (const auto &clusterdninfo:c.second) {
                         const auto &[_dnuri, _blkinfo] = clusterdninfo;
                         const auto &[_stripeid, _blkid, _blktype] = _blkinfo;
-                        fromdns_globalplan.emplace_back(_dnuri);
-                        stripeids_globalplan.emplace_back(_stripeid);
-                        blkids_globalplan.emplace_back(_blkid);
+                        stripeids.push_back(_stripeid);
+                        blkids.push_back(_blkid);
+                        fromdns.emplace_back(_dnuri);
+                        p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, worker));
+                        fromdns.clear();
+                        stripeids.clear();
+                        blkids.clear();
                     }
-                };
+                }
             }
 
 
-            Global_Coding_Plan p2{std::make_tuple(stripeids_globalplan, blkids_globalplan, fromdns_globalplan,
-                                                  m_cluster_info[pickedgpcluster].gatewayuri,
-                                                  todns_globalplan)};
+            for (int j = 0; j < _g; ++j) {
+
+                for (const auto &c:cluster_tmp_datablock) {
+                    if (partial_gp && c.second.size() > _g) {
+                        //already partial coded , stored on that cluster's gateway
+                        auto gatewayuri = m_cluster_info[c.first].gatewayuri;
+                        fromdns.emplace_back(gatewayuri);
+                        stripeids.emplace_back(from);
+                        blkids.emplace_back(-j);
+                    } else {
+                        //or send data blocks to
+                        for (const auto &clusterdninfo:c.second) {
+                            const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                            const auto &[_stripeid, _blkid, _blktype] = _blkinfo;
+                            fromdns.emplace_back(worker);//from gp cluster gateway
+                            stripeids.emplace_back(_stripeid);
+                            blkids.emplace_back(_blkid);
+                        }
+
+                    };
+                }
+                p2.emplace_back(std::make_tuple(stripeids, blkids, fromdns, todns_globalplan[j]));
+                stripeids.clear();
+                blkids.clear();
+                fromdns.clear();
+            }
+           
 
 
             auto tocluster_iter = to_cluster.begin();
@@ -2350,8 +2411,8 @@ namespace lrc {
                                                 std::vector<int>(to_partialfrom.size(), -1), to_partialfrom, worker));
             }
 
-            Migration_Plan p3=std::make_tuple(migration_stripe,migration_from,migration_to);
-            return {p1,p2,p3,p4};
+            Migration_Plan p3 = std::make_tuple(migration_stripe, migration_from, migration_to);
+            return {p1, p2, p3, p4};
         } else {
             cluster_cap = _g + (_g / g);
             int m = (k / l) % (g + 1);//residue_datablock per group

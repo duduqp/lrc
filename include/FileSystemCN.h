@@ -46,9 +46,9 @@ namespace lrc {
             typedef std::tuple<std::vector<int>,std::vector<int>, std::vector<int>> SingleStripeLayout_bycluster;
             typedef std::tuple<std::vector<int>,std::vector<int>,std::vector<std::string>,std::string> Partial_Coding_Plan;
             typedef std::tuple<std::vector<int>,std::vector<std::string>,std::vector<std::string>> Migration_Plan;
-            typedef std::tuple<std::vector<int>,std::vector<int>,std::vector<std::string>,std::string,std::vector<std::string>> Global_Coding_Plan;
+            typedef std::tuple<std::vector<int>,std::vector<int>,std::vector<std::string>,std::string> Global_Coding_Plan;
 
-            typedef std::tuple<std::vector<Partial_Coding_Plan>,Global_Coding_Plan,Migration_Plan,std::vector<Partial_Coding_Plan>> Transition_Plan;
+            typedef std::tuple<std::vector<Partial_Coding_Plan>,std::vector<Global_Coding_Plan>,Migration_Plan,std::vector<Partial_Coding_Plan>> Transition_Plan;
 
             std::shared_ptr<spdlog::logger> m_cn_logger;
 
