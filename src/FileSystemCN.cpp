@@ -2368,7 +2368,6 @@ namespace lrc {
                 blkids.clear();
                 fromdns.clear();
             }
-           
 
 
             auto tocluster_iter = to_cluster.begin();
@@ -2376,19 +2375,8 @@ namespace lrc {
             int tmpc = -1;
             int lastc = -1;
             //just migration
-            std::vector<std::string> to_partialfrom;
             for (int j = 0; j < migration_from.size(); ++j) {
                 int srcci = m_dn_info[migration_from[j]].clusterid;
-                if (partial_lp && 0 != j && 0 == j % r) {
-                    const auto &worker = *todns_iter;
-                    ++todns_iter;
-                    p4.emplace_back(std::make_tuple(std::vector<int>(to_partialfrom.size(), from),
-                                                    std::vector<int>(to_partialfrom.size(), -1), to_partialfrom,
-                                                    worker));
-                }
-                migration_to.emplace_back(*todns_iter);
-                ++todns_iter;
-
                 if (srcci != lastc) {
                     todns_iter = nullptr;
                     lastc = srcci;
@@ -2399,45 +2387,47 @@ namespace lrc {
                 if (nullptr == todns_iter) {
                     todns_iter = &m_cluster_info[tmpc].datanodesuri[0];
                 }
-                if (partial_lp) {
-                    to_partialfrom.emplace_back(*todns_iter);
-                    ++todns_iter;
-                }
-            }
-            if (!to_partialfrom.empty()) {
-                const auto &worker = *todns_iter;
+                migration_to.emplace_back(*todns_iter);
                 ++todns_iter;
-                p4.emplace_back(std::make_tuple(std::vector<int>(to_partialfrom.size(), from),
-                                                std::vector<int>(to_partialfrom.size(), -1), to_partialfrom, worker));
             }
+
 
             Migration_Plan p3 = std::make_tuple(migration_stripe, migration_from, migration_to);
             return {p1, p2, p3, p4};
         } else {
             cluster_cap = _g + (_g / g);
             int m = (k / l) % (g + 1);//residue_datablock per group
-            residuecluster_cap = (_g / m) * (m + 1);//count lp
-            int mix_cap = _g + 1 + (g / m);
+            residuecluster_cap = (_g / m) * (m + 1);//count lp in
+            int mix_cap = _g + 1 + 1 * (g / m);//_g+1 data blocks plus at most g/m lps
+            //dddd
+            //dl
+            //dl
             //pick up residue cluster id
-            unordered_map<int, vector<int>> cluster_precount;
+            std::unordered_map<int, std::vector<int>> cluster_precount;
             for (auto ci:union_cluster) {
-                cluster_precount.insert({ci, vector<int>(step, 0)});
+                cluster_precount.insert({ci, std::vector<int>(step, 0)});
             }
             for (int i = 0; i < step; ++i) {
-                auto[dataloc, lploc, gploc] = layout[from + i];
-                for (auto ci:dataloc) {
+                const auto &[dataloc, lploc, gploc] = layout[from + i];
+                for (const auto &p:dataloc) {
+                    const auto &[_dnuri, _stripegrp] = p;
+                    const auto &[_blkid, _type, _flag] = _stripegrp;
+                    int ci = m_dn_info[_dnuri].clusterid;
                     cluster_precount[ci][i]++;
                 }
-                for (auto ci:lploc) {
+                for (const auto &p:lploc) {
+                    const auto &[_dnuri, _stripegrp] = p;
+                    const auto &[_blkid, _type, _flag] = _stripegrp;
+                    int ci = m_dn_info[_dnuri].clusterid;
                     cluster_precount[ci][i]++;
                 }
             }
 
-            unordered_map<int, unordered_set<int>> special_cluster_mover;
-            unordered_set<int> mixpack_cluster;
-            for (auto stat:cluster_precount) {
-                auto[c, countlist] = stat;
-                set<int> dedup(countlist.cbegin(), countlist.cend());
+            std::unordered_map<int, std::unordered_set<int>> special_cluster_mover;
+            std::unordered_set<int> mixpack_cluster;
+            for (const auto &stat:cluster_precount) {
+                const auto &[c, countlist] = stat;
+                std::set<int> dedup(countlist.cbegin(), countlist.cend());
                 if (dedup.size() > 1) {
                     //mixed
                     mixpack_cluster.insert(c);
@@ -2455,7 +2445,7 @@ namespace lrc {
                             // ==2 one normal one residue , move normal
                             if (!special_cluster_mover.contains(c)) {
                                 special_cluster_mover.insert(
-                                        {c, unordered_set < int > {}});
+                                        {c, std::unordered_set<int>{}});
                             }
                             for (int i = 0; i < step; ++i) {
                                 if (countlist[i] == g + 1) {
@@ -2466,7 +2456,7 @@ namespace lrc {
                     } else if (cap == (g + 1)) {
                         if (!special_cluster_mover.contains(c)) {
                             special_cluster_mover.insert(
-                                    {c, unordered_set < int > {}});
+                                    {c, std::unordered_set<int>{}});
                         }
                         for (int i = 0; i < step; ++i) {
                             if (countlist[i] != g + 1) {
@@ -2480,59 +2470,168 @@ namespace lrc {
 
             }
 
-            vector <pair<int, int>> migration_plan;
             for (int i = 0; i < step; ++i) {
-                auto[dataloc, lploc, gploc] = layout[from + i];
-                for (int j = 0; j < dataloc.size(); ++j) {
-                    int ci = dataloc[j];
-                    if (0 != cluster_tmp.count(ci)) {
-                        cluster_tmp_datablock[ci]++;
+                const auto &[dataloc, lploc, gploc] = layout[from + i];
+                for (const auto &p:dataloc) {
+                    const auto &[_dnuri, _stripegrp] = p;
+                    const auto &[_blkid, _type, _flag] = _stripegrp;
+                    int ci = m_dn_info[_dnuri].clusterid;
+                    if (0 != cluster_tmp_total.count(ci)) {
+                        cluster_tmp_datablock[ci].emplace(_dnuri, std::make_tuple(from + i, _blkid, TYPE::DATA));
                         if (special_cluster_mover.contains(ci) && special_cluster_mover[ci].contains(i)) {
-                            migration_plan.emplace_back(from + i, j);
+                            migration_stripe.push_back(from + i);
+                            migration_from.emplace_back(_dnuri);
+                            migration_mapping.emplace(ci, std::vector<std::string>());
                             continue;
                         }
                         int cap = (0 == residue_cluster.count(ci)) ? cluster_cap : residuecluster_cap;
                         if (mixpack_cluster.contains(ci)) cap = mix_cap;
-                        if (cluster_tmp[ci] < cap) {
-                            cluster_tmp[ci]++;
+                        if (cluster_tmp_total[ci].size() < cap) {
+                            cluster_tmp_total[ci].emplace(_dnuri, std::make_tuple(from + i, _blkid, TYPE::DATA));
                         } else {
-                            migration_plan.emplace_back(from + i, j);
+                            migration_stripe.push_back(from + i);
+                            migration_from.emplace_back(_dnuri);
                         }
                     } else {
-                        cluster_tmp.insert({ci, 1});
-                        cluster_tmp_datablock.insert({ci, 1});
+                        cluster_tmp_total.emplace(ci, std::unordered_map<std::string, std::tuple<int, int, TYPE>>());
+                        cluster_tmp_datablock.emplace(ci,
+                                                      std::unordered_map<std::string, std::tuple<int, int, TYPE>>());
+                        cluster_tmp_total[ci].emplace(_dnuri, std::make_tuple(from + i, _blkid, TYPE::DATA));
+                        cluster_tmp_datablock[ci].emplace(_dnuri, std::make_tuple(from + i, _blkid, TYPE::DATA));
                         if (special_cluster_mover.contains(ci) && special_cluster_mover[ci].contains(i)) {
-                            migration_plan.emplace_back(from + i, j);
+                            migration_stripe.push_back(from + i);
+                            migration_from.emplace_back(_dnuri);
+                            migration_mapping.emplace(ci, std::vector<std::string>());
                             continue;
                         }
                     }
                 }
 
-                for (int j = 0; j < lploc.size(); ++j) {
-                    int ci = lploc[j];
+
+                for (const auto & p:lploc) {
+                    const auto &[_lpuri, _stripegrp] = p;
+                    const auto &[_blkid, _type, _flag] = _stripegrp;
+                    int ci = m_dn_info[_lpuri].clusterid;
                     if (special_cluster_mover.contains(ci) && special_cluster_mover[ci].contains(i)) {
-                        migration_plan.emplace_back(from + i, j + k);
+                        migration_stripe.push_back(from + i);
+                        migration_from.emplace_back(_lpuri);
+                        migration_mapping.emplace(ci, std::vector<std::string>());
                         continue;
                     }
                     int cap = (0 == residue_cluster.count(ci)) ? cluster_cap : residuecluster_cap;
                     if (mixpack_cluster.contains(ci)) cap = mix_cap;
-                    if (cluster_tmp[ci] < cap) {
-                        cluster_tmp[ci]++;
+                    if (cluster_tmp_total[ci].size() < cap) {
+                        cluster_tmp_total[ci].emplace(_lpuri, std::make_tuple(from + i, _blkid, TYPE::LP));
                     } else {
-                        migration_plan.emplace_back(from + i, j + k);
+                        migration_stripe.push_back(from + i);
+                        migration_from.emplace_back(_lpuri);
                     }
                 }
 
             }
             //reconsx
-            for (auto c:cluster_tmp_datablock) {
-                if (partial_gp) rec += min(c.second, _g);
-                else rec += c.second;
+            std::vector<int> stripeids, blkids;
+            std::vector<std::string> fromdns;
+            std::vector<std::string> todns_globalplan;
+            //pick gp nodes
+            int pickedgpcluster = -1;
+            std::sample(candgp_cluster.cbegin(), candgp_cluster.cend(), &pickedgpcluster, 1,
+                        std::mt19937{std::random_device{}()});
+            to_cluster.erase(pickedgpcluster);
+            auto candgps = m_cluster_info[pickedgpcluster].datanodesuri;
+            std::sample(candgps.cbegin(), candgps.cend(), todns_globalplan.begin(), _g,
+                        std::mt19937{std::random_device{}()});
+
+
+            const auto &worker = todns_globalplan[0];
+
+            for (const auto &c:cluster_tmp_datablock) {
+                if (partial_gp && c.second.size() > _g) {
+                    //need partial
+                    for (int j = 0; j < _g; ++j) {
+                        for (const auto &clusterdninfo:c.second) {
+                            const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                            const auto &[_stripeid, _blkid, _type] = _blkinfo;
+                            fromdns.emplace_back(_dnuri);
+                            stripeids.emplace_back(_stripeid);
+                            blkids.emplace_back(_blkid);
+                        }
+                        auto gatewayuri = m_cluster_info[c.first].gatewayuri;
+                        p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, gatewayuri));
+                        //clear
+                        fromdns.clear();
+                        stripeids.clear();
+                        blkids.clear();
+                    }
+                } else {
+                    //or send data blocks to gp cluster gateway as a special partial plan
+                    for (const auto &clusterdninfo:c.second) {
+                        const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                        const auto &[_stripeid, _blkid, _blktype] = _blkinfo;
+                        stripeids.push_back(_stripeid);
+                        blkids.push_back(_blkid);
+                        fromdns.emplace_back(_dnuri);
+                        p1.emplace_back(std::make_tuple(stripeids, blkids, fromdns, worker));
+                        fromdns.clear();
+                        stripeids.clear();
+                        blkids.clear();
+                    }
+                }
             }
-            mig = migration_plan.size();
-            return {rec, mig};
+
+
+            for (int j = 0; j < _g; ++j) {
+
+                for (const auto &c:cluster_tmp_datablock) {
+                    if (partial_gp && c.second.size() > _g) {
+                        //already partial coded , stored on that cluster's gateway
+                        auto gatewayuri = m_cluster_info[c.first].gatewayuri;
+                        fromdns.emplace_back(gatewayuri);
+                        stripeids.emplace_back(from);
+                        blkids.emplace_back(-j);
+                    } else {
+                        //or send data blocks to
+                        for (const auto &clusterdninfo:c.second) {
+                            const auto &[_dnuri, _blkinfo] = clusterdninfo;
+                            const auto &[_stripeid, _blkid, _blktype] = _blkinfo;
+                            fromdns.emplace_back(worker);//from gp cluster gateway
+                            stripeids.emplace_back(_stripeid);
+                            blkids.emplace_back(_blkid);
+                        }
+
+                    };
+                }
+                p2.emplace_back(std::make_tuple(stripeids, blkids, fromdns, todns_globalplan[j]));
+                stripeids.clear();
+                blkids.clear();
+                fromdns.clear();
+            }
         }
 
+        auto tocluster_iter = to_cluster.begin();
+        std::string *todns_iter = nullptr;
+        int tmpc = -1;
+        int lastc = -1;
+        //just migration
+        for (int j = 0; j < migration_from.size(); ++j) {
+            int srcci = m_dn_info[migration_from[j]].clusterid;
+            if (srcci != lastc) {
+                todns_iter = nullptr;
+                lastc = srcci;
+                tmpc = *tocluster_iter;
+                ++tocluster_iter;
+            }
+
+            if (nullptr == todns_iter) {
+                todns_iter = &m_cluster_info[tmpc].datanodesuri[0];
+            }
+            migration_to.emplace_back(*todns_iter);
+            ++todns_iter;
+        }
+
+
+        Migration_Plan p3 = std::make_tuple(migration_stripe, migration_from, migration_to);
+        return {p1, p2, p3, p4};
 
     }
 
